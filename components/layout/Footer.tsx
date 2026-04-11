@@ -1,47 +1,67 @@
 "use client";
 
 import Link from "next/link";
-import { Flame, Instagram, Facebook, Twitter, Mail } from "lucide-react";
+import { Instagram, Youtube, Mail, Phone, MessageCircle } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="bg-brown-900 text-cream-200">
+    <footer className="bg-forest-900 text-forest-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <Link
-              href="/"
-              className="flex items-center gap-2 font-serif text-2xl font-bold text-white mb-4"
-            >
-              <Flame className="text-amber-400" size={26} />
-              Lumière
+            <Link href="/" className="inline-flex items-center gap-3 mb-5">
+              {/* Logo mark */}
+              <div className="w-11 h-11 rounded-full bg-forest-800 border-2 border-gold-400 flex items-center justify-center flex-shrink-0">
+                <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none">
+                  <path
+                    d="M12 4 C11 6 10 7 10 9 C10 11 11 12 12 12 C13 12 14 11 14 9 C14 7 13 6 12 4Z"
+                    fill="#e8c040"
+                  />
+                  <rect x="10" y="12" width="4" height="6" rx="0.5" fill="#e56058" />
+                  <rect x="9" y="18" width="6" height="1.5" rx="0.75" fill="#c4564a" />
+                </svg>
+              </div>
+              <div className="leading-none">
+                <span className="block font-serif text-xl font-bold text-white tracking-wide">
+                  Artisan House
+                </span>
+                <span className="block text-[10px] font-medium text-gold-400 tracking-[0.2em] uppercase mt-0.5">
+                  Candles · Clays · Crafts
+                </span>
+              </div>
             </Link>
-            <p className="text-sm text-cream-300 leading-relaxed mb-6">
-              Handcrafted candles and bespoke artwork, made with intention and
-              delivered with love. Each piece tells a story.
+            <p className="text-sm text-forest-300 leading-relaxed mb-6">
+              Handcrafted candles, clay art, and creative crafts made with
+              intention and delivered with love. Each piece tells a story.
             </p>
             <div className="flex items-center gap-3">
               <a
-                href="#"
-                className="w-9 h-9 rounded-full bg-brown-700 flex items-center justify-center text-cream-300 hover:bg-amber-700 hover:text-white transition-colors"
+                href="https://instagram.com/artisanhouse.in"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 rounded-full bg-forest-700 flex items-center justify-center text-forest-300 hover:bg-coral-600 hover:text-white transition-colors"
                 aria-label="Instagram"
               >
                 <Instagram size={16} />
               </a>
               <a
-                href="#"
-                className="w-9 h-9 rounded-full bg-brown-700 flex items-center justify-center text-cream-300 hover:bg-amber-700 hover:text-white transition-colors"
-                aria-label="Facebook"
+                href="https://wa.me/918009170754"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 rounded-full bg-forest-700 flex items-center justify-center text-forest-300 hover:bg-coral-600 hover:text-white transition-colors"
+                aria-label="WhatsApp"
               >
-                <Facebook size={16} />
+                <MessageCircle size={16} />
               </a>
               <a
-                href="#"
-                className="w-9 h-9 rounded-full bg-brown-700 flex items-center justify-center text-cream-300 hover:bg-amber-700 hover:text-white transition-colors"
-                aria-label="Twitter"
+                href="https://youtube.com/@artisanhouse_in"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 rounded-full bg-forest-700 flex items-center justify-center text-forest-300 hover:bg-coral-600 hover:text-white transition-colors"
+                aria-label="YouTube"
               >
-                <Twitter size={16} />
+                <Youtube size={16} />
               </a>
             </div>
           </div>
@@ -56,13 +76,13 @@ export default function Footer() {
                 { href: "/products", label: "All Products" },
                 { href: "/categories/scented-candles", label: "Scented Candles" },
                 { href: "/categories/pillar-candles", label: "Pillar Candles" },
-                { href: "/categories/custom-artwork", label: "Custom Artwork" },
+                { href: "/categories/custom-artwork", label: "Clay Art" },
                 { href: "/categories/gift-sets", label: "Gift Sets" },
               ].map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-cream-300 hover:text-amber-400 transition-colors"
+                    className="text-sm text-forest-300 hover:text-gold-400 transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -80,14 +100,14 @@ export default function Footer() {
               {[
                 { href: "#", label: "About Us" },
                 { href: "#", label: "Our Story" },
-                { href: "#", label: "Sustainability" },
+                { href: "#", label: "Custom Orders" },
                 { href: "#", label: "FAQ" },
                 { href: "#", label: "Contact Us" },
               ].map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-cream-300 hover:text-amber-400 transition-colors"
+                    className="text-sm text-forest-300 hover:text-gold-400 transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -96,55 +116,86 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Newsletter */}
+          {/* Contact */}
           <div>
             <h3 className="font-semibold text-white mb-4 text-sm uppercase tracking-wider">
-              Newsletter
+              Get in Touch
             </h3>
-            <p className="text-sm text-cream-300 mb-4">
-              Join our community for exclusive offers, new arrivals, and
-              candle-making tips.
-            </p>
-            <form
-              onSubmit={(e) => e.preventDefault()}
-              className="flex flex-col gap-2"
-            >
-              <input
-                type="email"
-                placeholder="Your email address"
-                className="px-4 py-2.5 bg-brown-700 border border-brown-600 rounded-lg text-sm text-white placeholder:text-brown-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
-              />
-              <button
-                type="submit"
-                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-amber-700 text-white rounded-lg text-sm font-medium hover:bg-amber-600 transition-colors"
+            <ul className="space-y-3">
+              <li>
+                <a
+                  href="https://instagram.com/artisanhouse.in"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2.5 text-sm text-forest-300 hover:text-gold-400 transition-colors"
+                >
+                  <Instagram size={14} className="flex-shrink-0" />
+                  artisanhouse.in
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://wa.me/918009170754"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2.5 text-sm text-forest-300 hover:text-gold-400 transition-colors"
+                >
+                  <MessageCircle size={14} className="flex-shrink-0" />
+                  8009170754
+                </a>
+              </li>
+              <li>
+                <a
+                  href="tel:+918009170754"
+                  className="flex items-center gap-2.5 text-sm text-forest-300 hover:text-gold-400 transition-colors"
+                >
+                  <Phone size={14} className="flex-shrink-0" />
+                  8009170754
+                </a>
+              </li>
+              <li>
+                <a
+                  href="mailto:artisanhouse.in@gmail.com"
+                  className="flex items-center gap-2.5 text-sm text-forest-300 hover:text-gold-400 transition-colors"
+                >
+                  <Mail size={14} className="flex-shrink-0" />
+                  artisanhouse.in@gmail.com
+                </a>
+              </li>
+            </ul>
+
+            <div className="mt-6 pt-6 border-t border-forest-700">
+              <p className="text-xs text-forest-400 mb-1">Buy our products at</p>
+              <a
+                href="https://www.artisanhouse.in"
+                className="text-sm font-semibold text-gold-400 hover:text-gold-300 transition-colors"
               >
-                <Mail size={16} />
-                Subscribe
-              </button>
-            </form>
+                www.artisanhouse.in
+              </a>
+            </div>
           </div>
         </div>
 
-        <div className="border-t border-brown-700 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-cream-400">
-            © {new Date().getFullYear()} Lumière Candle & Art. All rights reserved.
+        <div className="border-t border-forest-700 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-forest-400">
+            © {new Date().getFullYear()} Artisan House. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             <Link
               href="#"
-              className="text-xs text-cream-400 hover:text-amber-400 transition-colors"
+              className="text-xs text-forest-400 hover:text-gold-400 transition-colors"
             >
               Privacy Policy
             </Link>
             <Link
               href="#"
-              className="text-xs text-cream-400 hover:text-amber-400 transition-colors"
+              className="text-xs text-forest-400 hover:text-gold-400 transition-colors"
             >
               Terms of Service
             </Link>
             <Link
               href="/admin/login"
-              className="text-xs text-cream-400 hover:text-amber-400 transition-colors"
+              className="text-xs text-forest-400 hover:text-gold-400 transition-colors"
             >
               Admin
             </Link>

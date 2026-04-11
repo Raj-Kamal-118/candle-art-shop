@@ -8,7 +8,7 @@
   }
 
   body {
-    @apply bg-cream-50 text-brown-900;
+    @apply bg-cream-50 text-forest-900;
     font-family: 'Inter', system-ui, sans-serif;
   }
 

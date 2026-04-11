@@ -17,18 +17,18 @@ export default async function HomePage() {
       <Testimonials />
 
       {/* CTA Section */}
-      <section className="py-20 bg-cream-50">
+      <section className="py-20 bg-forest-900">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
-          <h2 className="font-serif text-4xl font-bold text-brown-900 mb-4">
+          <h2 className="font-serif text-4xl font-bold text-white mb-4">
             Something Truly Yours
           </h2>
-          <p className="text-brown-600 text-lg mb-8 leading-relaxed">
+          <p className="text-forest-200 text-lg mb-8 leading-relaxed">
             Every piece can be personalized. Work with our artisans to create a
             candle or artwork that tells your unique story.
           </p>
           <a
             href="/products?customizable=true"
-            className="inline-flex items-center gap-2 bg-amber-700 text-white px-8 py-4 rounded-xl font-semibold hover:bg-amber-800 transition-all duration-200 shadow-lg shadow-amber-200"
+            className="inline-flex items-center gap-2 bg-coral-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-coral-700 transition-all duration-200 shadow-lg shadow-coral-900/30"
           >
             Explore Custom Options
           </a>

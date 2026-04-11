@@ -4,9 +4,9 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
-  title: "Lumière — Handcrafted Candles & Art",
+  title: "Artisan House — Candles | Clays | Crafts",
   description:
-    "Discover our collection of handcrafted candles and bespoke artwork, made with intention and the finest natural ingredients.",
+    "Discover handcrafted candles, clay art, and creative crafts at Artisan House. Each piece is made with love and intention. Shop at artisanhouse.in",
 };
 
 export default function RootLayout({

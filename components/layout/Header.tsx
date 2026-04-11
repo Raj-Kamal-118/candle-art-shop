@@ -3,9 +3,42 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ShoppingCart, Heart, Search, Menu, X, Flame } from "lucide-react";
+import { ShoppingCart, Heart, Search, Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useStore } from "@/lib/store";
+
+function ArtisanLogo() {
+  return (
+    <Link
+      href="/"
+      className="flex items-center gap-2.5 hover:opacity-90 transition-opacity"
+    >
+      {/* Circular badge mark */}
+      <div className="w-9 h-9 rounded-full bg-forest-900 border-2 border-gold-400 flex items-center justify-center flex-shrink-0">
+        <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none">
+          {/* Candle flame */}
+          <path
+            d="M12 4 C11 6 10 7 10 9 C10 11 11 12 12 12 C13 12 14 11 14 9 C14 7 13 6 12 4Z"
+            fill="#e8c040"
+          />
+          {/* Candle body */}
+          <rect x="10" y="12" width="4" height="6" rx="0.5" fill="#e56058" />
+          {/* Candle base */}
+          <rect x="9" y="18" width="6" height="1.5" rx="0.75" fill="#c4564a" />
+        </svg>
+      </div>
+      {/* Brand name */}
+      <div className="leading-none">
+        <span className="block font-serif text-lg font-bold text-forest-900 tracking-wide">
+          Artisan House
+        </span>
+        <span className="block text-[9px] font-medium text-gold-600 tracking-[0.15em] uppercase">
+          Candles · Clays · Crafts
+        </span>
+      </div>
+    </Link>
+  );
+}
 
 export default function Header() {
   const pathname = usePathname();
@@ -55,14 +88,7 @@ export default function Header() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link
-            href="/"
-            className="flex items-center gap-2 font-serif text-xl font-bold text-brown-900 hover:text-amber-700 transition-colors"
-          >
-            <Flame className="text-amber-600" size={24} />
-            <span>Lumière</span>
-          </Link>
+          <ArtisanLogo />
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-7">
@@ -70,10 +96,10 @@ export default function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`text-sm font-medium transition-colors hover:text-amber-700 ${
+                className={`text-sm font-medium transition-colors hover:text-coral-600 ${
                   pathname === link.href
-                    ? "text-amber-700 border-b-2 border-amber-600 pb-0.5"
-                    : "text-brown-700"
+                    ? "text-coral-600 border-b-2 border-coral-500 pb-0.5"
+                    : "text-forest-700"
                 }`}
               >
                 {link.label}
@@ -83,47 +109,43 @@ export default function Header() {
 
           {/* Right actions */}
           <div className="flex items-center gap-3">
-            {/* Search */}
             <button
               onClick={() => setSearchOpen(!searchOpen)}
-              className="p-2 text-brown-600 hover:text-amber-700 transition-colors rounded-full hover:bg-amber-50"
+              className="p-2 text-forest-600 hover:text-coral-600 transition-colors rounded-full hover:bg-coral-50"
               aria-label="Search"
             >
               <Search size={20} />
             </button>
 
-            {/* Favorites */}
             <Link
               href="/favorites"
-              className="relative p-2 text-brown-600 hover:text-amber-700 transition-colors rounded-full hover:bg-amber-50"
+              className="relative p-2 text-forest-600 hover:text-coral-600 transition-colors rounded-full hover:bg-coral-50"
               aria-label="Favorites"
             >
               <Heart size={20} />
               {favCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-amber-600 text-white text-xs rounded-full flex items-center justify-center font-medium">
+                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-coral-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
                   {favCount}
                 </span>
               )}
             </Link>
 
-            {/* Cart */}
             <Link
               href="/cart"
-              className="relative p-2 text-brown-600 hover:text-amber-700 transition-colors rounded-full hover:bg-amber-50"
+              className="relative p-2 text-forest-600 hover:text-coral-600 transition-colors rounded-full hover:bg-coral-50"
               aria-label="Cart"
             >
               <ShoppingCart size={20} />
               {cartCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-amber-600 text-white text-xs rounded-full flex items-center justify-center font-medium">
+                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-coral-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
                   {cartCount > 9 ? "9+" : cartCount}
                 </span>
               )}
             </Link>
 
-            {/* Mobile menu button */}
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="md:hidden p-2 text-brown-600 hover:text-amber-700 transition-colors rounded-full hover:bg-amber-50"
+              className="md:hidden p-2 text-forest-600 hover:text-coral-600 transition-colors rounded-full hover:bg-coral-50"
               aria-label="Menu"
             >
               {menuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -146,9 +168,9 @@ export default function Header() {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search candles, artwork, gift sets..."
+                    placeholder="Search candles, clay art, gift sets..."
                     autoFocus
-                    className="w-full px-4 py-2.5 bg-cream-100 border border-cream-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent placeholder:text-brown-400"
+                    className="w-full px-4 py-2.5 bg-forest-50 border border-forest-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-coral-400 focus:border-transparent placeholder:text-forest-400"
                   />
                 </form>
               </div>
@@ -164,7 +186,7 @@ export default function Header() {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="md:hidden overflow-hidden bg-white border-t border-cream-200"
+            className="md:hidden overflow-hidden bg-white border-t border-forest-100"
           >
             <nav className="px-4 py-4 flex flex-col gap-1">
               {navLinks.map((link) => (
@@ -173,8 +195,8 @@ export default function Header() {
                   href={link.href}
                   className={`px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                     pathname === link.href
-                      ? "bg-amber-50 text-amber-700"
-                      : "text-brown-700 hover:bg-cream-100"
+                      ? "bg-coral-50 text-coral-700"
+                      : "text-forest-700 hover:bg-forest-50"
                   }`}
                 >
                   {link.label}
