@@ -1,0 +1,139 @@
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
+import { Heart, ShoppingCart, Eye } from "lucide-react";
+import { motion } from "framer-motion";
+import { Product } from "@/lib/types";
+import { useStore } from "@/lib/store";
+import { formatPrice } from "@/lib/utils";
+import Badge from "@/components/ui/Badge";
+
+interface ProductCardProps {
+  product: Product;
+}
+
+export default function ProductCard({ product }: ProductCardProps) {
+  const { addToCart, addToFavorites, removeFromFavorites, isFavorite } =
+    useStore();
+  const [addedToCart, setAddedToCart] = useState(false);
+  const favorite = isFavorite(product.id);
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addToCart(product);
+    setAddedToCart(true);
+    setTimeout(() => setAddedToCart(false), 1500);
+  };
+
+  const handleToggleFavorite = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (favorite) {
+      removeFromFavorites(product.id);
+    } else {
+      addToFavorites(product);
+    }
+  };
+
+  const discount = product.compareAtPrice
+    ? Math.round(
+        ((product.compareAtPrice - product.price) / product.compareAtPrice) *
+          100
+      )
+    : null;
+
+  return (
+    <Link href={`/products/${product.id}`}>
+      <div className="group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer">
+        {/* Image container */}
+        <div className="relative aspect-square overflow-hidden bg-cream-100">
+          <img
+            src={product.images[0]}
+            alt={product.name}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          />
+
+          {/* Hover overlay */}
+          <div className="absolute inset-0 bg-brown-900/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleAddToCart}
+                className="flex items-center gap-2 bg-white text-brown-900 px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-amber-50 transition-colors shadow-lg"
+              >
+                <ShoppingCart size={15} />
+                {addedToCart ? "Added!" : "Add to Cart"}
+              </button>
+              <Link
+                href={`/products/${product.id}`}
+                className="p-2.5 bg-white rounded-xl text-brown-900 hover:bg-amber-50 transition-colors shadow-lg"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Eye size={15} />
+              </Link>
+            </div>
+          </div>
+
+          {/* Badges */}
+          <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+            {discount && (
+              <Badge variant="danger" className="text-xs">
+                -{discount}%
+              </Badge>
+            )}
+            {product.featured && (
+              <Badge variant="default" className="text-xs">
+                Featured
+              </Badge>
+            )}
+            {!product.inStock && (
+              <Badge variant="warning" className="text-xs">
+                Sold Out
+              </Badge>
+            )}
+          </div>
+
+          {/* Favorite button */}
+          <button
+            onClick={handleToggleFavorite}
+            className={`absolute top-3 right-3 p-2 rounded-full shadow transition-all duration-200 ${
+              favorite
+                ? "bg-red-500 text-white scale-110"
+                : "bg-white text-brown-500 hover:text-red-500 opacity-0 group-hover:opacity-100"
+            }`}
+          >
+            <Heart size={15} className={favorite ? "fill-current" : ""} />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="p-4">
+          <p className="text-xs text-amber-600 font-medium uppercase tracking-wide mb-1">
+            {product.customizable ? "Customizable" : "Ready to Ship"}
+          </p>
+          <h3 className="font-semibold text-brown-900 text-sm leading-tight mb-3 group-hover:text-amber-700 transition-colors line-clamp-2">
+            {product.name}
+          </h3>
+          <div className="flex items-center justify-between">
+            <div className="flex items-baseline gap-2">
+              <span className="text-base font-bold text-brown-900">
+                {formatPrice(product.price)}
+              </span>
+              {product.compareAtPrice && (
+                <span className="text-xs text-brown-400 line-through">
+                  {formatPrice(product.compareAtPrice)}
+                </span>
+              )}
+            </div>
+            {product.stockCount < 10 && product.inStock && (
+              <span className="text-xs text-amber-600 font-medium">
+                Only {product.stockCount} left
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+}

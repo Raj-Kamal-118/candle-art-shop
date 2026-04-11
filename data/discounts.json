@@ -1,0 +1,35 @@
+[
+  {
+    "id": "disc-1",
+    "code": "WELCOME20",
+    "type": "percentage",
+    "value": 20,
+    "minOrderAmount": 0,
+    "maxUses": 100,
+    "usedCount": 12,
+    "expiresAt": "2025-12-31T23:59:59Z",
+    "active": true
+  },
+  {
+    "id": "disc-2",
+    "code": "SAVE850",
+    "type": "fixed",
+    "value": 850,
+    "minOrderAmount": 4250,
+    "maxUses": 50,
+    "usedCount": 5,
+    "expiresAt": "2025-06-30T23:59:59Z",
+    "active": true
+  },
+  {
+    "id": "disc-3",
+    "code": "LUXURY15",
+    "type": "percentage",
+    "value": 15,
+    "minOrderAmount": 8500,
+    "maxUses": 200,
+    "usedCount": 30,
+    "expiresAt": "2025-09-30T23:59:59Z",
+    "active": true
+  }
+]

@@ -1,0 +1,331 @@
+[
+  {
+    "id": "prod-1",
+    "name": "Amber Rose Soy Candle",
+    "slug": "amber-rose-soy-candle",
+    "description": "Indulge in the warm, romantic scent of our Amber Rose Soy Candle. Hand-poured using 100% pure soy wax and infused with a sophisticated blend of Bulgarian rose, warm amber, and a hint of sandalwood. Burns cleanly for up to 50 hours with a cotton wick. Perfect for creating an intimate, cozy atmosphere.",
+    "price": 2999,
+    "compareAtPrice": 3849,
+    "categoryId": "cat-1",
+    "images": [
+      "https://loremflickr.com/800/800/candle,rose?lock=1",
+      "https://loremflickr.com/800/800/candle,amber?lock=2",
+      "https://loremflickr.com/800/800/candle,soy?lock=3"
+    ],
+    "tags": ["rose", "amber", "soy", "romantic", "bestseller"],
+    "inStock": true,
+    "stockCount": 45,
+    "featured": true,
+    "customizable": true,
+    "customizationOptions": [
+      {
+        "label": "Fragrance Intensity",
+        "type": "select",
+        "options": ["Light", "Medium", "Strong"]
+      },
+      {
+        "label": "Custom Message (engraved on jar)",
+        "type": "text"
+      }
+    ],
+    "createdAt": "2024-01-15T00:00:00Z",
+    "updatedAt": "2024-03-10T00:00:00Z"
+  },
+  {
+    "id": "prod-2",
+    "name": "Vanilla Bourbon Luxury Candle",
+    "slug": "vanilla-bourbon-luxury-candle",
+    "description": "A decadent fusion of Madagascar vanilla and smoky bourbon creates an irresistible warmth in this premium scented candle. Made with a coconut-soy wax blend and adorned with a wooden wick that creates a gentle crackling sound. Burns for up to 60 hours. The perfect companion for cool evenings.",
+    "price": 3649,
+    "compareAtPrice": null,
+    "categoryId": "cat-1",
+    "images": [
+      "https://loremflickr.com/800/800/candle,vanilla?lock=4",
+      "https://loremflickr.com/800/800/candle,woodwick?lock=5"
+    ],
+    "tags": ["vanilla", "bourbon", "coconut-soy", "crackling wick"],
+    "inStock": true,
+    "stockCount": 32,
+    "featured": true,
+    "customizable": false,
+    "customizationOptions": [],
+    "createdAt": "2024-01-20T00:00:00Z",
+    "updatedAt": "2024-03-12T00:00:00Z"
+  },
+  {
+    "id": "prod-3",
+    "name": "Forest Mist & Cedarwood",
+    "slug": "forest-mist-cedarwood",
+    "description": "Transport yourself to an ancient forest with this grounding blend of cedarwood, pine resin, and cool mist notes. Our vegan-friendly soy candle is housed in a beautiful smoked glass vessel. Each candle is hand-poured in small batches ensuring the highest quality. Burns approximately 45 hours.",
+    "price": 3299,
+    "compareAtPrice": null,
+    "categoryId": "cat-1",
+    "images": [
+      "https://loremflickr.com/800/800/candle,forest?lock=6",
+      "https://loremflickr.com/800/800/candle,pine?lock=7"
+    ],
+    "tags": ["cedarwood", "pine", "forest", "vegan", "grounding"],
+    "inStock": true,
+    "stockCount": 28,
+    "featured": false,
+    "customizable": true,
+    "customizationOptions": [
+      {
+        "label": "Vessel Color",
+        "type": "select",
+        "options": ["Smoked Grey", "Midnight Black", "Natural Clear"]
+      }
+    ],
+    "createdAt": "2024-02-01T00:00:00Z",
+    "updatedAt": "2024-03-15T00:00:00Z"
+  },
+  {
+    "id": "prod-4",
+    "name": "Jasmine & Tuberose Dream",
+    "slug": "jasmine-tuberose-dream",
+    "description": "A heady floral symphony of fresh jasmine blossoms and sensual tuberose, balanced with a soft musk base. This luxury scented candle is crafted in a hand-painted ceramic vessel that doubles as a decorative piece after the candle has burned. Burns for 55 hours. A truly transformative sensory experience.",
+    "price": 4499,
+    "compareAtPrice": 5349,
+    "categoryId": "cat-1",
+    "images": [
+      "https://loremflickr.com/800/800/candle,jasmine?lock=8",
+      "https://loremflickr.com/800/800/candle,floral?lock=9",
+      "https://loremflickr.com/800/800/candle,ceramic?lock=10"
+    ],
+    "tags": ["jasmine", "tuberose", "floral", "ceramic", "luxury"],
+    "inStock": true,
+    "stockCount": 15,
+    "featured": true,
+    "customizable": true,
+    "customizationOptions": [
+      {
+        "label": "Ceramic Vessel Design",
+        "type": "select",
+        "options": [
+          "Botanical Flowers",
+          "Geometric Patterns",
+          "Solid Matte White"
+        ]
+      },
+      {
+        "label": "Personalization Text",
+        "type": "text"
+      }
+    ],
+    "createdAt": "2024-02-10T00:00:00Z",
+    "updatedAt": "2024-03-20T00:00:00Z"
+  },
+  {
+    "id": "prod-5",
+    "name": "Classic Ivory Pillar Trio",
+    "slug": "classic-ivory-pillar-trio",
+    "description": "A set of three elegant ivory pillar candles in staggered heights (4\", 6\", and 8\"). Made from premium paraffin wax with a slow-burn formula that ensures even melting and minimal dripping. Perfect for creating dramatic tablescapes, mantlepiece arrangements, or intimate dinner settings. Unscented.",
+    "price": 4149,
+    "compareAtPrice": 4999,
+    "categoryId": "cat-2",
+    "images": [
+      "https://loremflickr.com/800/800/candle,pillar?lock=11",
+      "https://loremflickr.com/800/800/candle,ivory?lock=12"
+    ],
+    "tags": ["pillar", "ivory", "unscented", "set", "tablescape"],
+    "inStock": true,
+    "stockCount": 22,
+    "featured": true,
+    "customizable": true,
+    "customizationOptions": [
+      {
+        "label": "Color",
+        "type": "color"
+      },
+      {
+        "label": "Scent Addition",
+        "type": "select",
+        "options": ["Unscented", "Lavender", "Vanilla", "Eucalyptus"]
+      }
+    ],
+    "createdAt": "2024-02-15T00:00:00Z",
+    "updatedAt": "2024-03-18T00:00:00Z"
+  },
+  {
+    "id": "prod-6",
+    "name": "Rustic Beeswax Pillar",
+    "slug": "rustic-beeswax-pillar",
+    "description": "A stunning natural beeswax pillar candle with its characteristic honey-golden hue and subtle sweet scent. Each candle is hand-rolled from pure beeswax sheets, making each piece slightly unique. Naturally air-purifying as it burns. Available in 6\" and 9\" heights. Burns for up to 80 hours.",
+    "price": 3149,
+    "compareAtPrice": null,
+    "categoryId": "cat-2",
+    "images": [
+      "https://loremflickr.com/800/800/candle,beeswax?lock=13",
+      "https://loremflickr.com/800/800/candle,honey?lock=14"
+    ],
+    "tags": ["beeswax", "natural", "honey", "air-purifying", "rustic"],
+    "inStock": true,
+    "stockCount": 18,
+    "featured": false,
+    "customizable": true,
+    "customizationOptions": [
+      {
+        "label": "Height",
+        "type": "select",
+        "options": ["6 inches", "9 inches"]
+      }
+    ],
+    "createdAt": "2024-02-20T00:00:00Z",
+    "updatedAt": "2024-03-22T00:00:00Z"
+  },
+  {
+    "id": "prod-7",
+    "name": "Marbled Obsidian Pillar",
+    "slug": "marbled-obsidian-pillar",
+    "description": "A dramatic statement piece featuring striking black and gold marbling achieved through a meticulous hand-swirling technique. This sculptural pillar candle is as much art as it is functional. Each candle is truly one-of-a-kind. Made with premium paraffin for a clean, long burn of up to 70 hours.",
+    "price": 4749,
+    "compareAtPrice": null,
+    "categoryId": "cat-2",
+    "images": [
+      "https://loremflickr.com/800/800/candle,marbled?lock=15",
+      "https://loremflickr.com/800/800/candle,black?lock=16",
+      "https://loremflickr.com/800/800/candle,gold?lock=17"
+    ],
+    "tags": ["marbled", "black", "gold", "sculptural", "statement"],
+    "inStock": true,
+    "stockCount": 8,
+    "featured": true,
+    "customizable": false,
+    "customizationOptions": [],
+    "createdAt": "2024-03-01T00:00:00Z",
+    "updatedAt": "2024-03-25T00:00:00Z"
+  },
+  {
+    "id": "prod-8",
+    "name": "Botanical Press Candle Art",
+    "slug": "botanical-press-candle-art",
+    "description": "A breathtaking fusion of candle-making and botanical art. Real pressed flowers and leaves are suspended in clear wax around a central pillar candle, creating a luminous stained-glass effect when lit. Each piece is individually crafted and unique. The botanical sleeve can be kept as a decorative piece after burning.",
+    "price": 6699,
+    "compareAtPrice": 8149,
+    "categoryId": "cat-3",
+    "images": [
+      "https://loremflickr.com/800/800/candle,botanical?lock=18",
+      "https://loremflickr.com/800/800/candle,pressedflowers?lock=19",
+      "https://loremflickr.com/800/800/candle,art?lock=20"
+    ],
+    "tags": ["botanical", "pressed flowers", "art", "unique", "stained-glass"],
+    "inStock": true,
+    "stockCount": 6,
+    "featured": true,
+    "customizable": true,
+    "customizationOptions": [
+      {
+        "label": "Botanical Selection",
+        "type": "select",
+        "options": [
+          "Spring Meadow",
+          "Tropical Blooms",
+          "Autumn Harvest",
+          "Winter Whites"
+        ]
+      },
+      {
+        "label": "Dedication Message",
+        "type": "text"
+      }
+    ],
+    "createdAt": "2024-03-05T00:00:00Z",
+    "updatedAt": "2024-03-28T00:00:00Z"
+  },
+  {
+    "id": "prod-9",
+    "name": "Hand-Painted Moon Phase Canvas Candle",
+    "slug": "hand-painted-moon-phase-canvas-candle",
+    "description": "A truly unique art piece featuring a hand-painted moon phase cycle on raw canvas wrapped around a cylindrical candle form. Each painting is an original work by our resident artist, signed and dated. The canvas serves as a keepsake after the candle burns. Available in three colorway series.",
+    "price": 7649,
+    "compareAtPrice": null,
+    "categoryId": "cat-3",
+    "images": [
+      "https://loremflickr.com/800/800/candle,moon?lock=21",
+      "https://loremflickr.com/800/800/candle,canvas?lock=22"
+    ],
+    "tags": ["hand-painted", "moon phase", "canvas", "original art", "signed"],
+    "inStock": true,
+    "stockCount": 4,
+    "featured": false,
+    "customizable": true,
+    "customizationOptions": [
+      {
+        "label": "Colorway",
+        "type": "select",
+        "options": ["Midnight Blue & Gold", "Blush & Mauve", "Sage & Earth"]
+      },
+      {
+        "label": "Personalized Dedication",
+        "type": "text"
+      }
+    ],
+    "createdAt": "2024-03-10T00:00:00Z",
+    "updatedAt": "2024-04-01T00:00:00Z"
+  },
+  {
+    "id": "prod-10",
+    "name": "The Solstice Gift Collection",
+    "slug": "solstice-gift-collection",
+    "description": "Our most beloved gift set, The Solstice Collection brings together four of our signature scents — Amber Rose, Vanilla Bourbon, Forest Mist, and a seasonal exclusive — in a beautifully crafted wooden keepsake box. Each candle is travel-sized (20hr burn) and presented in matching amber glass vessels with gilt lids. The perfect luxury gift.",
+    "price": 8399,
+    "compareAtPrice": 10949,
+    "categoryId": "cat-4",
+    "images": [
+      "https://loremflickr.com/800/800/candle,giftset?lock=23",
+      "https://loremflickr.com/800/800/candle,woodenbox?lock=24",
+      "https://loremflickr.com/800/800/candle,luxury?lock=25"
+    ],
+    "tags": [
+      "gift set",
+      "collection",
+      "wooden box",
+      "amber glass",
+      "luxury",
+      "bestseller"
+    ],
+    "inStock": true,
+    "stockCount": 20,
+    "featured": true,
+    "customizable": true,
+    "customizationOptions": [
+      {
+        "label": "Gift Message",
+        "type": "text"
+      },
+      {
+        "label": "Ribbon Color",
+        "type": "select",
+        "options": ["Gold", "Ivory", "Deep Burgundy", "Forest Green"]
+      }
+    ],
+    "createdAt": "2024-03-15T00:00:00Z",
+    "updatedAt": "2024-04-05T00:00:00Z"
+  },
+  {
+    "id": "prod-11",
+    "name": "Artist's Studio Gift Box",
+    "slug": "artists-studio-gift-box",
+    "description": "A curated collection for the art and candle lover, featuring our Botanical Press Candle Art, a petite hand-painted votive candle, and a scented taper duo. Presented in a hand-stamped kraft paper box with tissue and ribbon. Includes a handwritten card explaining the story behind each piece.",
+    "price": 10699,
+    "compareAtPrice": 13249,
+    "categoryId": "cat-4",
+    "images": [
+      "https://loremflickr.com/800/800/candle,giftbox?lock=26",
+      "https://loremflickr.com/800/800/candle,studio?lock=27"
+    ],
+    "tags": ["gift box", "art", "botanical", "handwritten", "curated"],
+    "inStock": true,
+    "stockCount": 10,
+    "featured": false,
+    "customizable": true,
+    "customizationOptions": [
+      {
+        "label": "Personal Message",
+        "type": "text"
+      }
+    ],
+    "createdAt": "2024-03-20T00:00:00Z",
+    "updatedAt": "2024-04-08T00:00:00Z"
+  }
+]

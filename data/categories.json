@@ -1,0 +1,38 @@
+[
+  {
+    "id": "cat-1",
+    "name": "Scented Candles",
+    "slug": "scented-candles",
+    "description": "Luxurious scented candles crafted with premium fragrance oils and natural wax blends to fill your space with enchanting aromas.",
+    "image": "https://picsum.photos/seed/scented/600/400",
+    "productCount": 4,
+    "createdAt": "2024-01-01T00:00:00Z"
+  },
+  {
+    "id": "cat-2",
+    "name": "Pillar Candles",
+    "slug": "pillar-candles",
+    "description": "Elegant pillar candles in various heights and widths, perfect for centerpieces and home decor statements.",
+    "image": "https://picsum.photos/seed/pillar/600/400",
+    "productCount": 3,
+    "createdAt": "2024-01-01T00:00:00Z"
+  },
+  {
+    "id": "cat-3",
+    "name": "Custom Artwork",
+    "slug": "custom-artwork",
+    "description": "Hand-painted candles and bespoke artwork pieces, each uniquely crafted to your specifications and artistic vision.",
+    "image": "https://picsum.photos/seed/artwork/600/400",
+    "productCount": 2,
+    "createdAt": "2024-01-01T00:00:00Z"
+  },
+  {
+    "id": "cat-4",
+    "name": "Gift Sets",
+    "slug": "gift-sets",
+    "description": "Beautifully curated gift sets combining our finest candles and artwork, elegantly packaged for every occasion.",
+    "image": "https://picsum.photos/seed/giftset/600/400",
+    "productCount": 2,
+    "createdAt": "2024-01-01T00:00:00Z"
+  }
+]

@@ -1,0 +1,57 @@
+[
+  {
+    "id": "order-1775857749001-utlf8yqys",
+    "createdAt": "2026-04-10T21:49:09.001Z",
+    "status": "pending",
+    "items": [
+      {
+        "productId": "prod-2",
+        "productName": "Vanilla Bourbon Luxury Candle",
+        "productImage": "https://picsum.photos/seed/vanilla1/800/800",
+        "price": 42.99,
+        "quantity": 1
+      },
+      {
+        "productId": "prod-4",
+        "productName": "Jasmine & Tuberose Dream",
+        "productImage": "https://picsum.photos/seed/jasmine1/800/800",
+        "price": 52.99,
+        "quantity": 1
+      },
+      {
+        "productId": "prod-5",
+        "productName": "Classic Ivory Pillar Trio",
+        "productImage": "https://picsum.photos/seed/pillar1/800/800",
+        "price": 48.99,
+        "quantity": 1
+      }
+    ],
+    "subtotal": 144.97,
+    "discount": 0,
+    "shipping": 99,
+    "total": 243.97,
+    "shippingAddress": {
+      "fullName": "Raj Kamal",
+      "email": "rkcse118@gmail.com",
+      "phone": "+919504536836",
+      "address1": "East Ramkrishna nagar Bypass Patna",
+      "address2": "L.P. sahi college, near homeopathic hospital , Balaji bhawan",
+      "city": "Patna",
+      "state": "Bihar",
+      "postalCode": "800027",
+      "country": "India"
+    },
+    "billingAddress": {
+      "fullName": "Raj Kamal",
+      "email": "rkcse118@gmail.com",
+      "phone": "+919504536836",
+      "address1": "East Ramkrishna nagar Bypass Patna",
+      "address2": "L.P. sahi college, near homeopathic hospital , Balaji bhawan",
+      "city": "Patna",
+      "state": "Bihar",
+      "postalCode": "800027",
+      "country": "India"
+    },
+    "paymentMethod": "qr"
+  }
+]
