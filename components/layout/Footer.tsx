@@ -2,35 +2,27 @@
 
 import Link from "next/link";
 import { Instagram, Youtube, Mail, Phone, MessageCircle } from "lucide-react";
+import ArtisanLogo from "@/components/ui/ArtisanLogo";
 
 export default function Footer() {
   return (
-    <footer className="bg-forest-900 text-forest-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
+    <footer
+      className="text-forest-100 relative"
+      style={{
+        backgroundImage:
+          "url('https://pub-1f6a6fc4e92548b987db5dbea7cd456e.r2.dev/candle-art-shop-images/Asset/Gemini_Generated_Image_wjh0jbwjh0jbwjh0.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
+      {/* Dark overlay so text stays readable */}
+      <div className="absolute inset-0 bg-forest-950/80" />
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <Link href="/" className="inline-flex items-center gap-3 mb-5">
-              {/* Logo mark */}
-              <div className="w-11 h-11 rounded-full bg-forest-800 border-2 border-gold-400 flex items-center justify-center flex-shrink-0">
-                <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none">
-                  <path
-                    d="M12 4 C11 6 10 7 10 9 C10 11 11 12 12 12 C13 12 14 11 14 9 C14 7 13 6 12 4Z"
-                    fill="#e8c040"
-                  />
-                  <rect x="10" y="12" width="4" height="6" rx="0.5" fill="#e56058" />
-                  <rect x="9" y="18" width="6" height="1.5" rx="0.75" fill="#c4564a" />
-                </svg>
-              </div>
-              <div className="leading-none">
-                <span className="block font-serif text-xl font-bold text-white tracking-wide">
-                  Artisan House
-                </span>
-                <span className="block text-[10px] font-medium text-gold-400 tracking-[0.2em] uppercase mt-0.5">
-                  Candles · Clays · Crafts
-                </span>
-              </div>
-            </Link>
+            <ArtisanLogo />
             <p className="text-sm text-forest-300 leading-relaxed mb-6">
               Handcrafted candles, clay art, and creative crafts made with
               intention and delivered with love. Each piece tells a story.
@@ -74,7 +66,10 @@ export default function Footer() {
             <ul className="space-y-3">
               {[
                 { href: "/products", label: "All Products" },
-                { href: "/categories/scented-candles", label: "Scented Candles" },
+                {
+                  href: "/categories/scented-candles",
+                  label: "Scented Candles",
+                },
                 { href: "/categories/pillar-candles", label: "Pillar Candles" },
                 { href: "/categories/custom-artwork", label: "Clay Art" },
                 { href: "/categories/gift-sets", label: "Gift Sets" },
@@ -165,7 +160,9 @@ export default function Footer() {
             </ul>
 
             <div className="mt-6 pt-6 border-t border-forest-700">
-              <p className="text-xs text-forest-400 mb-1">Buy our products at</p>
+              <p className="text-xs text-forest-400 mb-1">
+                Buy our products at
+              </p>
               <a
                 href="https://www.artisanhouse.in"
                 className="text-sm font-semibold text-gold-400 hover:text-gold-300 transition-colors"
