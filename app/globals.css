@@ -8,8 +8,13 @@
   }
 
   body {
-    @apply bg-cream-50 text-forest-900;
+    @apply bg-cream-50 text-forest-900 transition-colors duration-300;
     font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  .dark body {
+    background-color: #0a0a16;
+    color: #fef3c7;
   }
 
   h1, h2, h3 {
@@ -17,7 +22,29 @@
   }
 }
 
+/* ── Night sky background for dark mode ───────────────────────────── */
+.dark body {
+  background-color: #0a0a16;
+  background-image:
+    radial-gradient(ellipse at 20% 20%, rgba(251, 191, 36, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(251, 191, 36, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 0%, rgba(139, 92, 246, 0.04) 0%, transparent 60%);
+}
+
+/* ── Candle glow utilities ────────────────────────────────────────── */
 @layer utilities {
+  .candle-glow {
+    box-shadow: 0 0 40px rgba(251, 191, 36, 0.12), 0 0 80px rgba(251, 191, 36, 0.05);
+  }
+
+  .candle-glow-sm {
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.15);
+  }
+
+  .candle-text-glow {
+    text-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+  }
+
   .line-clamp-2 {
     overflow: hidden;
     display: -webkit-box;

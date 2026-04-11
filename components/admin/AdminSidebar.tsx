@@ -9,16 +9,10 @@ import {
   Percent,
   ShoppingBag,
   LogOut,
-  Flame,
 } from "lucide-react";
 
 const navItems = [
-  {
-    href: "/admin",
-    label: "Dashboard",
-    icon: LayoutDashboard,
-    exact: true,
-  },
+  { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/categories", label: "Categories", icon: Tag },
   { href: "/admin/discounts", label: "Discounts", icon: Percent },
@@ -35,14 +29,27 @@ export default function AdminSidebar() {
   };
 
   return (
-    <aside className="w-64 bg-brown-900 min-h-screen flex flex-col">
-      <div className="p-6 border-b border-brown-700">
-        <Link
-          href="/admin"
-          className="flex items-center gap-2 font-serif text-xl font-bold text-white"
-        >
-          <Flame className="text-amber-400" size={22} />
-          Lumière Admin
+    <aside className="w-64 bg-forest-900 min-h-screen flex flex-col">
+      <div className="p-6 border-b border-forest-700">
+        <Link href="/admin" className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-forest-800 border-2 border-gold-400 flex items-center justify-center flex-shrink-0">
+            <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none">
+              <path
+                d="M12 4 C11 6 10 7 10 9 C10 11 11 12 12 12 C13 12 14 11 14 9 C14 7 13 6 12 4Z"
+                fill="#e8c040"
+              />
+              <rect x="10" y="12" width="4" height="6" rx="0.5" fill="#e56058" />
+              <rect x="9" y="18" width="6" height="1.5" rx="0.75" fill="#c4564a" />
+            </svg>
+          </div>
+          <div className="leading-none">
+            <span className="block font-serif text-base font-bold text-white">
+              Artisan House
+            </span>
+            <span className="block text-[9px] font-medium text-gold-400 tracking-widest uppercase mt-0.5">
+              Admin Panel
+            </span>
+          </div>
         </Link>
       </div>
 
@@ -58,8 +65,8 @@ export default function AdminSidebar() {
               href={item.href}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
                 active
-                  ? "bg-amber-700 text-white"
-                  : "text-brown-300 hover:bg-brown-700 hover:text-white"
+                  ? "bg-coral-600 text-white"
+                  : "text-forest-300 hover:bg-forest-700 hover:text-white"
               }`}
             >
               <Icon size={18} />
@@ -69,16 +76,16 @@ export default function AdminSidebar() {
         })}
       </nav>
 
-      <div className="p-4 border-t border-brown-700">
+      <div className="p-4 border-t border-forest-700">
         <Link
           href="/"
-          className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-brown-300 hover:bg-brown-700 hover:text-white transition-colors mb-1"
+          className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-forest-300 hover:bg-forest-700 hover:text-white transition-colors mb-1"
         >
           ← Back to Store
         </Link>
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-brown-300 hover:bg-red-800 hover:text-white transition-colors w-full text-left"
+          className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-forest-300 hover:bg-red-800 hover:text-white transition-colors w-full text-left"
         >
           <LogOut size={18} />
           Logout
