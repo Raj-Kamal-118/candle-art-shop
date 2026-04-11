@@ -1,18 +1,48 @@
-import { getProducts, getCategories } from "@/lib/data";
+import { getProducts, getCategories, getHeroSettings } from "@/lib/data";
 import HeroSection from "@/components/home/HeroSection";
 import FeaturedProducts from "@/components/home/FeaturedProducts";
 import CategoryGrid from "@/components/home/CategoryGrid";
+import CategoryBannerSection from "@/components/home/CategoryBannerSection";
 import Testimonials from "@/components/home/Testimonials";
 
 export default async function HomePage() {
-  const products = await getProducts();
-  const categories = await getCategories();
+  const [products, categories, heroSettings] = await Promise.all([
+    getProducts(),
+    getCategories(),
+    getHeroSettings(),
+  ]);
+
   const featuredProducts = products.filter((p) => p.featured).slice(0, 4);
+
+  // Build a map of categoryId → products for the carousel sections
+  const productsByCategory = Object.fromEntries(
+    categories.map((cat) => [
+      cat.id,
+      products.filter((p) => p.categoryId === cat.id && p.inStock),
+    ])
+  );
 
   return (
     <>
-      <HeroSection />
+      <HeroSection settings={heroSettings} />
+
       <CategoryGrid categories={categories} />
+
+      {/* Category banner + product carousel sections */}
+      <section className="py-8 bg-cream-50 dark:bg-[#0f0e1c]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 divide-y divide-cream-200 dark:divide-amber-900/20">
+          {categories
+            .filter((cat) => cat.showInHomepage !== false)
+            .map((cat) => (
+              <CategoryBannerSection
+                key={cat.id}
+                category={cat}
+                products={productsByCategory[cat.id] || []}
+              />
+            ))}
+        </div>
+      </section>
+
       <FeaturedProducts products={featuredProducts} />
       <Testimonials />
 

@@ -2,12 +2,14 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { CartItem, Product } from "./types";
+import { CartItem, Product, User } from "./types";
+import { getVariantPrice } from "./utils";
 
 interface CartStore {
   cartItems: CartItem[];
   favoriteItems: Product[];
   savedForLaterItems: CartItem[];
+  currentUser: User | null;
 
   addToCart: (product: Product, quantity?: number, customizations?: Record<string, string>) => void;
   removeFromCart: (productId: string) => void;
@@ -24,6 +26,9 @@ interface CartStore {
 
   cartTotal: () => number;
   cartCount: () => number;
+
+  setCurrentUser: (user: User | null) => void;
+  clearUser: () => void;
 }
 
 export const useStore = create<CartStore>()(
@@ -32,8 +37,10 @@ export const useStore = create<CartStore>()(
       cartItems: [],
       favoriteItems: [],
       savedForLaterItems: [],
+      currentUser: null,
 
       addToCart: (product, quantity = 1, customizations) => {
+        const price = getVariantPrice(product, customizations);
         set((state) => {
           const existing = state.cartItems.find(
             (item) => item.product.id === product.id
@@ -42,7 +49,7 @@ export const useStore = create<CartStore>()(
             return {
               cartItems: state.cartItems.map((item) =>
                 item.product.id === product.id
-                  ? { ...item, quantity: item.quantity + quantity }
+                  ? { ...item, quantity: item.quantity + quantity, price }
                   : item
               ),
             };
@@ -50,7 +57,7 @@ export const useStore = create<CartStore>()(
           return {
             cartItems: [
               ...state.cartItems,
-              { product, quantity, customizations },
+              { product, quantity, customizations, price },
             ],
           };
         });
@@ -137,7 +144,7 @@ export const useStore = create<CartStore>()(
 
       cartTotal: () => {
         return get().cartItems.reduce(
-          (total, item) => total + item.product.price * item.quantity,
+          (total, item) => total + (item.price ?? item.product.price) * item.quantity,
           0
         );
       },
@@ -145,6 +152,9 @@ export const useStore = create<CartStore>()(
       cartCount: () => {
         return get().cartItems.reduce((count, item) => count + item.quantity, 0);
       },
+
+      setCurrentUser: (user) => set({ currentUser: user }),
+      clearUser: () => set({ currentUser: null }),
     }),
     {
       name: "candle-art-shop-store",

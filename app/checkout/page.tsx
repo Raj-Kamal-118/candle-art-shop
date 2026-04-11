@@ -2,20 +2,21 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle, MapPin, CreditCard, Tag } from "lucide-react";
+import { CheckCircle, MapPin, CreditCard, Tag, ShieldCheck } from "lucide-react";
 import { useStore } from "@/lib/store";
-import { Address, DiscountCode } from "@/lib/types";
+import { Address, DiscountCode, User } from "@/lib/types";
 import { formatPrice, getShippingCost, calculateDiscount } from "@/lib/utils";
 import AddressForm from "@/components/checkout/AddressForm";
 import PaymentStep from "@/components/checkout/PaymentStep";
 import OrderSummary from "@/components/checkout/OrderSummary";
+import OTPLoginModal from "@/components/auth/OTPLoginModal";
 import Button from "@/components/ui/Button";
 
-type Step = "address" | "payment" | "confirmation";
+type Step = "address" | "verify" | "payment" | "confirmation";
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { cartItems, clearCart } = useStore();
+  const { cartItems, clearCart, currentUser, setCurrentUser } = useStore();
 
   const [step, setStep] = useState<Step>("address");
   const [shippingAddress, setShippingAddress] = useState<Address | null>(null);
@@ -26,9 +27,16 @@ export default function CheckoutPage() {
   const [applyingDiscount, setApplyingDiscount] = useState(false);
   const [placingOrder, setPlacingOrder] = useState(false);
   const [orderId, setOrderId] = useState<string | null>(null);
+  const [otpModalOpen, setOtpModalOpen] = useState(false);
+  const [verifiedUser, setVerifiedUser] = useState<User | null>(currentUser);
+
+  // Sync verifiedUser with store
+  useEffect(() => {
+    if (currentUser) setVerifiedUser(currentUser);
+  }, [currentUser]);
 
   const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
+    (sum, item) => sum + (item.price ?? item.product.price) * item.quantity,
     0
   );
   const discountAmount = appliedDiscount
@@ -67,6 +75,19 @@ export default function CheckoutPage() {
 
   const handleAddressSubmit = (address: Address) => {
     setShippingAddress(address);
+    // If user is already verified, skip OTP step
+    if (verifiedUser) {
+      setStep("payment");
+    } else {
+      setStep("verify");
+      setOtpModalOpen(true);
+    }
+  };
+
+  const handleOTPSuccess = (user: User) => {
+    setVerifiedUser(user);
+    setCurrentUser(user);
+    setOtpModalOpen(false);
     setStep("payment");
   };
 
@@ -78,7 +99,7 @@ export default function CheckoutPage() {
         productId: item.product.id,
         productName: item.product.name,
         productImage: item.product.images[0],
-        price: item.product.price,
+        price: item.price ?? item.product.price,
         quantity: item.quantity,
         customizations: item.customizations,
       }));
@@ -96,6 +117,8 @@ export default function CheckoutPage() {
           shippingAddress,
           billingAddress: shippingAddress,
           paymentMethod,
+          userId: verifiedUser?.id,
+          customerPhone: shippingAddress.phone,
         }),
       });
 
@@ -110,9 +133,12 @@ export default function CheckoutPage() {
 
   const steps = [
     { id: "address", label: "Shipping", icon: MapPin },
+    { id: "verify", label: "Verify", icon: ShieldCheck },
     { id: "payment", label: "Payment", icon: CreditCard },
     { id: "confirmation", label: "Confirmation", icon: CheckCircle },
   ];
+
+  const currentStepIndex = steps.findIndex((s) => s.id === step);
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
@@ -125,8 +151,7 @@ export default function CheckoutPage() {
         {steps.map((s, i) => {
           const Icon = s.icon;
           const isActive = s.id === step;
-          const isPast =
-            steps.findIndex((x) => x.id === step) > i;
+          const isPast = currentStepIndex > i;
           return (
             <div key={s.id} className="flex items-center">
               <div
@@ -142,11 +167,7 @@ export default function CheckoutPage() {
                 <span className="hidden sm:inline">{s.label}</span>
               </div>
               {i < steps.length - 1 && (
-                <div
-                  className={`w-8 sm:w-12 h-0.5 mx-1 ${
-                    isPast ? "bg-green-400" : "bg-cream-300"
-                  }`}
-                />
+                <div className={`w-8 sm:w-12 h-0.5 mx-1 ${isPast ? "bg-green-400" : "bg-cream-300"}`} />
               )}
             </div>
           );
@@ -171,6 +192,11 @@ export default function CheckoutPage() {
             <Button onClick={() => router.push("/")} size="lg">
               Continue Shopping
             </Button>
+            {verifiedUser && (
+              <Button variant="outline" onClick={() => router.push("/account")} size="lg">
+                View My Orders
+              </Button>
+            )}
           </div>
         </div>
       ) : (
@@ -179,16 +205,51 @@ export default function CheckoutPage() {
           <div className="lg:col-span-2 space-y-6">
             {step === "address" && (
               <div className="bg-white rounded-2xl p-6 shadow-sm border border-cream-200">
-                <h2 className="font-serif text-xl font-bold text-brown-900 mb-5">
-                  Shipping Address
+                <div className="flex items-center justify-between mb-5">
+                  <h2 className="font-serif text-xl font-bold text-brown-900">
+                    Shipping Address
+                  </h2>
+                  {verifiedUser && (
+                    <span className="flex items-center gap-1.5 text-xs text-green-700 bg-green-50 border border-green-200 px-3 py-1.5 rounded-full font-medium">
+                      <ShieldCheck size={12} />
+                      Verified: {verifiedUser.phone}
+                    </span>
+                  )}
+                </div>
+                <AddressForm onSubmit={handleAddressSubmit} submitLabel={verifiedUser ? "Continue to Payment" : "Continue & Verify Phone"} />
+              </div>
+            )}
+
+            {/* OTP verification step */}
+            {step === "verify" && (
+              <div className="bg-white rounded-2xl p-6 shadow-sm border border-cream-200 text-center py-10">
+                <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <ShieldCheck size={28} className="text-amber-700" />
+                </div>
+                <h2 className="font-serif text-xl font-bold text-brown-900 mb-2">
+                  Verify Your Phone
                 </h2>
-                <AddressForm onSubmit={handleAddressSubmit} />
+                <p className="text-brown-500 text-sm mb-6 max-w-sm mx-auto">
+                  We need to verify{" "}
+                  <strong>{shippingAddress?.phone}</strong> before you can
+                  proceed to payment.
+                </p>
+                <Button onClick={() => setOtpModalOpen(true)} size="lg">
+                  <ShieldCheck size={16} />
+                  Send OTP to {shippingAddress?.phone}
+                </Button>
+                <button
+                  onClick={() => setStep("address")}
+                  className="block mt-4 text-sm text-amber-700 hover:underline mx-auto"
+                >
+                  ← Edit address
+                </button>
               </div>
             )}
 
             {step === "payment" && shippingAddress && (
               <>
-                {/* Address summary */}
+                {/* Address & verification summary */}
                 <div className="bg-white rounded-2xl p-5 shadow-sm border border-cream-200">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="font-semibold text-brown-900 text-sm flex items-center gap-2">
@@ -206,16 +267,18 @@ export default function CheckoutPage() {
                     {shippingAddress.fullName}, {shippingAddress.address1}
                     {shippingAddress.address2 ? `, ${shippingAddress.address2}` : ""},{" "}
                     {shippingAddress.city}, {shippingAddress.state}{" "}
-                    {shippingAddress.postalCode}, {shippingAddress.country}
+                    {shippingAddress.postalCode}
                   </p>
+                  {verifiedUser && (
+                    <p className="mt-2 flex items-center gap-1.5 text-xs text-green-700 font-medium">
+                      <ShieldCheck size={12} />
+                      Phone verified: {verifiedUser.phone}
+                    </p>
+                  )}
                 </div>
 
                 <div className="bg-white rounded-2xl p-6 shadow-sm border border-cream-200">
-                  <PaymentStep
-                    total={total}
-                    onSubmit={handlePlaceOrder}
-                    loading={placingOrder}
-                  />
+                  <PaymentStep total={total} onSubmit={handlePlaceOrder} loading={placingOrder} />
                 </div>
               </>
             )}
@@ -223,11 +286,7 @@ export default function CheckoutPage() {
 
           {/* Order summary */}
           <div className="space-y-4">
-            <OrderSummary
-              items={cartItems}
-              discount={discountAmount}
-              discountCode={discountCode}
-            />
+            <OrderSummary items={cartItems} discount={discountAmount} discountCode={discountCode} />
 
             {/* Discount code */}
             <div className="bg-white rounded-2xl p-5 shadow-sm border border-cream-200">
@@ -238,20 +297,10 @@ export default function CheckoutPage() {
               {appliedDiscount ? (
                 <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg px-3 py-2">
                   <div>
-                    <p className="text-sm font-semibold text-green-800">
-                      {discountCode}
-                    </p>
-                    <p className="text-xs text-green-600">
-                      -{formatPrice(discountAmount)} saved
-                    </p>
+                    <p className="text-sm font-semibold text-green-800">{discountCode}</p>
+                    <p className="text-xs text-green-600">-{formatPrice(discountAmount)} saved</p>
                   </div>
-                  <button
-                    onClick={() => {
-                      setAppliedDiscount(null);
-                      setDiscountCode("");
-                    }}
-                    className="text-xs text-red-500 hover:text-red-700"
-                  >
+                  <button onClick={() => { setAppliedDiscount(null); setDiscountCode(""); }} className="text-xs text-red-500 hover:text-red-700">
                     Remove
                   </button>
                 </div>
@@ -265,23 +314,29 @@ export default function CheckoutPage() {
                     className="flex-1 px-3 py-2 text-sm border border-brown-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400"
                     onKeyDown={(e) => e.key === "Enter" && handleApplyDiscount()}
                   />
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleApplyDiscount}
-                    loading={applyingDiscount}
-                  >
+                  <Button variant="outline" size="sm" onClick={handleApplyDiscount} loading={applyingDiscount}>
                     Apply
                   </Button>
                 </div>
               )}
-              {discountError && (
-                <p className="mt-2 text-xs text-red-600">{discountError}</p>
-              )}
+              {discountError && <p className="mt-2 text-xs text-red-600">{discountError}</p>}
             </div>
           </div>
         </div>
       )}
+
+      {/* OTP Modal */}
+      <OTPLoginModal
+        isOpen={otpModalOpen}
+        onClose={() => {
+          setOtpModalOpen(false);
+          if (!verifiedUser) setStep("address");
+        }}
+        onSuccess={handleOTPSuccess}
+        prefilledPhone={shippingAddress?.phone || ""}
+        title="Verify Your Phone"
+        subtitle="Enter the OTP sent to your mobile to confirm your identity."
+      />
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ShoppingCart, Heart, Search, Menu, X, Moon, Sun } from "lucide-react";
+import { ShoppingCart, Heart, Search, Menu, X, Moon, Sun, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useStore } from "@/lib/store";
 import { useTheme } from "@/components/layout/ThemeProvider";
@@ -95,6 +95,14 @@ export default function Header() {
             >
               <Search size={20} />
             </button>
+
+            <Link
+              href="/account"
+              className="p-2 text-forest-600 dark:text-amber-100/70 hover:text-coral-600 dark:hover:text-amber-400 transition-colors rounded-full hover:bg-coral-50 dark:hover:bg-amber-900/30"
+              aria-label="My Account"
+            >
+              <User size={20} />
+            </Link>
 
             <Link
               href="/favorites"

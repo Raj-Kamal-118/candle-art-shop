@@ -14,7 +14,7 @@ import {
 import { motion } from "framer-motion";
 import { Product, Category } from "@/lib/types";
 import { useStore } from "@/lib/store";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, getVariantPrice } from "@/lib/utils";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 
@@ -87,6 +87,7 @@ export default function ProductDetailPage() {
     );
   }
 
+  const effectivePrice = getVariantPrice(product, customizations);
   const discount = product.compareAtPrice
     ? Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100)
     : null;
@@ -180,9 +181,14 @@ export default function ProductDetailPage() {
           {/* Price */}
           <div className="flex items-baseline gap-3 mb-6">
             <span className="text-3xl font-bold text-brown-900">
-              {formatPrice(product.price)}
+              {formatPrice(effectivePrice)}
             </span>
-            {product.compareAtPrice && (
+            {effectivePrice !== product.price && (
+              <span className="text-sm text-brown-400 line-through">
+                {formatPrice(product.price)}
+              </span>
+            )}
+            {product.compareAtPrice && effectivePrice === product.price && (
               <>
                 <span className="text-lg text-brown-400 line-through">
                   {formatPrice(product.compareAtPrice)}

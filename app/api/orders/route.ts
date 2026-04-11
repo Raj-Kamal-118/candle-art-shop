@@ -18,10 +18,21 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
+    // Pull userId from session cookie (if logged in)
+    const userId = request.cookies.get("user_session")?.value || undefined;
+
+    // Derive customerPhone from shipping address or explicit field
+    const customerPhone =
+      body.customerPhone ||
+      body.shippingAddress?.phone ||
+      undefined;
+
     const order = await createOrder({
       id: generateId("order"),
       createdAt: new Date().toISOString(),
       status: "pending",
+      userId,
+      customerPhone,
       ...body,
     });
 

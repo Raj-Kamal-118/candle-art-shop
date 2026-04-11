@@ -50,7 +50,7 @@ export default function CartItemComponent({
               )}
           </div>
           <p className="font-bold text-brown-900 shrink-0">
-            {formatPrice(item.product.price * item.quantity)}
+            {formatPrice((item.price ?? item.product.price) * item.quantity)}
           </p>
         </div>
 
@@ -77,7 +77,7 @@ export default function CartItemComponent({
                 <Plus size={12} />
               </button>
               <span className="text-xs text-brown-400 ml-1">
-                × {formatPrice(item.product.price)}
+                × {formatPrice(item.price ?? item.product.price)}
               </span>
             </div>
           ) : (

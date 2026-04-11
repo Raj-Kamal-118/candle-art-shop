@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import type { Product } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -44,4 +45,32 @@ export function calculateDiscount(
 export function getShippingCost(subtotal: number): number {
   if (subtotal >= 999) return 0;
   return 99;
+}
+
+/**
+ * Resolves the effective price for a product given the current customizations.
+ * If the product has variant pricing and all price-affecting options are selected,
+ * returns the variant price. Otherwise returns the base product price.
+ */
+export function getVariantPrice(
+  product: Product,
+  customizations?: Record<string, string>
+): number {
+  if (
+    !product.variantPricing ||
+    !product.customizationOptions ||
+    !customizations
+  ) {
+    return product.price;
+  }
+  const pricingOptions = product.customizationOptions.filter(
+    (o) => o.affectsPrice && o.type === "select"
+  );
+  if (pricingOptions.length === 0) return product.price;
+
+  const key = pricingOptions
+    .map((o) => customizations[o.label] ?? "")
+    .join("|");
+
+  return product.variantPricing[key] ?? product.price;
 }

@@ -9,10 +9,12 @@ import {
   Percent,
   ShoppingBag,
   LogOut,
+  Layers,
 } from "lucide-react";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { href: "/admin/hero", label: "Hero Section", icon: Layers },
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/categories", label: "Categories", icon: Tag },
   { href: "/admin/discounts", label: "Discounts", icon: Percent },

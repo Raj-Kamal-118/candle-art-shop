@@ -1,5 +1,13 @@
 import { supabase } from "./supabase";
-import { Product, Category, DiscountCode, Order } from "./types";
+import {
+  Product,
+  Category,
+  DiscountCode,
+  Order,
+  HeroSettings,
+  User,
+  OTPSession,
+} from "./types";
 
 // ─── Mappers (DB snake_case → TypeScript camelCase) ─────────────────────────
 
@@ -20,6 +28,7 @@ function mapProduct(row: Record<string, unknown>): Product {
     customizable: row.customizable as boolean,
     customizationOptions:
       (row.customization_options as Product["customizationOptions"]) || [],
+    variantPricing: (row.variant_pricing as Product["variantPricing"]) || {},
     createdAt: row.created_at as string,
     updatedAt: row.updated_at as string,
   };
@@ -34,6 +43,14 @@ function mapCategory(row: Record<string, unknown>): Category {
     image: row.image as string,
     productCount: row.product_count as number,
     createdAt: row.created_at as string,
+    bannerTitle: row.banner_title as string | undefined,
+    bannerDescription: row.banner_description as string | undefined,
+    bannerImage: row.banner_image as string | undefined,
+    bannerBgColor: (row.banner_bg_color as string) || "#f5f0eb",
+    bannerButtons:
+      (row.banner_buttons as Category["bannerButtons"]) || [],
+    showInHomepage:
+      row.show_in_homepage === undefined ? true : (row.show_in_homepage as boolean),
   };
 }
 
@@ -65,6 +82,50 @@ function mapOrder(row: Record<string, unknown>): Order {
     paymentMethod: row.payment_method as "cod" | "qr",
     status: row.status as string,
     createdAt: row.created_at as string,
+    userId: row.user_id as string | undefined,
+    customerPhone: row.customer_phone as string | undefined,
+  };
+}
+
+function mapHeroSettings(row: Record<string, unknown>): HeroSettings {
+  return {
+    id: row.id as string,
+    badgeText: row.badge_text as string,
+    h1Text: row.h1_text as string,
+    h1HighlightedText: row.h1_highlighted_text as string,
+    h1TextColor: row.h1_text_color as string,
+    description: row.description as string,
+    buttons: (row.buttons as HeroSettings["buttons"]) || [],
+    backgroundType: row.background_type as HeroSettings["backgroundType"],
+    backgroundValue: row.background_value as string | undefined,
+    showImages: row.show_images as boolean,
+    images: (row.images as string[]) || [],
+    showStats: row.show_stats as boolean,
+    stats: (row.stats as HeroSettings["stats"]) || [],
+    floatingBadgeText: row.floating_badge_text as string | undefined,
+    updatedAt: row.updated_at as string,
+  };
+}
+
+function mapUser(row: Record<string, unknown>): User {
+  return {
+    id: row.id as string,
+    phone: row.phone as string,
+    name: row.name as string | undefined,
+    email: row.email as string | undefined,
+    createdAt: row.created_at as string,
+    updatedAt: row.updated_at as string,
+  };
+}
+
+function mapOTPSession(row: Record<string, unknown>): OTPSession {
+  return {
+    id: row.id as string,
+    phone: row.phone as string,
+    otp: row.otp as string,
+    expiresAt: row.expires_at as string,
+    verified: row.verified as boolean,
+    createdAt: row.created_at as string,
   };
 }
 
@@ -76,6 +137,17 @@ export async function getProducts(): Promise<Product[]> {
     .select("*")
     .order("created_at", { ascending: false });
   if (error) throw error;
+  return data.map(mapProduct);
+}
+
+export async function getProductsByCategory(categoryId: string): Promise<Product[]> {
+  const { data, error } = await supabase
+    .from("products")
+    .select("*")
+    .eq("category_id", categoryId)
+    .eq("in_stock", true)
+    .order("created_at", { ascending: false });
+  if (error) return [];
   return data.map(mapProduct);
 }
 
@@ -119,6 +191,7 @@ export async function createProduct(product: Product): Promise<Product> {
       featured: product.featured,
       customizable: product.customizable,
       customization_options: product.customizationOptions ?? [],
+      variant_pricing: product.variantPricing ?? {},
       created_at: product.createdAt,
       updated_at: product.updatedAt,
     })
@@ -152,6 +225,8 @@ export async function updateProduct(
     dbUpdates.customizable = updates.customizable;
   if (updates.customizationOptions !== undefined)
     dbUpdates.customization_options = updates.customizationOptions;
+  if (updates.variantPricing !== undefined)
+    dbUpdates.variant_pricing = updates.variantPricing;
   if (updates.updatedAt !== undefined)
     dbUpdates.updated_at = updates.updatedAt;
 
@@ -215,6 +290,12 @@ export async function createCategory(category: Category): Promise<Category> {
       description: category.description,
       image: category.image,
       product_count: category.productCount,
+      banner_title: category.bannerTitle ?? null,
+      banner_description: category.bannerDescription ?? null,
+      banner_image: category.bannerImage ?? null,
+      banner_bg_color: category.bannerBgColor ?? "#f5f0eb",
+      banner_buttons: category.bannerButtons ?? [],
+      show_in_homepage: category.showInHomepage ?? true,
       created_at: category.createdAt,
     })
     .select()
@@ -235,6 +316,18 @@ export async function updateCategory(
   if (updates.image !== undefined) dbUpdates.image = updates.image;
   if (updates.productCount !== undefined)
     dbUpdates.product_count = updates.productCount;
+  if (updates.bannerTitle !== undefined)
+    dbUpdates.banner_title = updates.bannerTitle;
+  if (updates.bannerDescription !== undefined)
+    dbUpdates.banner_description = updates.bannerDescription;
+  if (updates.bannerImage !== undefined)
+    dbUpdates.banner_image = updates.bannerImage;
+  if (updates.bannerBgColor !== undefined)
+    dbUpdates.banner_bg_color = updates.bannerBgColor;
+  if (updates.bannerButtons !== undefined)
+    dbUpdates.banner_buttons = updates.bannerButtons;
+  if (updates.showInHomepage !== undefined)
+    dbUpdates.show_in_homepage = updates.showInHomepage;
 
   const { data, error } = await supabase
     .from("categories")
@@ -361,6 +454,26 @@ export async function getOrderById(id: string): Promise<Order | undefined> {
   return mapOrder(data);
 }
 
+export async function getOrdersByUserId(userId: string): Promise<Order[]> {
+  const { data, error } = await supabase
+    .from("orders")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+  if (error) return [];
+  return data.map(mapOrder);
+}
+
+export async function getOrdersByPhone(phone: string): Promise<Order[]> {
+  const { data, error } = await supabase
+    .from("orders")
+    .select("*")
+    .eq("customer_phone", phone)
+    .order("created_at", { ascending: false });
+  if (error) return [];
+  return data.map(mapOrder);
+}
+
 export async function createOrder(order: Order): Promise<Order> {
   const { data, error } = await supabase
     .from("orders")
@@ -376,6 +489,8 @@ export async function createOrder(order: Order): Promise<Order> {
       shipping_address: order.shippingAddress,
       billing_address: order.billingAddress,
       payment_method: order.paymentMethod,
+      user_id: order.userId ?? null,
+      customer_phone: order.customerPhone ?? null,
       created_at: order.createdAt,
     })
     .select()
@@ -400,4 +515,189 @@ export async function updateOrder(
     .single();
   if (error) return null;
   return mapOrder(data);
+}
+
+// ─── Hero Settings (Feature 1) ────────────────────────────────────────────────
+
+export async function getHeroSettings(): Promise<HeroSettings> {
+  const { data, error } = await supabase
+    .from("hero_settings")
+    .select("*")
+    .eq("id", "main")
+    .single();
+
+  if (error || !data) {
+    // Return sensible defaults if table doesn't exist yet
+    return {
+      id: "main",
+      badgeText: "Handcrafted with love",
+      h1Text: "Light Your World",
+      h1HighlightedText: "With Art",
+      h1TextColor: "#e85d4a",
+      description:
+        "Discover our collection of handcrafted candles, clay art, and creative crafts. Each piece is made with intention, using the finest natural ingredients and artistic craftsmanship.",
+      buttons: [
+        { text: "Shop Collection", link: "/products", icon: "arrow-right", variant: "primary" },
+        { text: "Custom Orders", link: "/categories/custom-artwork", icon: "", variant: "secondary" },
+      ],
+      backgroundType: "gradient",
+      backgroundValue: undefined,
+      showImages: true,
+      images: [
+        "https://picsum.photos/seed/hero1/400/550",
+        "https://picsum.photos/seed/hero3/400/400",
+        "https://picsum.photos/seed/hero2/400/400",
+        "https://picsum.photos/seed/hero4/400/550",
+      ],
+      showStats: true,
+      stats: [
+        { value: "500+", label: "Happy Customers" },
+        { value: "100%", label: "Natural Ingredients" },
+        { value: "11", label: "Signature Products" },
+      ],
+      floatingBadgeText: "Free shipping on Orders over ₹999",
+      updatedAt: new Date().toISOString(),
+    };
+  }
+
+  return mapHeroSettings(data);
+}
+
+export async function updateHeroSettings(
+  updates: Partial<Omit<HeroSettings, "id">>
+): Promise<HeroSettings | null> {
+  const dbUpdates: Record<string, unknown> = { updated_at: new Date().toISOString() };
+  if (updates.badgeText !== undefined) dbUpdates.badge_text = updates.badgeText;
+  if (updates.h1Text !== undefined) dbUpdates.h1_text = updates.h1Text;
+  if (updates.h1HighlightedText !== undefined) dbUpdates.h1_highlighted_text = updates.h1HighlightedText;
+  if (updates.h1TextColor !== undefined) dbUpdates.h1_text_color = updates.h1TextColor;
+  if (updates.description !== undefined) dbUpdates.description = updates.description;
+  if (updates.buttons !== undefined) dbUpdates.buttons = updates.buttons;
+  if (updates.backgroundType !== undefined) dbUpdates.background_type = updates.backgroundType;
+  if (updates.backgroundValue !== undefined) dbUpdates.background_value = updates.backgroundValue;
+  if (updates.showImages !== undefined) dbUpdates.show_images = updates.showImages;
+  if (updates.images !== undefined) dbUpdates.images = updates.images;
+  if (updates.showStats !== undefined) dbUpdates.show_stats = updates.showStats;
+  if (updates.stats !== undefined) dbUpdates.stats = updates.stats;
+  if (updates.floatingBadgeText !== undefined) dbUpdates.floating_badge_text = updates.floatingBadgeText;
+
+  const { data, error } = await supabase
+    .from("hero_settings")
+    .update(dbUpdates)
+    .eq("id", "main")
+    .select()
+    .single();
+  if (error) return null;
+  return mapHeroSettings(data);
+}
+
+// ─── Users & OTP (Feature 4) ──────────────────────────────────────────────────
+
+export async function getUserByPhone(phone: string): Promise<User | undefined> {
+  const { data, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("phone", phone)
+    .single();
+  if (error) return undefined;
+  return mapUser(data);
+}
+
+export async function getUserById(id: string): Promise<User | undefined> {
+  const { data, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("id", id)
+    .single();
+  if (error) return undefined;
+  return mapUser(data);
+}
+
+export async function createUser(user: {
+  id: string;
+  phone: string;
+  name?: string;
+  email?: string;
+}): Promise<User> {
+  const now = new Date().toISOString();
+  const { data, error } = await supabase
+    .from("users")
+    .insert({
+      id: user.id,
+      phone: user.phone,
+      name: user.name ?? null,
+      email: user.email ?? null,
+      created_at: now,
+      updated_at: now,
+    })
+    .select()
+    .single();
+  if (error) throw error;
+  return mapUser(data);
+}
+
+export async function updateUser(
+  id: string,
+  updates: { name?: string; email?: string }
+): Promise<User | null> {
+  const dbUpdates: Record<string, unknown> = { updated_at: new Date().toISOString() };
+  if (updates.name !== undefined) dbUpdates.name = updates.name;
+  if (updates.email !== undefined) dbUpdates.email = updates.email;
+
+  const { data, error } = await supabase
+    .from("users")
+    .update(dbUpdates)
+    .eq("id", id)
+    .select()
+    .single();
+  if (error) return null;
+  return mapUser(data);
+}
+
+export async function createOTPSession(session: {
+  id: string;
+  phone: string;
+  otp: string;
+  expiresAt: string;
+}): Promise<OTPSession> {
+  // Invalidate any old sessions for this phone first
+  await supabase.from("otp_sessions").delete().eq("phone", session.phone);
+
+  const { data, error } = await supabase
+    .from("otp_sessions")
+    .insert({
+      id: session.id,
+      phone: session.phone,
+      otp: session.otp,
+      expires_at: session.expiresAt,
+      verified: false,
+      created_at: new Date().toISOString(),
+    })
+    .select()
+    .single();
+  if (error) throw error;
+  return mapOTPSession(data);
+}
+
+export async function getLatestOTPSession(
+  phone: string
+): Promise<OTPSession | undefined> {
+  const { data, error } = await supabase
+    .from("otp_sessions")
+    .select("*")
+    .eq("phone", phone)
+    .eq("verified", false)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .single();
+  if (error) return undefined;
+  return mapOTPSession(data);
+}
+
+export async function markOTPVerified(id: string): Promise<boolean> {
+  const { error } = await supabase
+    .from("otp_sessions")
+    .update({ verified: true })
+    .eq("id", id);
+  return !error;
 }
