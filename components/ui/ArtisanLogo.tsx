@@ -4,7 +4,7 @@ export default function ArtisanLogo() {
   return (
     <Link
       href="/"
-      className="flex items-center gap-5 hover:opacity-90 transition-opacity"
+      className="flex flex-col md:flex-row items-center gap-2 md:gap-5 hover:opacity-90 transition-opacity"
     >
       <div className="w-20 h-20 rounded-full flex items-center justify-center flex-shrink-0">
         <img
@@ -12,7 +12,7 @@ export default function ArtisanLogo() {
           alt="Artisan House logo"
         />
       </div>
-      <div className="leading-none">
+      <div className="leading-none text-center md:text-left">
         <span className="block font-serif text-lg font-bold text-forest-900 dark:text-amber-100 tracking-wide">
           Artisan House
         </span>

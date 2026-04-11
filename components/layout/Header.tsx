@@ -57,7 +57,7 @@ export default function Header() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between h-28 md:h-20">
           <ArtisanLogo />
 
           {/* Desktop Nav */}
