@@ -18,12 +18,12 @@ export default function Footer() {
     >
       {/* Dark overlay so text stays readable */}
       <div className="absolute inset-0 bg-forest-950/80" />
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-16">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-4 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand */}
           <div className="lg:col-span-1">
             <ArtisanLogo />
-            <p className="text-sm text-forest-300 leading-relaxed mb-6">
+            <p className="text-sm text-forest-300 leading-relaxed my-4">
               Handcrafted candles, clay art, and creative crafts made with
               intention and delivered with love. Each piece tells a story.
             </p>

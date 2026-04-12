@@ -3,7 +3,16 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ShoppingCart, Heart, Search, Menu, X, Moon, Sun, User } from "lucide-react";
+import {
+  ShoppingCart,
+  Heart,
+  Search,
+  Menu,
+  X,
+  Moon,
+  Sun,
+  User,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useStore } from "@/lib/store";
 import { useTheme } from "@/components/layout/ThemeProvider";
@@ -57,8 +66,10 @@ export default function Header() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between h-28 md:h-20">
-          <ArtisanLogo />
+        <div className="flex items-center justify-between h-24 md:h-20">
+          <div className="scale-[0.85] md:scale-100 origin-left flex-shrink-0 -mt-4">
+            <ArtisanLogo />
+          </div>
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-7">

@@ -4,7 +4,7 @@ export default function ArtisanLogo() {
   return (
     <Link
       href="/"
-      className="flex flex-col md:flex-row items-center gap-2 md:gap-5 hover:opacity-90 transition-opacity"
+      className="flex flex-col md:flex-row items-center gap-0 md:gap-5 hover:opacity-90 transition-opacity"
     >
       <div className="w-20 h-20 rounded-full flex items-center justify-center flex-shrink-0">
         <img
