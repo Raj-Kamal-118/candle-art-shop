@@ -10,6 +10,7 @@ import {
   ShoppingBag,
   LogOut,
   Layers,
+  MessageSquare,
 } from "lucide-react";
 import ArtisanLogo from "../ui/ArtisanLogo";
 
@@ -20,6 +21,7 @@ const navItems = [
   { href: "/admin/categories", label: "Categories", icon: Tag },
   { href: "/admin/discounts", label: "Discounts", icon: Percent },
   { href: "/admin/orders", label: "Orders", icon: ShoppingBag },
+  { href: "/admin/quotes", label: "Quotes", icon: MessageSquare },
 ];
 
 export default function AdminSidebar() {

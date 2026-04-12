@@ -64,12 +64,39 @@ export default function CustomCandlePage() {
   const [scent, setScent] = useState("Vanilla Bourbon");
   const [wax, setWax] = useState("100% Soy Wax");
   const [wick, setWick] = useState("Cotton Wick");
-  const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Contact Details
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+
+  const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically send the quote data to your backend
-    setSubmitted(true);
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/quotes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "candle",
+          name,
+          email,
+          phone,
+          details: { shape, color, scent, wax, wick },
+        }),
+      });
+
+      if (response.ok) {
+        setSubmitted(true);
+      }
+    } catch (error) {
+      console.error("Failed to submit quote", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const selectedShape = SHAPES.find((s) => s.name === shape) || SHAPES[1];
@@ -226,6 +253,50 @@ export default function CustomCandlePage() {
                 </div>
               </div>
             </div>
+
+            {/* Contact Information */}
+            <div className="pt-6 border-t border-cream-100 dark:border-amber-900/20">
+              <h3 className="font-semibold text-brown-900 dark:text-amber-100 mb-4">
+                Your Contact Details
+              </h3>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm text-brown-700 dark:text-amber-100/80 mb-1">
+                    Full Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full p-3 bg-cream-50 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none text-brown-800 dark:text-amber-100"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-brown-700 dark:text-amber-100/80 mb-1">
+                    Email Address *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full p-3 bg-cream-50 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none text-brown-800 dark:text-amber-100"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block text-sm text-brown-700 dark:text-amber-100/80 mb-1">
+                    Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="w-full p-3 bg-cream-50 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none text-brown-800 dark:text-amber-100"
+                  />
+                </div>
+              </div>
+            </div>
           </form>
         </div>
 
@@ -283,8 +354,10 @@ export default function CustomCandlePage() {
               form="custom-candle-form"
               className="w-full flex justify-center gap-2"
               size="lg"
+              disabled={isSubmitting}
             >
-              <Send size={16} /> Request Custom Quote
+              <Send size={16} />{" "}
+              {isSubmitting ? "Submitting..." : "Request Custom Quote"}
             </Button>
           </div>
         </div>

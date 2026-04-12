@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Product } from "@/lib/types";
 import ProductCard from "./ProductCard";
@@ -15,6 +15,8 @@ export default function ProductCarousel({
   title,
 }: ProductCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [canScroll, setCanScroll] = useState(false);
 
   const scroll = (direction: "left" | "right") => {
     if (!scrollRef.current) return;
@@ -24,6 +26,31 @@ export default function ProductCarousel({
       behavior: "smooth",
     });
   };
+
+  const checkScrollability = () => {
+    if (scrollRef.current) {
+      const { scrollWidth, clientWidth } = scrollRef.current;
+      setCanScroll(scrollWidth > clientWidth);
+    }
+  };
+
+  const handleScroll = () => {
+    if (scrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+      const maxScroll = scrollWidth - clientWidth;
+
+      if (maxScroll > 0) {
+        const progress = (scrollLeft / maxScroll) * 100;
+        setScrollProgress(progress);
+      }
+    }
+  };
+
+  useEffect(() => {
+    checkScrollability();
+    window.addEventListener("resize", checkScrollability);
+    return () => window.removeEventListener("resize", checkScrollability);
+  }, [products]);
 
   if (products.length === 0) return null;
 
@@ -48,6 +75,7 @@ export default function ProductCarousel({
         {/* Scrollable row */}
         <div
           ref={scrollRef}
+          onScroll={handleScroll}
           className="flex gap-3 sm:gap-5 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory px-1 sm:px-2"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
@@ -67,6 +95,18 @@ export default function ProductCarousel({
           <ChevronRight size={18} />
         </button>
       </div>
+
+      {/* Visual Scroll Indicator */}
+      {canScroll && (
+        <div className="mt-4 h-1.5 w-32 sm:w-48 mx-auto bg-cream-200 dark:bg-amber-900/30 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-amber-500 dark:bg-amber-600 rounded-full transition-all duration-150 ease-out"
+            style={{
+              width: `${Math.max(15, scrollProgress)}%`,
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }

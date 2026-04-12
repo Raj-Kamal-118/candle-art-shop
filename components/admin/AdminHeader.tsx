@@ -8,6 +8,7 @@ const titles: Record<string, string> = {
   "/admin/categories": "Categories",
   "/admin/discounts": "Discounts",
   "/admin/orders": "Orders",
+  "/admin/quotes": "Quote Requests",
 };
 
 export default function AdminHeader() {

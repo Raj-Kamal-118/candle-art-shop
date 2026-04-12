@@ -53,7 +53,7 @@ export default function Header() {
     { href: "/", label: "Home" },
     { href: "/products", label: "Shop" },
     { href: "/categories/scented-candles", label: "Candles" },
-    { href: "/categories/custom-artwork", label: "Artwork" },
+    { href: "/categories/fridge-magnets", label: "Magnet" },
     { href: "/categories/gift-sets", label: "Gift Sets" },
   ];
 

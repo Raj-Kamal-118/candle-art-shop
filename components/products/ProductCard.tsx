@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Heart, ShoppingCart, Eye } from "lucide-react";
+import { Heart, ShoppingCart, Eye, Check } from "lucide-react";
 import { motion } from "framer-motion";
 import { Product } from "@/lib/types";
 import { useStore } from "@/lib/store";
@@ -60,9 +60,13 @@ export default function ProductCard({ product }: ProductCardProps) {
             <div className="flex items-center gap-2">
               <button
                 onClick={handleAddToCart}
-                className="flex items-center gap-2 bg-white dark:bg-[#0f0e1c] text-brown-900 dark:text-amber-100 px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-amber-50 dark:hover:bg-amber-900/50 transition-colors shadow-lg"
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-lg ${
+                  addedToCart
+                    ? "bg-green-600 text-white"
+                    : "bg-white dark:bg-[#0f0e1c] text-brown-900 dark:text-amber-100 hover:bg-amber-50 dark:hover:bg-amber-900/50"
+                }`}
               >
-                <ShoppingCart size={15} />
+                {addedToCart ? <Check size={15} /> : <ShoppingCart size={15} />}
                 {addedToCart ? "Added!" : "Add to Cart"}
               </button>
               <Link
@@ -135,10 +139,12 @@ export default function ProductCard({ product }: ProductCardProps) {
             </div>
             <button
               onClick={handleAddToCart}
-              className="md:hidden flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-amber-500 dark:bg-amber-600 transition-colors shrink-0 shadow-sm"
-              aria-label="Add to Cart"
+              className={`md:hidden flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full transition-colors shrink-0 shadow-sm text-white ${
+                addedToCart ? "bg-green-600" : "bg-amber-500 dark:bg-amber-600"
+              }`}
+              aria-label={addedToCart ? "Added to Cart" : "Add to Cart"}
             >
-              <ShoppingCart size={13} />
+              {addedToCart ? <Check size={13} /> : <ShoppingCart size={13} />}
             </button>
           </div>
         </div>

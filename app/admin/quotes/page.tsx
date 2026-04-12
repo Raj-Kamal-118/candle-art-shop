@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY!;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function AdminQuotesPage() {
@@ -72,9 +72,26 @@ export default function AdminQuotesPage() {
                   {quote.type}
                 </td>
                 <td className="px-6 py-4 text-xs">
-                  <pre className="max-w-[200px] overflow-hidden truncate">
-                    {JSON.stringify(quote.details, null, 2)}
-                  </pre>
+                  <div className="space-y-1">
+                    {quote.details &&
+                      Object.entries(quote.details).map(([key, value]) => (
+                        <div key={key} className="flex gap-2">
+                          <span className="font-medium text-gray-700 dark:text-gray-300 capitalize min-w-[70px]">
+                            {key.replace(/([A-Z])/g, " $1").trim()}:
+                          </span>
+                          <span
+                            className="text-gray-600 dark:text-gray-400 truncate max-w-[150px]"
+                            title={String(value)}
+                          >
+                            {typeof value === "boolean"
+                              ? value
+                                ? "Yes"
+                                : "No"
+                              : String(value)}
+                          </span>
+                        </div>
+                      ))}
+                  </div>
                 </td>
                 <td className="px-6 py-4">
                   <span
