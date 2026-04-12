@@ -26,12 +26,17 @@ export default function CategoryBannerSection({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5 }}
-      className="py-12"
+      className="relative py-12"
     >
+      {/* Per-category subtle candle glow */}
+      <div className="absolute pointer-events-none inset-0 flex items-center justify-center z-0 overflow-hidden">
+        <div className="w-[800px] h-[400px] bg-amber-500/10 rounded-full blur-[120px] opacity-0 dark:opacity-100 transition-opacity duration-700" />
+      </div>
+
       {/* ── Banner ─────────────────────────────────────────────────────────── */}
       {hasBanner && (
         <div
-          className="relative rounded-3xl overflow-hidden mb-8 min-h-[220px] flex items-center"
+          className="relative z-10 rounded-3xl overflow-hidden mb-8 min-h-[220px] flex items-center shadow-sm dark:shadow-none dark:border dark:border-amber-900/20"
           style={{
             backgroundColor: category.bannerBgColor || "#f5f0eb",
           }}
@@ -52,9 +57,12 @@ export default function CategoryBannerSection({
 
           {/* Content */}
           <div className="relative z-10 px-8 sm:px-14 py-10 max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-widest mb-2"
+            <p
+              className="text-xs font-semibold uppercase tracking-widest mb-2"
               style={{
-                color: category.bannerImage ? "rgba(255,255,255,0.7)" : "#9a7b5a",
+                color: category.bannerImage
+                  ? "rgba(255,255,255,0.7)"
+                  : "#9a7b5a",
               }}
             >
               {category.name}
@@ -80,30 +88,30 @@ export default function CategoryBannerSection({
 
             {/* Banner buttons */}
             <div className="flex flex-wrap gap-3">
-              {(category.bannerButtons || []).length > 0
-                ? category.bannerButtons!.map((btn, i) => (
-                    <Link
-                      key={i}
-                      href={btn.link}
-                      className={
-                        btn.variant === "primary"
-                          ? "inline-flex items-center gap-2 bg-coral-600 text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-coral-700 transition-colors shadow-md"
-                          : "inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white border border-white/40 px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-white/30 transition-colors"
-                      }
-                    >
-                      {btn.text}
-                      <ArrowRight size={14} />
-                    </Link>
-                  ))
-                : (
+              {(category.bannerButtons || []).length > 0 ? (
+                category.bannerButtons!.map((btn, i) => (
                   <Link
-                    href={`/categories/${category.slug}`}
-                    className="inline-flex items-center gap-2 bg-coral-600 text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-coral-700 transition-colors shadow-md"
+                    key={i}
+                    href={btn.link}
+                    className={
+                      btn.variant === "primary"
+                        ? "inline-flex items-center gap-2 bg-coral-600 text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-coral-700 transition-colors shadow-md"
+                        : "inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white border border-white/40 px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-white/30 transition-colors"
+                    }
                   >
-                    Shop {category.name}
+                    {btn.text}
                     <ArrowRight size={14} />
                   </Link>
-                )}
+                ))
+              ) : (
+                <Link
+                  href={`/categories/${category.slug}`}
+                  className="inline-flex items-center gap-2 bg-coral-600 text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-coral-700 transition-colors shadow-md"
+                >
+                  Shop {category.name}
+                  <ArrowRight size={14} />
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -111,7 +119,7 @@ export default function CategoryBannerSection({
 
       {/* ── Product Carousel ──────────────────────────────────────────────── */}
       {products.length > 0 && (
-        <div>
+        <div className="relative z-10">
           {!hasBanner && (
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-serif text-2xl font-bold text-brown-900 dark:text-amber-100">
@@ -129,7 +137,8 @@ export default function CategoryBannerSection({
           {hasBanner && (
             <div className="flex items-center justify-between mb-4">
               <p className="text-sm font-medium text-brown-600 dark:text-amber-300">
-                {products.length} product{products.length !== 1 ? "s" : ""} in this category
+                {products.length} product{products.length !== 1 ? "s" : ""} in
+                this category
               </p>
               <Link
                 href={`/categories/${category.slug}`}

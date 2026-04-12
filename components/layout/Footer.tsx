@@ -93,11 +93,11 @@ export default function Footer() {
             </h3>
             <ul className="space-y-3">
               {[
-                { href: "#", label: "About Us" },
-                { href: "#", label: "Our Story" },
-                { href: "#", label: "Custom Orders" },
-                { href: "#", label: "FAQ" },
-                { href: "#", label: "Contact Us" },
+                { href: "/informational/about", label: "About Us" },
+                { href: "/informational/faq", label: "FAQ" },
+                { href: "/informational/shipping", label: "Shipping Policy" },
+                { href: "/informational/returns", label: "Returns & Refunds" },
+                { href: "/informational/contact", label: "Contact Us" },
               ].map((link) => (
                 <li key={link.href}>
                   <Link
@@ -179,13 +179,13 @@ export default function Footer() {
           </p>
           <div className="flex items-center gap-4">
             <Link
-              href="#"
+              href="/informational/privacy"
               className="text-xs text-forest-400 hover:text-gold-400 transition-colors"
             >
               Privacy Policy
             </Link>
             <Link
-              href="#"
+              href="/informational/terms"
               className="text-xs text-forest-400 hover:text-gold-400 transition-colors"
             >
               Terms of Service
