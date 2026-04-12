@@ -22,7 +22,7 @@ export default function RootLayout({
       <body>
         <ThemeProvider>
           <Header />
-          <main className="pt-28 md:pt-20 min-h-screen">{children}</main>
+          <main className="pt-28 md:pt-20">{children}</main>
           <Footer />
         </ThemeProvider>
       </body>

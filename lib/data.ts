@@ -83,6 +83,7 @@ function mapOrder(row: Record<string, unknown>): Order {
     billingAddress: row.billing_address as Order["billingAddress"],
     paymentMethod: row.payment_method as "cod" | "qr",
     status: row.status as string,
+    paymentReference: row.payment_reference as string | undefined,
     createdAt: row.created_at as string,
     userId: row.user_id as string | undefined,
     customerPhone: row.customer_phone as string | undefined,
@@ -518,6 +519,7 @@ export async function createOrder(order: Order): Promise<Order> {
       shipping_address: order.shippingAddress,
       billing_address: order.billingAddress,
       payment_method: order.paymentMethod,
+      payment_reference: order.paymentReference ?? null,
       user_id: order.userId ?? null,
       customer_phone: order.customerPhone ?? null,
       created_at: order.createdAt,
@@ -535,6 +537,7 @@ export async function updateOrder(
   const dbUpdates: Record<string, unknown> = {};
   if (updates.status !== undefined) dbUpdates.status = updates.status;
   if (updates.items !== undefined) dbUpdates.items = updates.items;
+  if (updates.paymentReference !== undefined) dbUpdates.payment_reference = updates.paymentReference;
 
   const { data, error } = await supabase
     .from("orders")

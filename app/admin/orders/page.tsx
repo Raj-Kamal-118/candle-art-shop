@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { ShoppingBag, ChevronDown, ChevronUp } from "lucide-react";
 import { Order } from "@/lib/types";
 import Badge from "@/components/ui/Badge";
+import CopyFeedbackLink from "@/components/admin/CopyFeedbackLink";
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -20,13 +21,28 @@ export default function AdminOrdersPage() {
   }, []);
 
   const handleStatusChange = async (orderId: string, status: string) => {
+    const previousOrders = [...orders];
     // Optimistic update
     setOrders((prev) =>
-      prev.map((o) => (o.id === orderId ? { ...o, status } : o))
+      prev.map((o) => (o.id === orderId ? { ...o, status } : o)),
     );
+
+    try {
+      const res = await fetch(`/api/orders/${orderId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      if (!res.ok) throw new Error("Failed to update status");
+    } catch (error) {
+      console.error("Status update failed", error);
+      setOrders(previousOrders); // Revert optimistic update on failure
+    }
   };
 
-  const getStatusVariant = (status: string): "default" | "success" | "warning" | "danger" | "info" => {
+  const getStatusVariant = (
+    status: string,
+  ): "default" | "success" | "warning" | "danger" | "info" => {
     switch (status) {
       case "pending":
         return "warning";
@@ -59,19 +75,23 @@ export default function AdminOrdersPage() {
         ) : (
           <div>
             {/* Header */}
-            <div className="grid grid-cols-6 gap-4 px-5 py-3.5 bg-gray-50 border-b border-gray-100 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            <div className="grid grid-cols-7 gap-4 px-5 py-3.5 bg-gray-50 border-b border-gray-100 text-xs font-semibold text-gray-500 uppercase tracking-wide items-center">
               <div>Order ID</div>
               <div>Customer</div>
               <div>Items</div>
               <div>Total</div>
               <div>Payment</div>
               <div>Status</div>
+              <div className="text-right">Feedback</div>
             </div>
 
             {orders.map((order) => (
-              <div key={order.id} className="border-b border-gray-50 last:border-0">
+              <div
+                key={order.id}
+                className="border-b border-gray-50 last:border-0"
+              >
                 <div
-                  className="grid grid-cols-6 gap-4 px-5 py-4 hover:bg-gray-50 transition-colors cursor-pointer text-sm"
+                  className="grid grid-cols-7 gap-4 px-5 py-4 hover:bg-gray-50 transition-colors cursor-pointer text-sm items-center"
                   onClick={() =>
                     setExpanded(expanded === order.id ? null : order.id)
                   }
@@ -101,10 +121,10 @@ export default function AdminOrdersPage() {
                     {order.items.reduce((s, i) => s + i.quantity, 0)} items
                   </div>
                   <div className="font-semibold text-gray-900">
-                    ${order.total.toFixed(2)}
+                    ₹{order.total.toFixed(2)}
                     {order.discount > 0 && (
                       <div className="text-xs text-green-600 font-normal">
-                        -{order.discountCode} (-${order.discount.toFixed(2)})
+                        -{order.discountCode} (-₹{order.discount.toFixed(2)})
                       </div>
                     )}
                   </div>
@@ -123,12 +143,12 @@ export default function AdminOrdersPage() {
                         order.status === "delivered"
                           ? "bg-green-100 text-green-800"
                           : order.status === "cancelled"
-                          ? "bg-red-100 text-red-800"
-                          : order.status === "shipped"
-                          ? "bg-blue-100 text-blue-800"
-                          : order.status === "processing"
-                          ? "bg-indigo-100 text-indigo-800"
-                          : "bg-yellow-100 text-yellow-800"
+                            ? "bg-red-100 text-red-800"
+                            : order.status === "shipped"
+                              ? "bg-blue-100 text-blue-800"
+                              : order.status === "processing"
+                                ? "bg-indigo-100 text-indigo-800"
+                                : "bg-yellow-100 text-yellow-800"
                       }`}
                     >
                       <option value="pending">Pending</option>
@@ -137,6 +157,18 @@ export default function AdminOrdersPage() {
                       <option value="delivered">Delivered</option>
                       <option value="cancelled">Cancelled</option>
                     </select>
+                  </div>
+                  <div
+                    className="flex justify-end"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {order.status === "delivered" ? (
+                      <CopyFeedbackLink orderId={order.id} />
+                    ) : (
+                      <span className="text-[10px] text-gray-400 italic px-2">
+                        Deliver to request
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -164,11 +196,11 @@ export default function AdminOrdersPage() {
                                   {item.productName}
                                 </p>
                                 <p className="text-xs text-gray-500">
-                                  Qty: {item.quantity} × ${item.price}
+                                  Qty: {item.quantity} × ₹{item.price}
                                 </p>
                               </div>
                               <p className="text-sm font-semibold text-gray-900">
-                                ${(item.price * item.quantity).toFixed(2)}
+                                ₹{(item.price * item.quantity).toFixed(2)}
                               </p>
                             </div>
                           ))}
@@ -193,30 +225,45 @@ export default function AdminOrdersPage() {
                             {order.shippingAddress.postalCode}
                           </p>
                           <p>{order.shippingAddress.country}</p>
-                          <p className="text-gray-400">{order.shippingAddress.phone}</p>
-                          <p className="text-gray-400">{order.shippingAddress.email}</p>
+                          <p className="text-gray-400">
+                            {order.shippingAddress.phone}
+                          </p>
+                          <p className="text-gray-400">
+                            {order.shippingAddress.email}
+                          </p>
                         </div>
 
                         <div className="mt-4 bg-white rounded-xl p-4 text-sm space-y-2">
                           <div className="flex justify-between text-gray-600">
                             <span>Subtotal</span>
-                            <span>${order.subtotal.toFixed(2)}</span>
+                            <span>₹{order.subtotal.toFixed(2)}</span>
                           </div>
                           {order.discount > 0 && (
                             <div className="flex justify-between text-green-600">
                               <span>Discount</span>
-                              <span>-${order.discount.toFixed(2)}</span>
+                              <span>-₹{order.discount.toFixed(2)}</span>
                             </div>
                           )}
                           <div className="flex justify-between text-gray-600">
                             <span>Shipping</span>
-                            <span>${order.shipping.toFixed(2)}</span>
+                            <span>₹{order.shipping.toFixed(2)}</span>
                           </div>
                           <div className="flex justify-between font-bold text-gray-900 border-t border-gray-100 pt-2">
                             <span>Total</span>
-                            <span>${order.total.toFixed(2)}</span>
+                            <span>₹{order.total.toFixed(2)}</span>
                           </div>
                         </div>
+
+                        {order.paymentReference && (
+                          <div className="mt-4 bg-white rounded-xl p-4 text-sm">
+                            <span className="text-gray-500 mr-2">
+                              Payment Ref:
+                            </span>
+                            <span className="font-mono text-gray-900 font-medium break-all">
+                              {order.paymentReference}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

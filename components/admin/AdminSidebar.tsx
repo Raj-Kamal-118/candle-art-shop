@@ -22,6 +22,7 @@ const navItems = [
   { href: "/admin/discounts", label: "Discounts", icon: Percent },
   { href: "/admin/orders", label: "Orders", icon: ShoppingBag },
   { href: "/admin/quotes", label: "Quotes", icon: MessageSquare },
+  { href: "/admin/reviews", label: "Reviews", icon: MessageSquare },
 ];
 
 export default function AdminSidebar() {

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   CheckCircle,
   MapPin,
@@ -20,8 +20,9 @@ import Button from "@/components/ui/Button";
 
 type Step = "address" | "payment" | "confirmation";
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { cartItems, clearCart, currentUser, setCurrentUser } = useStore();
 
   const [step, setStep] = useState<Step>("address");
@@ -34,7 +35,12 @@ export default function CheckoutPage() {
   const [discountError, setDiscountError] = useState("");
   const [applyingDiscount, setApplyingDiscount] = useState(false);
   const [placingOrder, setPlacingOrder] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"online" | "cod">(
+    "online",
+  );
+  const [paymentError, setPaymentError] = useState("");
   const [orderId, setOrderId] = useState<string | null>(null);
+  const [paymentRef, setPaymentRef] = useState<string | null>(null);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [verifiedUser, setVerifiedUser] = useState<User | null>(currentUser);
 
@@ -42,6 +48,22 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (currentUser) setVerifiedUser(currentUser);
   }, [currentUser]);
+
+  // Handle returning from PhonePe Gateway
+  useEffect(() => {
+    const callbackOrderId = searchParams.get("order");
+    const callbackStatus = searchParams.get("status");
+    const callbackRef = searchParams.get("ref");
+
+    if (callbackOrderId && callbackStatus === "SUCCESS") {
+      setOrderId(callbackOrderId);
+      if (callbackRef) setPaymentRef(callbackRef);
+      clearCart();
+      setStep("confirmation");
+    } else if (callbackStatus === "FAILED") {
+      setPaymentError("Payment failed or was cancelled. Please try again.");
+    }
+  }, [searchParams, clearCart]);
 
   const subtotal = cartItems.reduce(
     (sum, item) => sum + (item.price ?? item.product.price) * item.quantity,
@@ -51,7 +73,8 @@ export default function CheckoutPage() {
     ? calculateDiscount(subtotal, appliedDiscount.type, appliedDiscount.value)
     : 0;
   const shipping = getShippingCost(subtotal - discountAmount);
-  const total = subtotal - discountAmount + shipping;
+  const codFee = paymentMethod === "cod" ? 50 : 0;
+  const total = subtotal - discountAmount + shipping + codFee;
 
   if (cartItems.length === 0 && step !== "confirmation") {
     router.push("/cart");
@@ -92,9 +115,10 @@ export default function CheckoutPage() {
     setAuthModalOpen(false);
   };
 
-  const handlePlaceOrder = async (paymentMethod: "cod" | "qr") => {
+  const handlePlaceOrder = async () => {
     if (!shippingAddress) return;
     setPlacingOrder(true);
+    setPaymentError("");
     try {
       const orderItems = cartItems.map((item) => ({
         productId: item.product.id,
@@ -124,9 +148,32 @@ export default function CheckoutPage() {
       });
 
       const order = await res.json();
-      setOrderId(order.id);
-      clearCart();
-      setStep("confirmation");
+      if (paymentMethod === "online") {
+        const ppRes = await fetch("/api/payment/phonepe", {
+          method: "POST",
+          body: JSON.stringify({
+            orderId: order.id,
+            amount: total,
+            phone: shippingAddress.phone,
+          }),
+          headers: { "Content-Type": "application/json" },
+        });
+        const ppData = await ppRes.json();
+
+        if (ppData.url) {
+          window.location.href = ppData.url; // Redirect to PhonePe
+          return; // Do not clear cart yet, wait for return
+        } else {
+          throw new Error("Failed to initialize payment gateway");
+        }
+      } else {
+        setOrderId(order.id);
+        clearCart();
+        setStep("confirmation");
+      }
+    } catch (error) {
+      setPaymentError("Something went wrong while placing your order.");
+      setPlacingOrder(false);
     } finally {
       setPlacingOrder(false);
     }
@@ -188,9 +235,17 @@ export default function CheckoutPage() {
             Thank you for your purchase. Your order has been placed
             successfully.
           </p>
-          <p className="text-sm text-amber-700 font-medium mb-8">
+          <p
+            className={`text-sm text-amber-700 font-medium ${paymentRef ? "mb-1" : "mb-8"}`}
+          >
             Order ID: {orderId}
           </p>
+          {paymentRef && (
+            <p className="text-sm text-brown-500 mb-8">
+              Payment Ref:{" "}
+              <span className="font-semibold text-brown-900">{paymentRef}</span>
+            </p>
+          )}
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button onClick={() => router.push("/")} size="lg">
               Continue Shopping
@@ -282,8 +337,15 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="bg-white rounded-2xl p-6 shadow-sm border border-cream-200">
+                  {paymentError && (
+                    <div className="mb-4 p-3 bg-red-50 text-red-700 text-sm font-medium rounded-lg border border-red-200">
+                      {paymentError}
+                    </div>
+                  )}
                   <PaymentStep
                     total={total}
+                    method={paymentMethod}
+                    onMethodChange={setPaymentMethod}
                     onSubmit={handlePlaceOrder}
                     loading={placingOrder}
                   />
@@ -298,6 +360,7 @@ export default function CheckoutPage() {
               items={cartItems}
               discount={discountAmount}
               discountCode={discountCode}
+              codFee={codFee}
             />
 
             {/* Discount code */}
@@ -366,5 +429,19 @@ export default function CheckoutPage() {
         title="Log in / Sign up"
       />
     </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="py-24 text-center text-brown-500">
+          Loading Checkout...
+        </div>
+      }
+    >
+      <CheckoutContent />
+    </Suspense>
   );
 }

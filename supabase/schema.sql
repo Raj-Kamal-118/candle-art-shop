@@ -60,7 +60,22 @@ CREATE TABLE IF NOT EXISTS orders (
   shipping_address JSONB,
   billing_address  JSONB,
   payment_method   TEXT,
+  payment_reference TEXT,
   created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Reviews
+CREATE TABLE IF NOT EXISTS reviews (
+  id             TEXT PRIMARY KEY,
+  order_id       TEXT,
+  product_name   TEXT,
+  customer_name  TEXT NOT NULL,
+  location       TEXT,
+  rating         INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+  text           TEXT NOT NULL,
+  image_url      TEXT,
+  approved       BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- ============================================================
@@ -70,6 +85,7 @@ ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE products    ENABLE ROW LEVEL SECURITY;
 ALTER TABLE discounts   ENABLE ROW LEVEL SECURITY;
 ALTER TABLE orders      ENABLE ROW LEVEL SECURITY;
+ALTER TABLE reviews     ENABLE ROW LEVEL SECURITY;
 
 -- Service role bypasses RLS automatically, so no policies needed
 -- for the server-side Next.js app. Public (anon) access is blocked.
@@ -147,4 +163,14 @@ INSERT INTO discounts (id, code, type, value, min_order_amount, max_uses, used_c
   ('disc-1', 'WELCOME10',  'percentage', 10,  0,    100, 0, NOW() + INTERVAL '1 year', TRUE),
   ('disc-2', 'SAVE500',    'fixed',      500, 2000, 50,  0, NOW() + INTERVAL '6 months', TRUE),
   ('disc-3', 'FESTIVE20',  'percentage', 20,  5000, 200, 0, NOW() + INTERVAL '3 months', TRUE)
+ON CONFLICT (id) DO NOTHING;
+
+-- ============================================================
+-- Seed: reviews
+-- ============================================================
+INSERT INTO reviews (id, product_name, customer_name, location, rating, text, image_url, approved, created_at) VALUES
+  ('rev-1', 'Amber Rose Soy Candle', 'Sarah M.', 'New York, NY', 5, 'The Amber Rose candle is absolutely divine. The scent fills my entire apartment without being overwhelming, and it burns so evenly. I''ve already ordered three more as gifts!', 'https://picsum.photos/seed/rev1/400/400', TRUE, NOW()),
+  ('rev-2', 'Botanical Press Candle Art', 'James L.', 'San Francisco, CA', 5, 'I ordered the Botanical Press Candle Art as a birthday gift and the recipient was speechless. The craftsmanship is extraordinary — it''s truly a work of art that also functions as a candle.', 'https://picsum.photos/seed/rev2/400/400', TRUE, NOW() - INTERVAL '1 day'),
+  ('rev-3', 'The Solstice Gift Collection', 'Emma T.', 'London, UK', 5, 'The Solstice Gift Collection was the perfect Christmas gift for my mother. Beautiful packaging, gorgeous scents, and the wooden box is something she''s kept on display. Worth every penny.', NULL, TRUE, NOW() - INTERVAL '2 days'),
+  ('rev-4', 'Vanilla Bourbon Luxury Candle', 'Michael R.', 'Austin, TX', 4, 'Love the crackling wooden wick! The scent is very warm and cozy.', NULL, TRUE, NOW() - INTERVAL '3 days')
 ON CONFLICT (id) DO NOTHING;

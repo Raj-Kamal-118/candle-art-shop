@@ -6,19 +6,21 @@ interface OrderSummaryProps {
   items: CartItem[];
   discount?: number;
   discountCode?: string;
+  codFee?: number;
 }
 
 export default function OrderSummary({
   items,
   discount = 0,
   discountCode,
+  codFee = 0,
 }: OrderSummaryProps) {
   const subtotal = items.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
-    0
+    0,
   );
   const shipping = getShippingCost(subtotal - discount);
-  const total = subtotal - discount + shipping;
+  const total = subtotal - discount + shipping + codFee;
 
   return (
     <div className="bg-cream-50 rounded-2xl p-5 border border-cream-200">
@@ -67,6 +69,12 @@ export default function OrderSummary({
           <span>Shipping</span>
           <span>{shipping === 0 ? "Free" : formatPrice(shipping)}</span>
         </div>
+        {codFee > 0 && (
+          <div className="flex justify-between text-brown-600">
+            <span>COD Fee</span>
+            <span>{formatPrice(codFee)}</span>
+          </div>
+        )}
         <div className="flex justify-between font-bold text-base pt-1 border-t border-cream-200">
           <span className="text-brown-900">Total</span>
           <span className="text-brown-900">{formatPrice(total)}</span>

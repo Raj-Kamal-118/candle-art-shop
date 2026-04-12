@@ -108,6 +108,7 @@ export interface Order {
   billingAddress: Address;
   paymentMethod: "cod" | "qr";
   status: string;
+  paymentReference?: string;
   createdAt: string;
   userId?: string;
   customerPhone?: string;

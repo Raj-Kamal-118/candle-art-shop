@@ -1,16 +1,19 @@
 import { getProducts, getCategories, getHeroSettings } from "@/lib/data";
+import { getApprovedReviews } from "@/lib/reviews";
 import { Flame, Image as ImageIcon } from "lucide-react";
 import HeroSection from "@/components/home/HeroSection";
 import FeaturedProducts from "@/components/home/FeaturedProducts";
-import CategoryGrid from "@/components/home/CategoryGrid";
 import CategoryBannerSection from "@/components/home/CategoryBannerSection";
 import Testimonials from "@/components/home/Testimonials";
 
+export const revalidate = 60;
+
 export default async function HomePage() {
-  const [products, categories, heroSettings] = await Promise.all([
+  const [products, categories, heroSettings, reviews] = await Promise.all([
     getProducts(),
     getCategories(),
     getHeroSettings(),
+    getApprovedReviews(),
   ]);
 
   const featuredProducts = products.filter((p) => p.featured).slice(0, 4);
@@ -53,7 +56,7 @@ export default async function HomePage() {
       <FeaturedProducts products={featuredProducts} />
 
       {/* Testimonials */}
-      <Testimonials />
+      <Testimonials reviews={reviews} />
 
       {/* CTA Section */}
       <section className="relative py-24 bg-cream-50 dark:bg-[#0a0a16] overflow-hidden border-t border-cream-200 dark:border-amber-900/20 transition-colors duration-300">

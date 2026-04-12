@@ -1,4 +1,9 @@
-import { getProducts, getOrders, getCategories, getDiscounts } from "@/lib/data";
+import {
+  getProducts,
+  getOrders,
+  getCategories,
+  getDiscounts,
+} from "@/lib/data";
 import { formatPrice } from "@/lib/utils";
 import {
   Package,
@@ -13,16 +18,38 @@ import {
   XCircle,
   RotateCcw,
 } from "lucide-react";
+import OrderStatusSelector from "@/components/admin/OrderStatusSelector";
+import CopyFeedbackLink from "@/components/admin/CopyFeedbackLink";
 
 const statusConfig: Record<
   string,
   { label: string; classes: string; icon: React.ElementType }
 > = {
-  pending:    { label: "Pending",    classes: "bg-yellow-100 text-yellow-800",  icon: Clock },
-  processing: { label: "Processing", classes: "bg-blue-100 text-blue-800",      icon: RotateCcw },
-  shipped:    { label: "Shipped",    classes: "bg-indigo-100 text-indigo-800",  icon: Truck },
-  delivered:  { label: "Delivered",  classes: "bg-green-100 text-green-800",    icon: CheckCircle2 },
-  cancelled:  { label: "Cancelled",  classes: "bg-red-100 text-red-800",        icon: XCircle },
+  pending: {
+    label: "Pending",
+    classes: "bg-yellow-100 text-yellow-800",
+    icon: Clock,
+  },
+  processing: {
+    label: "Processing",
+    classes: "bg-blue-100 text-blue-800",
+    icon: RotateCcw,
+  },
+  shipped: {
+    label: "Shipped",
+    classes: "bg-indigo-100 text-indigo-800",
+    icon: Truck,
+  },
+  delivered: {
+    label: "Delivered",
+    classes: "bg-green-100 text-green-800",
+    icon: CheckCircle2,
+  },
+  cancelled: {
+    label: "Cancelled",
+    classes: "bg-red-100 text-red-800",
+    icon: XCircle,
+  },
 };
 
 export default async function AdminDashboard() {
@@ -181,6 +208,9 @@ export default async function AdminDashboard() {
                   <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
                     Date
                   </th>
+                  <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide text-right">
+                    Feedback
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
@@ -209,21 +239,21 @@ export default async function AdminDashboard() {
                         {formatPrice(order.total)}
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium ${
-                          order.paymentMethod === "cod"
-                            ? "bg-orange-100 text-orange-700"
-                            : "bg-sky-100 text-sky-700"
-                        }`}>
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium ${
+                            order.paymentMethod === "cod"
+                              ? "bg-orange-100 text-orange-700"
+                              : "bg-sky-100 text-sky-700"
+                          }`}
+                        >
                           {order.paymentMethod === "cod" ? "COD" : "QR Pay"}
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <span
-                          className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${s.classes}`}
-                        >
-                          <SIcon size={10} />
-                          {s.label}
-                        </span>
+                        <OrderStatusSelector
+                          orderId={order.id}
+                          currentStatus={order.status}
+                        />
                       </td>
                       <td className="px-6 py-4 text-gray-400 text-xs">
                         {new Date(order.createdAt).toLocaleDateString("en-IN", {
@@ -231,6 +261,15 @@ export default async function AdminDashboard() {
                           month: "short",
                           year: "numeric",
                         })}
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        {order.status === "delivered" ? (
+                          <CopyFeedbackLink orderId={order.id} />
+                        ) : (
+                          <span className="text-[10px] text-gray-400 italic px-2">
+                            Deliver to request
+                          </span>
+                        )}
                       </td>
                     </tr>
                   );
@@ -298,8 +337,8 @@ export default async function AdminDashboard() {
                           product.stockCount <= 5
                             ? "text-red-600"
                             : product.stockCount <= 15
-                            ? "text-yellow-600"
-                            : "text-gray-700"
+                              ? "text-yellow-600"
+                              : "text-gray-700"
                         }`}
                       >
                         {product.stockCount}
@@ -310,10 +349,12 @@ export default async function AdminDashboard() {
                             product.stockCount <= 5
                               ? "bg-red-400"
                               : product.stockCount <= 15
-                              ? "bg-yellow-400"
-                              : "bg-emerald-400"
+                                ? "bg-yellow-400"
+                                : "bg-emerald-400"
                           }`}
-                          style={{ width: `${Math.min((product.stockCount / 50) * 100, 100)}%` }}
+                          style={{
+                            width: `${Math.min((product.stockCount / 50) * 100, 100)}%`,
+                          }}
                         />
                       </div>
                     </div>

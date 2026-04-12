@@ -86,11 +86,6 @@ export default function ProductCard({ product }: ProductCardProps) {
                 -{discount}%
               </Badge>
             )}
-            {product.featured && (
-              <Badge variant="default" className="text-xs">
-                Featured
-              </Badge>
-            )}
             {!product.inStock && (
               <Badge variant="warning" className="text-xs">
                 Sold Out

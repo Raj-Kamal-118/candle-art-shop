@@ -94,7 +94,7 @@ export default function HeroSection({ settings }: HeroSectionProps) {
         </div>
       )}
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-32 grid lg:grid-cols-2 gap-16 items-center">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-12 grid lg:grid-cols-2 gap-16 items-center">
         {/* Content */}
         <div>
           <motion.div

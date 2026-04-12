@@ -2,43 +2,23 @@
 
 import { motion } from "framer-motion";
 import { Star, Quote } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 
-const testimonials = [
-  {
-    id: 1,
-    name: "Sarah M.",
-    location: "New York, NY",
-    rating: 5,
-    text: "The Amber Rose candle is absolutely divine. The scent fills my entire apartment without being overwhelming, and it burns so evenly. I've already ordered three more as gifts!",
-    product: "Amber Rose Soy Candle",
-    avatar: "https://picsum.photos/seed/avatar1/80/80",
-    productLink: "/products/amber-rose-soy-candle",
-  },
-  {
-    id: 2,
-    name: "James L.",
-    location: "San Francisco, CA",
-    rating: 5,
-    text: "I ordered the Botanical Press Candle Art as a birthday gift and the recipient was speechless. The craftsmanship is extraordinary — it's truly a work of art that also functions as a candle.",
-    product: "Botanical Press Candle Art",
-    avatar: "https://picsum.photos/seed/avatar2/80/80",
-    productLink: "/products/botanical-press-candle-art",
-  },
-  {
-    id: 3,
-    name: "Emma T.",
-    location: "London, UK",
-    rating: 5,
-    text: "The Solstice Gift Collection was the perfect Christmas gift for my mother. Beautiful packaging, gorgeous scents, and the wooden box is something she's kept on display. Worth every penny.",
-    product: "The Solstice Gift Collection",
-    avatar: "https://picsum.photos/seed/avatar3/80/80",
-    productLink: "/products/the-solstice-gift-collection",
-  },
-];
+interface Review {
+  id: string;
+  customer_name: string;
+  location: string;
+  rating: number;
+  text: string;
+  product_name: string;
+  image_url: string | null;
+}
 
-export default function Testimonials() {
+export default function Testimonials({ reviews = [] }: { reviews?: Review[] }) {
+  const displayReviews = reviews.slice(0, 3);
+
+  if (displayReviews.length === 0) return null;
+
   return (
     <section className="relative py-20 bg-cream-50 dark:bg-[#0f0e1c] border-t border-cream-200 dark:border-amber-900/20 transition-colors duration-300 overflow-hidden">
       {/* Central candle light glow effect */}
@@ -63,7 +43,7 @@ export default function Testimonials() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-          {testimonials.map((t, i) => (
+          {displayReviews.map((t, i) => (
             <motion.div
               key={t.id}
               initial={{ opacity: 0, y: 30 }}
@@ -92,32 +72,31 @@ export default function Testimonials() {
               <p className="text-brown-600 dark:text-amber-100/70 text-sm leading-relaxed mb-5 relative z-10">
                 "{t.text}"
               </p>
-              <div className="flex items-center gap-3 mt-auto">
-                <Image
-                  src={t.avatar}
-                  alt={`Avatar of ${t.name}`}
-                  width={40}
-                  height={40}
-                  className="w-10 h-10 rounded-full object-cover"
-                />
+              <div className="flex items-center gap-3 mt-auto relative z-10">
+                {t.image_url ? (
+                  <img
+                    src={t.image_url}
+                    alt={`Photo by ${t.customer_name}`}
+                    className="w-10 h-10 rounded-xl object-cover border border-cream-200 dark:border-amber-900/30"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center text-amber-800 dark:text-amber-200 font-bold">
+                    {t.customer_name.charAt(0)}
+                  </div>
+                )}
                 <div>
                   <p className="text-brown-900 dark:text-white font-semibold text-sm">
-                    {t.name}
+                    {t.customer_name}
                   </p>
                   <p className="text-brown-500 dark:text-amber-100/50 text-xs">
-                    {t.location}
+                    {t.location || "Verified Buyer"}
                   </p>
                 </div>
               </div>
               <div className="mt-3 pt-3 border-t border-cream-100 dark:border-amber-900/30">
                 <p className="text-amber-700 dark:text-amber-400 font-medium text-xs">
                   Purchased:{" "}
-                  <Link
-                    href={t.productLink}
-                    className="hover:underline hover:text-amber-800 dark:hover:text-amber-300 transition-colors"
-                  >
-                    {t.product}
-                  </Link>
+                  <span className="font-semibold">{t.product_name}</span>
                 </p>
               </div>
             </motion.div>
