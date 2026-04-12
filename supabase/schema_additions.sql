@@ -49,7 +49,7 @@ ALTER TABLE products ADD COLUMN IF NOT EXISTS variant_pricing JSONB NOT NULL DEF
 -- ── Feature 4: Users & OTP ────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS users (
   id          TEXT PRIMARY KEY,
-  phone       TEXT UNIQUE NOT NULL,
+  phone       TEXT UNIQUE,
   name        TEXT,
   email       TEXT,
   created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -70,6 +70,35 @@ ALTER TABLE orders ADD COLUMN IF NOT EXISTS customer_phone TEXT;
 
 ALTER TABLE users        ENABLE ROW LEVEL SECURITY;
 ALTER TABLE otp_sessions ENABLE ROW LEVEL SECURITY;
+
+-- Ensure phone is no longer required (if table was created prior to email/Google auth)
+ALTER TABLE IF EXISTS users ALTER COLUMN phone DROP NOT NULL;
+
+-- ── Supabase Auth Sync Trigger ────────────────────────────────────────────────
+-- Automatically sync users created via Supabase Auth (Google/Email) to the custom users table
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.users (id, email, name, phone, created_at, updated_at)
+  VALUES (
+    new.id::text,
+    new.email,
+    new.raw_user_meta_data->>'full_name',
+    new.raw_user_meta_data->>'phone',
+    NOW(),
+    NOW()
+  )
+  ON CONFLICT (id) DO UPDATE SET
+    email = EXCLUDED.email,
+    name = COALESCE(public.users.name, EXCLUDED.name);
+  RETURN new;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
 
 -- ── Indexes ───────────────────────────────────────────────────────────────────
 CREATE INDEX IF NOT EXISTS idx_otp_sessions_phone      ON otp_sessions(phone);

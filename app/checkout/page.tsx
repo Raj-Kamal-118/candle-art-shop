@@ -2,17 +2,23 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle, MapPin, CreditCard, Tag, ShieldCheck } from "lucide-react";
+import {
+  CheckCircle,
+  MapPin,
+  CreditCard,
+  Tag,
+  ShieldCheck,
+} from "lucide-react";
 import { useStore } from "@/lib/store";
 import { Address, DiscountCode, User } from "@/lib/types";
 import { formatPrice, getShippingCost, calculateDiscount } from "@/lib/utils";
 import AddressForm from "@/components/checkout/AddressForm";
 import PaymentStep from "@/components/checkout/PaymentStep";
 import OrderSummary from "@/components/checkout/OrderSummary";
-import OTPLoginModal from "@/components/auth/OTPLoginModal";
+import AuthModal from "@/components/auth/AuthModal";
 import Button from "@/components/ui/Button";
 
-type Step = "address" | "verify" | "payment" | "confirmation";
+type Step = "address" | "payment" | "confirmation";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -22,12 +28,14 @@ export default function CheckoutPage() {
   const [shippingAddress, setShippingAddress] = useState<Address | null>(null);
   const [discountCode, setDiscountCode] = useState("");
   const [discountInput, setDiscountInput] = useState("");
-  const [appliedDiscount, setAppliedDiscount] = useState<DiscountCode | null>(null);
+  const [appliedDiscount, setAppliedDiscount] = useState<DiscountCode | null>(
+    null,
+  );
   const [discountError, setDiscountError] = useState("");
   const [applyingDiscount, setApplyingDiscount] = useState(false);
   const [placingOrder, setPlacingOrder] = useState(false);
   const [orderId, setOrderId] = useState<string | null>(null);
-  const [otpModalOpen, setOtpModalOpen] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
   const [verifiedUser, setVerifiedUser] = useState<User | null>(currentUser);
 
   // Sync verifiedUser with store
@@ -37,7 +45,7 @@ export default function CheckoutPage() {
 
   const subtotal = cartItems.reduce(
     (sum, item) => sum + (item.price ?? item.product.price) * item.quantity,
-    0
+    0,
   );
   const discountAmount = appliedDiscount
     ? calculateDiscount(subtotal, appliedDiscount.type, appliedDiscount.value)
@@ -75,20 +83,13 @@ export default function CheckoutPage() {
 
   const handleAddressSubmit = (address: Address) => {
     setShippingAddress(address);
-    // If user is already verified, skip OTP step
-    if (verifiedUser) {
-      setStep("payment");
-    } else {
-      setStep("verify");
-      setOtpModalOpen(true);
-    }
+    setStep("payment");
   };
 
-  const handleOTPSuccess = (user: User) => {
+  const handleAuthSuccess = (user: User) => {
     setVerifiedUser(user);
     setCurrentUser(user);
-    setOtpModalOpen(false);
-    setStep("payment");
+    setAuthModalOpen(false);
   };
 
   const handlePlaceOrder = async (paymentMethod: "cod" | "qr") => {
@@ -133,7 +134,6 @@ export default function CheckoutPage() {
 
   const steps = [
     { id: "address", label: "Shipping", icon: MapPin },
-    { id: "verify", label: "Verify", icon: ShieldCheck },
     { id: "payment", label: "Payment", icon: CreditCard },
     { id: "confirmation", label: "Confirmation", icon: CheckCircle },
   ];
@@ -159,15 +159,17 @@ export default function CheckoutPage() {
                   isActive
                     ? "bg-amber-700 text-white"
                     : isPast
-                    ? "bg-green-600 text-white"
-                    : "bg-cream-200 text-brown-500"
+                      ? "bg-green-600 text-white"
+                      : "bg-cream-200 text-brown-500"
                 }`}
               >
                 <Icon size={15} />
                 <span className="hidden sm:inline">{s.label}</span>
               </div>
               {i < steps.length - 1 && (
-                <div className={`w-8 sm:w-12 h-0.5 mx-1 ${isPast ? "bg-green-400" : "bg-cream-300"}`} />
+                <div
+                  className={`w-8 sm:w-12 h-0.5 mx-1 ${isPast ? "bg-green-400" : "bg-cream-300"}`}
+                />
               )}
             </div>
           );
@@ -183,7 +185,8 @@ export default function CheckoutPage() {
             Order Confirmed!
           </h2>
           <p className="text-brown-500 mb-2">
-            Thank you for your purchase. Your order has been placed successfully.
+            Thank you for your purchase. Your order has been placed
+            successfully.
           </p>
           <p className="text-sm text-amber-700 font-medium mb-8">
             Order ID: {orderId}
@@ -193,7 +196,11 @@ export default function CheckoutPage() {
               Continue Shopping
             </Button>
             {verifiedUser && (
-              <Button variant="outline" onClick={() => router.push("/account")} size="lg">
+              <Button
+                variant="outline"
+                onClick={() => router.push("/account")}
+                size="lg"
+              >
                 View My Orders
               </Button>
             )}
@@ -212,38 +219,33 @@ export default function CheckoutPage() {
                   {verifiedUser && (
                     <span className="flex items-center gap-1.5 text-xs text-green-700 bg-green-50 border border-green-200 px-3 py-1.5 rounded-full font-medium">
                       <ShieldCheck size={12} />
-                      Verified: {verifiedUser.phone}
+                      Logged in
                     </span>
                   )}
                 </div>
-                <AddressForm onSubmit={handleAddressSubmit} submitLabel={verifiedUser ? "Continue to Payment" : "Continue & Verify Phone"} />
-              </div>
-            )}
-
-            {/* OTP verification step */}
-            {step === "verify" && (
-              <div className="bg-white rounded-2xl p-6 shadow-sm border border-cream-200 text-center py-10">
-                <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <ShieldCheck size={28} className="text-amber-700" />
-                </div>
-                <h2 className="font-serif text-xl font-bold text-brown-900 mb-2">
-                  Verify Your Phone
-                </h2>
-                <p className="text-brown-500 text-sm mb-6 max-w-sm mx-auto">
-                  We need to verify{" "}
-                  <strong>{shippingAddress?.phone}</strong> before you can
-                  proceed to payment.
-                </p>
-                <Button onClick={() => setOtpModalOpen(true)} size="lg">
-                  <ShieldCheck size={16} />
-                  Send OTP to {shippingAddress?.phone}
-                </Button>
-                <button
-                  onClick={() => setStep("address")}
-                  className="block mt-4 text-sm text-amber-700 hover:underline mx-auto"
-                >
-                  ← Edit address
-                </button>
+                {!verifiedUser && (
+                  <div className="bg-amber-50 rounded-xl p-4 mb-6 border border-amber-200 flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-semibold text-brown-900">
+                        Already have an account?
+                      </p>
+                      <p className="text-xs text-brown-600 mt-0.5">
+                        Log in for a faster checkout experience.
+                      </p>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setAuthModalOpen(true)}
+                    >
+                      Log in
+                    </Button>
+                  </div>
+                )}
+                <AddressForm
+                  onSubmit={handleAddressSubmit}
+                  submitLabel="Continue to Payment"
+                />
               </div>
             )}
 
@@ -265,20 +267,26 @@ export default function CheckoutPage() {
                   </div>
                   <p className="text-sm text-brown-700">
                     {shippingAddress.fullName}, {shippingAddress.address1}
-                    {shippingAddress.address2 ? `, ${shippingAddress.address2}` : ""},{" "}
-                    {shippingAddress.city}, {shippingAddress.state}{" "}
+                    {shippingAddress.address2
+                      ? `, ${shippingAddress.address2}`
+                      : ""}
+                    , {shippingAddress.city}, {shippingAddress.state}{" "}
                     {shippingAddress.postalCode}
                   </p>
                   {verifiedUser && (
                     <p className="mt-2 flex items-center gap-1.5 text-xs text-green-700 font-medium">
                       <ShieldCheck size={12} />
-                      Phone verified: {verifiedUser.phone}
+                      Logged in as: {verifiedUser.email || verifiedUser.name}
                     </p>
                   )}
                 </div>
 
                 <div className="bg-white rounded-2xl p-6 shadow-sm border border-cream-200">
-                  <PaymentStep total={total} onSubmit={handlePlaceOrder} loading={placingOrder} />
+                  <PaymentStep
+                    total={total}
+                    onSubmit={handlePlaceOrder}
+                    loading={placingOrder}
+                  />
                 </div>
               </>
             )}
@@ -286,7 +294,11 @@ export default function CheckoutPage() {
 
           {/* Order summary */}
           <div className="space-y-4">
-            <OrderSummary items={cartItems} discount={discountAmount} discountCode={discountCode} />
+            <OrderSummary
+              items={cartItems}
+              discount={discountAmount}
+              discountCode={discountCode}
+            />
 
             {/* Discount code */}
             <div className="bg-white rounded-2xl p-5 shadow-sm border border-cream-200">
@@ -297,10 +309,20 @@ export default function CheckoutPage() {
               {appliedDiscount ? (
                 <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg px-3 py-2">
                   <div>
-                    <p className="text-sm font-semibold text-green-800">{discountCode}</p>
-                    <p className="text-xs text-green-600">-{formatPrice(discountAmount)} saved</p>
+                    <p className="text-sm font-semibold text-green-800">
+                      {discountCode}
+                    </p>
+                    <p className="text-xs text-green-600">
+                      -{formatPrice(discountAmount)} saved
+                    </p>
                   </div>
-                  <button onClick={() => { setAppliedDiscount(null); setDiscountCode(""); }} className="text-xs text-red-500 hover:text-red-700">
+                  <button
+                    onClick={() => {
+                      setAppliedDiscount(null);
+                      setDiscountCode("");
+                    }}
+                    className="text-xs text-red-500 hover:text-red-700"
+                  >
                     Remove
                   </button>
                 </div>
@@ -309,33 +331,39 @@ export default function CheckoutPage() {
                   <input
                     type="text"
                     value={discountInput}
-                    onChange={(e) => setDiscountInput(e.target.value.toUpperCase())}
+                    onChange={(e) =>
+                      setDiscountInput(e.target.value.toUpperCase())
+                    }
                     placeholder="Enter code"
                     className="flex-1 px-3 py-2 text-sm border border-brown-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400"
-                    onKeyDown={(e) => e.key === "Enter" && handleApplyDiscount()}
+                    onKeyDown={(e) =>
+                      e.key === "Enter" && handleApplyDiscount()
+                    }
                   />
-                  <Button variant="outline" size="sm" onClick={handleApplyDiscount} loading={applyingDiscount}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleApplyDiscount}
+                    loading={applyingDiscount}
+                  >
                     Apply
                   </Button>
                 </div>
               )}
-              {discountError && <p className="mt-2 text-xs text-red-600">{discountError}</p>}
+              {discountError && (
+                <p className="mt-2 text-xs text-red-600">{discountError}</p>
+              )}
             </div>
           </div>
         </div>
       )}
 
-      {/* OTP Modal */}
-      <OTPLoginModal
-        isOpen={otpModalOpen}
-        onClose={() => {
-          setOtpModalOpen(false);
-          if (!verifiedUser) setStep("address");
-        }}
-        onSuccess={handleOTPSuccess}
-        prefilledPhone={shippingAddress?.phone || ""}
-        title="Verify Your Phone"
-        subtitle="Enter the OTP sent to your mobile to confirm your identity."
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        onSuccess={handleAuthSuccess}
+        title="Log in / Sign up"
       />
     </div>
   );

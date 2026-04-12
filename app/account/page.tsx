@@ -17,14 +17,37 @@ import {
 import { useStore } from "@/lib/store";
 import { Order } from "@/lib/types";
 import { formatPrice } from "@/lib/utils";
-import OTPLoginModal from "@/components/auth/OTPLoginModal";
+import AuthModal from "@/components/auth/AuthModal";
 
-const STATUS_CONFIG: Record<string, { label: string; icon: React.ReactNode; color: string }> = {
-  pending:    { label: "Pending",    icon: <Clock size={14} />,       color: "bg-yellow-100 text-yellow-800" },
-  processing: { label: "Processing", icon: <Package size={14} />,     color: "bg-blue-100 text-blue-800" },
-  shipped:    { label: "Shipped",    icon: <Truck size={14} />,       color: "bg-purple-100 text-purple-800" },
-  delivered:  { label: "Delivered",  icon: <CheckCircle size={14} />, color: "bg-green-100 text-green-800" },
-  cancelled:  { label: "Cancelled",  icon: <XCircle size={14} />,    color: "bg-red-100 text-red-800" },
+const STATUS_CONFIG: Record<
+  string,
+  { label: string; icon: React.ReactNode; color: string }
+> = {
+  pending: {
+    label: "Pending",
+    icon: <Clock size={14} />,
+    color: "bg-yellow-100 text-yellow-800",
+  },
+  processing: {
+    label: "Processing",
+    icon: <Package size={14} />,
+    color: "bg-blue-100 text-blue-800",
+  },
+  shipped: {
+    label: "Shipped",
+    icon: <Truck size={14} />,
+    color: "bg-purple-100 text-purple-800",
+  },
+  delivered: {
+    label: "Delivered",
+    icon: <CheckCircle size={14} />,
+    color: "bg-green-100 text-green-800",
+  },
+  cancelled: {
+    label: "Cancelled",
+    icon: <XCircle size={14} />,
+    color: "bg-red-100 text-red-800",
+  },
 };
 
 export default function AccountPage() {
@@ -50,7 +73,7 @@ export default function AccountPage() {
         }
       })
       .catch(() => setLoading(false));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchOrders = async () => {
@@ -86,15 +109,24 @@ export default function AccountPage() {
         <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
           <User size={32} className="text-amber-700" />
         </div>
-        <h1 className="font-serif text-3xl font-bold text-brown-900 mb-3">My Account</h1>
-        <p className="text-brown-500 mb-8">Login with your phone number to view your orders and account details.</p>
+        <h1 className="font-serif text-3xl font-bold text-brown-900 mb-3">
+          My Account
+        </h1>
+        <p className="text-brown-500 mb-8">
+          Log in with your email or Google account to view your orders and
+          account details.
+        </p>
         <button
           onClick={() => setLoginOpen(true)}
           className="inline-flex items-center gap-2 bg-coral-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-coral-700 transition-colors shadow-lg"
         >
-          Login with Phone
+          Log in / Sign up
         </button>
-        <OTPLoginModal isOpen={loginOpen} onClose={() => setLoginOpen(false)} onSuccess={handleLoginSuccess} />
+        <AuthModal
+          isOpen={loginOpen}
+          onClose={() => setLoginOpen(false)}
+          onSuccess={handleLoginSuccess}
+        />
       </div>
     );
   }
@@ -112,7 +144,9 @@ export default function AccountPage() {
               {user?.name || "My Account"}
             </h1>
             <p className="text-sm text-brown-500">{user?.phone}</p>
-            {user?.email && <p className="text-xs text-brown-400">{user.email}</p>}
+            {user?.email && (
+              <p className="text-xs text-brown-400">{user.email}</p>
+            )}
           </div>
         </div>
         <button
@@ -127,13 +161,18 @@ export default function AccountPage() {
       {/* Orders */}
       <div className="flex items-center gap-3 mb-6">
         <ShoppingBag size={20} className="text-amber-700" />
-        <h2 className="font-serif text-xl font-bold text-brown-900">Order History</h2>
+        <h2 className="font-serif text-xl font-bold text-brown-900">
+          Order History
+        </h2>
       </div>
 
       {loading ? (
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-white rounded-2xl p-6 shadow-sm border border-cream-200 animate-pulse">
+            <div
+              key={i}
+              className="bg-white rounded-2xl p-6 shadow-sm border border-cream-200 animate-pulse"
+            >
               <div className="h-4 bg-gray-200 rounded w-1/3 mb-3" />
               <div className="h-3 bg-gray-100 rounded w-1/2" />
             </div>
@@ -143,7 +182,9 @@ export default function AccountPage() {
         <div className="text-center py-16 bg-white rounded-2xl border border-cream-200">
           <ShoppingBag size={40} className="mx-auto text-gray-300 mb-3" />
           <p className="text-gray-500 font-medium">No orders yet</p>
-          <p className="text-sm text-gray-400 mt-1">Your orders will appear here after checkout.</p>
+          <p className="text-sm text-gray-400 mt-1">
+            Your orders will appear here after checkout.
+          </p>
           <button
             onClick={() => router.push("/products")}
             className="mt-6 inline-flex items-center gap-2 bg-coral-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-coral-700 text-sm transition-colors"
@@ -182,17 +223,26 @@ export default function AccountPage() {
                           year: "numeric",
                         })}
                         {" · "}
-                        {order.items.length} item{order.items.length !== 1 ? "s" : ""}
+                        {order.items.length} item
+                        {order.items.length !== 1 ? "s" : ""}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className={`hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${status.color}`}>
+                    <span
+                      className={`hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${status.color}`}
+                    >
                       {status.icon}
                       {status.label}
                     </span>
-                    <p className="font-bold text-brown-900">{formatPrice(order.total)}</p>
-                    {isExpanded ? <ChevronUp size={16} className="text-brown-400" /> : <ChevronDown size={16} className="text-brown-400" />}
+                    <p className="font-bold text-brown-900">
+                      {formatPrice(order.total)}
+                    </p>
+                    {isExpanded ? (
+                      <ChevronUp size={16} className="text-brown-400" />
+                    ) : (
+                      <ChevronDown size={16} className="text-brown-400" />
+                    )}
                   </div>
                 </button>
 
@@ -201,7 +251,9 @@ export default function AccountPage() {
                   <div className="border-t border-cream-200 p-5 space-y-4">
                     {/* Mobile status */}
                     <div className="sm:hidden">
-                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${status.color}`}>
+                      <span
+                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${status.color}`}
+                      >
                         {status.icon} {status.label}
                       </span>
                     </div>
@@ -216,12 +268,17 @@ export default function AccountPage() {
                             className="w-14 h-14 rounded-xl object-cover flex-none"
                           />
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-brown-900 line-clamp-1">{item.productName}</p>
-                            {item.customizations && Object.keys(item.customizations).length > 0 && (
-                              <p className="text-xs text-brown-400 mt-0.5">
-                                {Object.entries(item.customizations).map(([k, v]) => `${k}: ${v}`).join(" · ")}
-                              </p>
-                            )}
+                            <p className="text-sm font-medium text-brown-900 line-clamp-1">
+                              {item.productName}
+                            </p>
+                            {item.customizations &&
+                              Object.keys(item.customizations).length > 0 && (
+                                <p className="text-xs text-brown-400 mt-0.5">
+                                  {Object.entries(item.customizations)
+                                    .map(([k, v]) => `${k}: ${v}`)
+                                    .join(" · ")}
+                                </p>
+                              )}
                             <p className="text-xs text-brown-500 mt-0.5">
                               Qty {item.quantity} × {formatPrice(item.price)}
                             </p>
@@ -241,13 +298,20 @@ export default function AccountPage() {
                       </div>
                       {order.discount > 0 && (
                         <div className="flex justify-between text-sm text-green-700">
-                          <span>Discount {order.discountCode && `(${order.discountCode})`}</span>
+                          <span>
+                            Discount{" "}
+                            {order.discountCode && `(${order.discountCode})`}
+                          </span>
                           <span>-{formatPrice(order.discount)}</span>
                         </div>
                       )}
                       <div className="flex justify-between text-sm text-brown-500">
                         <span>Shipping</span>
-                        <span>{order.shipping === 0 ? "Free" : formatPrice(order.shipping)}</span>
+                        <span>
+                          {order.shipping === 0
+                            ? "Free"
+                            : formatPrice(order.shipping)}
+                        </span>
                       </div>
                       <div className="flex justify-between text-base font-bold text-brown-900 pt-1 border-t border-cream-100">
                         <span>Total</span>
@@ -257,12 +321,18 @@ export default function AccountPage() {
 
                     {/* Shipping address */}
                     <div className="bg-cream-50 rounded-xl p-4">
-                      <p className="text-xs font-semibold text-brown-600 uppercase tracking-wide mb-1">Delivered to</p>
+                      <p className="text-xs font-semibold text-brown-600 uppercase tracking-wide mb-1">
+                        Delivered to
+                      </p>
                       <p className="text-sm text-brown-700">
-                        {order.shippingAddress.fullName} · {order.shippingAddress.address1}
-                        {order.shippingAddress.city && `, ${order.shippingAddress.city}`}
-                        {order.shippingAddress.state && `, ${order.shippingAddress.state}`}
-                        {order.shippingAddress.postalCode && ` - ${order.shippingAddress.postalCode}`}
+                        {order.shippingAddress.fullName} ·{" "}
+                        {order.shippingAddress.address1}
+                        {order.shippingAddress.city &&
+                          `, ${order.shippingAddress.city}`}
+                        {order.shippingAddress.state &&
+                          `, ${order.shippingAddress.state}`}
+                        {order.shippingAddress.postalCode &&
+                          ` - ${order.shippingAddress.postalCode}`}
                       </p>
                     </div>
                   </div>
