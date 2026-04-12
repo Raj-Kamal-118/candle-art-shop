@@ -11,6 +11,7 @@ import {
   LogOut,
   Layers,
 } from "lucide-react";
+import ArtisanLogo from "../ui/ArtisanLogo";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
@@ -31,23 +32,11 @@ export default function AdminSidebar() {
   };
 
   return (
-    <aside className="w-64 bg-forest-900 min-h-screen flex flex-col">
+    <aside className="w-72 bg-forest-900 min-h-screen flex flex-col">
       <div className="p-6 border-b border-forest-700">
         <Link href="/admin" className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-forest-800 border-2 border-gold-400 flex items-center justify-center flex-shrink-0">
-            <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none">
-              <path
-                d="M12 4 C11 6 10 7 10 9 C10 11 11 12 12 12 C13 12 14 11 14 9 C14 7 13 6 12 4Z"
-                fill="#e8c040"
-              />
-              <rect x="10" y="12" width="4" height="6" rx="0.5" fill="#e56058" />
-              <rect x="9" y="18" width="6" height="1.5" rx="0.75" fill="#c4564a" />
-            </svg>
-          </div>
           <div className="leading-none">
-            <span className="block font-serif text-base font-bold text-white">
-              Artisan House
-            </span>
+            <ArtisanLogo />
             <span className="block text-[9px] font-medium text-gold-400 tracking-widest uppercase mt-0.5">
               Admin Panel
             </span>

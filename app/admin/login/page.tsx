@@ -6,6 +6,7 @@ import { Flame, Eye, EyeOff } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import ArtisanLogo from "@/components/ui/ArtisanLogo";
 
 const schema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -50,12 +51,9 @@ export default function AdminLoginPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-brown-900 to-brown-800 flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 text-white font-serif text-2xl font-bold mb-2">
-            <Flame className="text-amber-400" size={28} />
-            Lumière
-          </div>
-          <p className="text-brown-300 text-sm">Admin Dashboard</p>
+        <div className="flex flex-col items-center justify-center text-center mb-4 gap-2">
+          <ArtisanLogo />
+          <div className="text-brown-300 text-sm">Admin Dashboard</div>
         </div>
 
         <div className="bg-white rounded-2xl shadow-2xl p-8">
@@ -120,7 +118,7 @@ export default function AdminLoginPage() {
           </form>
 
           <p className="mt-4 text-xs text-center text-gray-400">
-            Default: admin / admin123
+            Default: admin / change-me-to-something-secure
           </p>
         </div>
       </div>

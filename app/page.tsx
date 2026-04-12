@@ -19,14 +19,14 @@ export default async function HomePage() {
     categories.map((cat) => [
       cat.id,
       products.filter((p) => p.categoryId === cat.id && p.inStock),
-    ])
+    ]),
   );
 
   return (
     <>
       <HeroSection settings={heroSettings} />
 
-      <CategoryGrid categories={categories} />
+      {/* <CategoryGrid categories={categories} /> */}
 
       {/* Category banner + product carousel sections */}
       <section className="py-8 bg-cream-50 dark:bg-[#0f0e1c]">

@@ -16,7 +16,7 @@ export async function uploadToR2(
   contentType: string
 ): Promise<string> {
   const ext = filename.split(".").pop() || "jpg";
-  const key = `candle-art-shop-images/uploads/${randomUUID()}.${ext}`;
+  const key = `uploads/${randomUUID()}.${ext}`;
 
   await r2Client.send(
     new PutObjectCommand({

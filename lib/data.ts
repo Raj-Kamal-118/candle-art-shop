@@ -29,6 +29,7 @@ function mapProduct(row: Record<string, unknown>): Product {
     customizationOptions:
       (row.customization_options as Product["customizationOptions"]) || [],
     variantPricing: (row.variant_pricing as Product["variantPricing"]) || {},
+    sortOrder: row.sort_order as number | undefined,
     createdAt: row.created_at as string,
     updatedAt: row.updated_at as string,
   };
@@ -43,6 +44,7 @@ function mapCategory(row: Record<string, unknown>): Category {
     image: row.image as string,
     productCount: row.product_count as number,
     createdAt: row.created_at as string,
+    sortOrder: row.sort_order as number | undefined,
     bannerTitle: row.banner_title as string | undefined,
     bannerDescription: row.banner_description as string | undefined,
     bannerImage: row.banner_image as string | undefined,
@@ -135,6 +137,7 @@ export async function getProducts(): Promise<Product[]> {
   const { data, error } = await supabase
     .from("products")
     .select("*")
+    .order("sort_order", { ascending: true, nullsFirst: false })
     .order("created_at", { ascending: false });
   if (error) throw error;
   return data.map(mapProduct);
@@ -146,6 +149,7 @@ export async function getProductsByCategory(categoryId: string): Promise<Product
     .select("*")
     .eq("category_id", categoryId)
     .eq("in_stock", true)
+    .order("sort_order", { ascending: true, nullsFirst: false })
     .order("created_at", { ascending: false });
   if (error) return [];
   return data.map(mapProduct);
@@ -229,6 +233,8 @@ export async function updateProduct(
     dbUpdates.variant_pricing = updates.variantPricing;
   if (updates.updatedAt !== undefined)
     dbUpdates.updated_at = updates.updatedAt;
+  if (updates.sortOrder !== undefined)
+    dbUpdates.sort_order = updates.sortOrder;
 
   const { data, error } = await supabase
     .from("products")
@@ -238,6 +244,16 @@ export async function updateProduct(
     .single();
   if (error) return null;
   return mapProduct(data);
+}
+
+export async function reorderProducts(
+  items: { id: string; sortOrder: number }[]
+): Promise<void> {
+  await Promise.all(
+    items.map(({ id, sortOrder }) =>
+      supabase.from("products").update({ sort_order: sortOrder }).eq("id", id)
+    )
+  );
 }
 
 export async function deleteProduct(id: string): Promise<boolean> {
@@ -251,6 +267,7 @@ export async function getCategories(): Promise<Category[]> {
   const { data, error } = await supabase
     .from("categories")
     .select("*")
+    .order("sort_order", { ascending: true, nullsFirst: false })
     .order("created_at", { ascending: true });
   if (error) throw error;
   return data.map(mapCategory);
@@ -328,6 +345,8 @@ export async function updateCategory(
     dbUpdates.banner_buttons = updates.bannerButtons;
   if (updates.showInHomepage !== undefined)
     dbUpdates.show_in_homepage = updates.showInHomepage;
+  if (updates.sortOrder !== undefined)
+    dbUpdates.sort_order = updates.sortOrder;
 
   const { data, error } = await supabase
     .from("categories")
@@ -337,6 +356,16 @@ export async function updateCategory(
     .single();
   if (error) return null;
   return mapCategory(data);
+}
+
+export async function reorderCategories(
+  items: { id: string; sortOrder: number }[]
+): Promise<void> {
+  await Promise.all(
+    items.map(({ id, sortOrder }) =>
+      supabase.from("categories").update({ sort_order: sortOrder }).eq("id", id)
+    )
+  );
 }
 
 export async function deleteCategory(id: string): Promise<boolean> {

@@ -1,14 +1,110 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Plus, Pencil, Trash2, Tag, Upload, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  Plus, Pencil, Trash2, Tag, Upload, ChevronDown, ChevronUp, GripVertical,
+} from "lucide-react";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { Category, BannerButton } from "@/lib/types";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 
+// ─── Sortable row ─────────────────────────────────────────────────────────────
+
+function SortableCategoryRow({
+  cat,
+  onEdit,
+  onDelete,
+}: {
+  cat: Category;
+  onEdit: (cat: Category) => void;
+  onDelete: (id: string) => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: cat.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 10 : undefined,
+  };
+
+  return (
+    <tr
+      ref={setNodeRef}
+      style={style}
+      className="border-b border-gray-50 hover:bg-gray-50 transition-colors"
+    >
+      <td className="pl-3 pr-1 py-4 w-8">
+        <button
+          {...attributes}
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500 touch-none"
+          title="Drag to reorder"
+        >
+          <GripVertical size={16} />
+        </button>
+      </td>
+      <td className="px-5 py-4">
+        <div className="flex items-center gap-3">
+          <img src={cat.image} alt={cat.name} className="w-10 h-10 rounded-xl object-cover" />
+          <div>
+            <p className="font-medium text-gray-900">{cat.name}</p>
+            <p className="text-xs text-gray-400 line-clamp-1 max-w-[200px]">{cat.description}</p>
+          </div>
+        </div>
+      </td>
+      <td className="px-4 py-4">
+        <code className="text-xs bg-gray-100 px-2 py-1 rounded">{cat.slug}</code>
+      </td>
+      <td className="px-4 py-4 text-gray-600">{cat.productCount}</td>
+      <td className="px-4 py-4">
+        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${cat.bannerTitle ? "bg-amber-100 text-amber-800" : "bg-gray-100 text-gray-500"}`}>
+          {cat.bannerTitle ? "Configured" : "None"}
+        </span>
+      </td>
+      <td className="px-4 py-4">
+        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${cat.showInHomepage !== false ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
+          {cat.showInHomepage !== false ? "Shown" : "Hidden"}
+        </span>
+      </td>
+      <td className="px-5 py-4">
+        <div className="flex items-center justify-end gap-2">
+          <button onClick={() => onEdit(cat)} className="p-2 text-gray-400 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition-colors">
+            <Pencil size={15} />
+          </button>
+          <button onClick={() => onDelete(cat.id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+            <Trash2 size={15} />
+          </button>
+        </div>
+      </td>
+    </tr>
+  );
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
 export default function AdminCategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [editCategory, setEditCategory] = useState<Category | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -29,11 +125,42 @@ export default function AdminCategoriesPage() {
     bannerButtons: [] as BannerButton[],
   });
 
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
   useEffect(() => {
     fetch("/api/categories")
       .then((r) => r.json())
       .then((data) => { setCategories(data); setLoading(false); });
   }, []);
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = categories.findIndex((c) => c.id === active.id);
+    const newIndex = categories.findIndex((c) => c.id === over.id);
+    const reordered = arrayMove(categories, oldIndex, newIndex);
+
+    // Optimistic update
+    setCategories(reordered);
+
+    // Persist new order
+    setSaving(true);
+    try {
+      await fetch("/api/categories/reorder", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(
+          reordered.map((c, i) => ({ id: c.id, sortOrder: i + 1 }))
+        ),
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const resetForm = () => ({
     name: "",
@@ -147,7 +274,12 @@ export default function AdminCategoriesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-gray-500 flex items-center gap-2">
+          <GripVertical size={14} className="text-gray-400" />
+          Drag rows to reorder — order is reflected on the homepage
+          {saving && <span className="text-amber-600 font-medium">Saving…</span>}
+        </p>
         <Button onClick={openAdd} size="sm">
           <Plus size={16} /> Add Category
         </Button>
@@ -166,6 +298,7 @@ export default function AdminCategoriesPage() {
             <table className="w-full text-sm">
               <thead className="bg-gray-50 border-b border-gray-100">
                 <tr>
+                  <th className="w-8 pl-3" />
                   <th className="text-left px-5 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Category</th>
                   <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Slug</th>
                   <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Products</th>
@@ -174,45 +307,27 @@ export default function AdminCategoriesPage() {
                   <th className="text-right px-5 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Actions</th>
                 </tr>
               </thead>
-              <tbody>
-                {categories.map((cat) => (
-                  <tr key={cat.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                    <td className="px-5 py-4">
-                      <div className="flex items-center gap-3">
-                        <img src={cat.image} alt={cat.name} className="w-10 h-10 rounded-xl object-cover" />
-                        <div>
-                          <p className="font-medium text-gray-900">{cat.name}</p>
-                          <p className="text-xs text-gray-400 line-clamp-1 max-w-[200px]">{cat.description}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-4">
-                      <code className="text-xs bg-gray-100 px-2 py-1 rounded">{cat.slug}</code>
-                    </td>
-                    <td className="px-4 py-4 text-gray-600">{cat.productCount}</td>
-                    <td className="px-4 py-4">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${cat.bannerTitle ? "bg-amber-100 text-amber-800" : "bg-gray-100 text-gray-500"}`}>
-                        {cat.bannerTitle ? "Configured" : "None"}
-                      </span>
-                    </td>
-                    <td className="px-4 py-4">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${cat.showInHomepage !== false ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
-                        {cat.showInHomepage !== false ? "Shown" : "Hidden"}
-                      </span>
-                    </td>
-                    <td className="px-5 py-4">
-                      <div className="flex items-center justify-end gap-2">
-                        <button onClick={() => openEdit(cat)} className="p-2 text-gray-400 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition-colors">
-                          <Pencil size={15} />
-                        </button>
-                        <button onClick={() => setDeleteId(cat.id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                          <Trash2 size={15} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={categories.map((c) => c.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <tbody>
+                    {categories.map((cat) => (
+                      <SortableCategoryRow
+                        key={cat.id}
+                        cat={cat}
+                        onEdit={openEdit}
+                        onDelete={setDeleteId}
+                      />
+                    ))}
+                  </tbody>
+                </SortableContext>
+              </DndContext>
             </table>
           </div>
         )}
@@ -222,7 +337,6 @@ export default function AdminCategoriesPage() {
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editCategory ? "Edit Category" : "Add Category"} size="xl">
         <form onSubmit={handleSubmit} className="space-y-4 max-h-[75vh] overflow-y-auto pr-1">
 
-          {/* Basic fields */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
             <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={inputCls} />
@@ -296,7 +410,6 @@ export default function AdminCategoriesPage() {
                   </div>
                 </div>
 
-                {/* Banner buttons */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <label className="text-sm font-medium text-gray-700">Banner Buttons</label>

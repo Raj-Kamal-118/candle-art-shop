@@ -14,6 +14,7 @@ export interface Category {
   image: string;
   productCount: number;
   createdAt: string;
+  sortOrder?: number;
   // Banner fields (Feature 2)
   bannerTitle?: string;
   bannerDescription?: string;
@@ -53,6 +54,7 @@ export interface Product {
   customizable: boolean;
   customizationOptions?: CustomizationOption[];
   variantPricing?: VariantPricing; // Feature 3
+  sortOrder?: number;
   createdAt: string;
   updatedAt: string;
 }
