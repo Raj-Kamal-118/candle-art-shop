@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   X,
   Mail,
@@ -8,6 +8,14 @@ import {
   User as UserIcon,
   Loader2,
   ArrowLeft,
+  Eye,
+  EyeOff,
+  AlertTriangle,
+  AlertCircle,
+  Info,
+  Shield,
+  ShieldCheck,
+  CheckCircle,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { User } from "@/lib/types";
@@ -38,8 +46,55 @@ export default function AuthModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [capsLockOn, setCapsLockOn] = useState(false);
 
   if (!isOpen) return null;
+
+  const passwordStrength = useMemo(() => {
+    if (!password) return null;
+    let score = 0;
+    if (password.length >= 6) score += 1;
+    if (password.length >= 10) score += 1;
+    if (/[A-Z]/.test(password)) score += 1;
+    if (/[0-9]/.test(password)) score += 1;
+    if (/[^A-Za-z0-9]/.test(password)) score += 1;
+
+    if (score <= 1)
+      return {
+        score: 1,
+        label: "Weak",
+        icon: <AlertCircle size={14} className="text-red-500" />,
+        color: "bg-red-400",
+      };
+    if (score === 2)
+      return {
+        score: 2,
+        label: "Fair",
+        icon: <Info size={14} className="text-orange-500" />,
+        color: "bg-orange-400",
+      };
+    if (score === 3)
+      return {
+        score: 3,
+        label: "Good",
+        icon: <Shield size={14} className="text-yellow-500" />,
+        color: "bg-yellow-400",
+      };
+    if (score === 4)
+      return {
+        score: 4,
+        label: "Strong",
+        icon: <ShieldCheck size={14} className="text-green-500" />,
+        color: "bg-green-400",
+      };
+    return {
+      score: 5,
+      label: "Super Strong",
+      icon: <CheckCircle size={14} className="text-green-600" />,
+      color: "bg-green-600",
+    };
+  }, [password]);
 
   const handleGoogleLogin = async () => {
     setLoading(true);
@@ -180,19 +235,26 @@ export default function AuthModal({
 
         <form onSubmit={handleEmailAuth} className="space-y-4">
           {mode === "signup" && (
-            <div className="relative">
-              <UserIcon
-                className="absolute left-3 top-3 text-gray-400"
-                size={18}
-              />
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Full Name"
-                required
-                className="w-full pl-10 pr-4 py-3 text-sm border border-brown-300 dark:border-amber-900/50 rounded-xl bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-400 dark:text-amber-100"
-              />
+            <div className="space-y-1">
+              <div className="relative">
+                <UserIcon
+                  className="absolute left-3 top-3 text-gray-400"
+                  size={18}
+                />
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Full Name"
+                  required
+                  className="w-full pl-10 pr-4 py-3 text-sm border border-brown-300 dark:border-amber-900/50 rounded-xl bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-400 dark:text-amber-100"
+                />
+              </div>
+              {name && (
+                <p className="text-xs text-amber-600 dark:text-amber-400 pl-1 animate-pulse">
+                  Nice to meet you, {name.split(" ")[0]}! ✨
+                </p>
+              )}
             </div>
           )}
 
@@ -209,16 +271,64 @@ export default function AuthModal({
           </div>
 
           {mode !== "forgot" && (
-            <div className="relative">
-              <Lock className="absolute left-3 top-3 text-gray-400" size={18} />
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                required
-                className="w-full pl-10 pr-4 py-3 text-sm border border-brown-300 dark:border-amber-900/50 rounded-xl bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-400 dark:text-amber-100"
-              />
+            <div className="space-y-2">
+              <div className="relative">
+                <Lock
+                  className="absolute left-3 top-3 text-gray-400"
+                  size={18}
+                />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onKeyUp={(e) => {
+                    if (e.getModifierState) {
+                      setCapsLockOn(e.getModifierState("CapsLock"));
+                    }
+                  }}
+                  placeholder="Password"
+                  required
+                  className="w-full pl-10 pr-12 py-3 text-sm border border-brown-300 dark:border-amber-900/50 rounded-xl bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-400 dark:text-amber-100"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 dark:hover:text-amber-300 transition-colors select-none"
+                  title={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+              {capsLockOn && (
+                <p className="text-xs font-medium text-amber-600 dark:text-amber-500 pl-1 mt-1 flex items-center gap-1">
+                  <AlertTriangle size={14} /> Warning: Caps lock is ON
+                </p>
+              )}
+              {mode === "signup" && passwordStrength && (
+                <div className="pl-1">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-xs font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                      Password strength:{" "}
+                      <span className="text-gray-800 dark:text-gray-200">
+                        {passwordStrength.label}
+                      </span>
+                      {passwordStrength.icon}
+                    </span>
+                  </div>
+                  <div className="flex gap-1 h-1.5 w-full">
+                    {[1, 2, 3, 4, 5].map((level) => (
+                      <div
+                        key={level}
+                        className={`h-full flex-1 rounded-full transition-colors duration-300 ${
+                          passwordStrength.score >= level
+                            ? passwordStrength.color
+                            : "bg-gray-200 dark:bg-gray-700"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
