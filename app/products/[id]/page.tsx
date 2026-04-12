@@ -21,13 +21,16 @@ import Badge from "@/components/ui/Badge";
 export default function ProductDetailPage() {
   const { id } = useParams() as { id: string };
   const router = useRouter();
-  const { addToCart, addToFavorites, removeFromFavorites, isFavorite } = useStore();
+  const { addToCart, addToFavorites, removeFromFavorites, isFavorite } =
+    useStore();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [category, setCategory] = useState<Category | null>(null);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [customizations, setCustomizations] = useState<Record<string, string>>({});
+  const [customizations, setCustomizations] = useState<Record<string, string>>(
+    {},
+  );
   const [addedToCart, setAddedToCart] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -80,7 +83,11 @@ export default function ProductDetailPage() {
     return (
       <div className="max-w-7xl mx-auto px-4 py-20 text-center">
         <p className="text-brown-500 text-lg">Product not found.</p>
-        <Button onClick={() => router.push("/products")} variant="outline" className="mt-4">
+        <Button
+          onClick={() => router.push("/products")}
+          variant="outline"
+          className="mt-4"
+        >
           Back to Products
         </Button>
       </div>
@@ -89,7 +96,10 @@ export default function ProductDetailPage() {
 
   const effectivePrice = getVariantPrice(product, customizations);
   const discount = product.compareAtPrice
-    ? Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100)
+    ? Math.round(
+        ((product.compareAtPrice - product.price) / product.compareAtPrice) *
+          100,
+      )
     : null;
   const favorite = isFavorite(product.id);
 
@@ -132,7 +142,11 @@ export default function ProductDetailPage() {
                       : "border-transparent opacity-60 hover:opacity-100"
                   }`}
                 >
-                  <img src={img} alt="" className="w-full h-full object-cover" />
+                  <img
+                    src={img}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
                 </button>
               ))}
             </div>
@@ -152,9 +166,7 @@ export default function ProductDetailPage() {
               </a>
             )}
             {product.featured && <Badge>Featured</Badge>}
-            {product.customizable && (
-              <Badge variant="info">Customizable</Badge>
-            )}
+            {product.customizable && <Badge variant="info">Customizable</Badge>}
             {!product.inStock && <Badge variant="warning">Out of Stock</Badge>}
           </div>
 
@@ -170,7 +182,9 @@ export default function ProductDetailPage() {
                   key={i}
                   size={16}
                   className={
-                    i < 4 ? "text-amber-400 fill-amber-400" : "text-cream-300 fill-cream-300"
+                    i < 4
+                      ? "text-amber-400 fill-amber-400"
+                      : "text-cream-300 fill-cream-300"
                   }
                 />
               ))}
@@ -198,69 +212,72 @@ export default function ProductDetailPage() {
             )}
           </div>
 
-          <p className="text-brown-600 leading-relaxed mb-6">
-            {product.description}
-          </p>
+          <div
+            dangerouslySetInnerHTML={{ __html: product.description }}
+            className="prose dark:prose-invert max-w-none text-brown-600 dark:text-gray-300 leading-relaxed mb-6"
+          />
 
           {/* Customization options */}
-          {product.customizable && product.customizationOptions && product.customizationOptions.length > 0 && (
-            <div className="mb-6 space-y-4">
-              <h3 className="font-semibold text-brown-900 text-sm">
-                Customize Your Order
-              </h3>
-              {product.customizationOptions.map((opt) => (
-                <div key={opt.label}>
-                  <label className="block text-sm font-medium text-brown-700 mb-1.5">
-                    {opt.label}
-                  </label>
-                  {opt.type === "select" && opt.options ? (
-                    <select
-                      className="w-full px-3 py-2.5 border border-brown-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white"
-                      value={customizations[opt.label] || ""}
-                      onChange={(e) =>
-                        setCustomizations((prev) => ({
-                          ...prev,
-                          [opt.label]: e.target.value,
-                        }))
-                      }
-                    >
-                      <option value="">Select {opt.label}</option>
-                      {opt.options.map((o) => (
-                        <option key={o} value={o}>
-                          {o}
-                        </option>
-                      ))}
-                    </select>
-                  ) : opt.type === "text" ? (
-                    <input
-                      type="text"
-                      placeholder={`Enter your ${opt.label.toLowerCase()}`}
-                      className="w-full px-3 py-2.5 border border-brown-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
-                      value={customizations[opt.label] || ""}
-                      onChange={(e) =>
-                        setCustomizations((prev) => ({
-                          ...prev,
-                          [opt.label]: e.target.value,
-                        }))
-                      }
-                    />
-                  ) : (
-                    <input
-                      type="color"
-                      className="w-16 h-10 border border-brown-300 rounded-lg cursor-pointer"
-                      value={customizations[opt.label] || "#d97706"}
-                      onChange={(e) =>
-                        setCustomizations((prev) => ({
-                          ...prev,
-                          [opt.label]: e.target.value,
-                        }))
-                      }
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
+          {product.customizable &&
+            product.customizationOptions &&
+            product.customizationOptions.length > 0 && (
+              <div className="mb-6 space-y-4">
+                <h3 className="font-semibold text-brown-900 text-sm">
+                  Customize Your Order
+                </h3>
+                {product.customizationOptions.map((opt) => (
+                  <div key={opt.label}>
+                    <label className="block text-sm font-medium text-brown-700 mb-1.5">
+                      {opt.label}
+                    </label>
+                    {opt.type === "select" && opt.options ? (
+                      <select
+                        className="w-full px-3 py-2.5 border border-brown-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white"
+                        value={customizations[opt.label] || ""}
+                        onChange={(e) =>
+                          setCustomizations((prev) => ({
+                            ...prev,
+                            [opt.label]: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select {opt.label}</option>
+                        {opt.options.map((o) => (
+                          <option key={o} value={o}>
+                            {o}
+                          </option>
+                        ))}
+                      </select>
+                    ) : opt.type === "text" ? (
+                      <input
+                        type="text"
+                        placeholder={`Enter your ${opt.label.toLowerCase()}`}
+                        className="w-full px-3 py-2.5 border border-brown-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+                        value={customizations[opt.label] || ""}
+                        onChange={(e) =>
+                          setCustomizations((prev) => ({
+                            ...prev,
+                            [opt.label]: e.target.value,
+                          }))
+                        }
+                      />
+                    ) : (
+                      <input
+                        type="color"
+                        className="w-16 h-10 border border-brown-300 rounded-lg cursor-pointer"
+                        value={customizations[opt.label] || "#d97706"}
+                        onChange={(e) =>
+                          setCustomizations((prev) => ({
+                            ...prev,
+                            [opt.label]: e.target.value,
+                          }))
+                        }
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
 
           {/* Quantity */}
           <div className="flex items-center gap-4 mb-6">
@@ -278,7 +295,9 @@ export default function ProductDetailPage() {
                 {quantity}
               </span>
               <button
-                onClick={() => setQuantity(Math.min(product.stockCount, quantity + 1))}
+                onClick={() =>
+                  setQuantity(Math.min(product.stockCount, quantity + 1))
+                }
                 className="px-3 py-2 text-brown-600 hover:bg-cream-100 transition-colors"
               >
                 +
@@ -300,7 +319,11 @@ export default function ProductDetailPage() {
               disabled={!product.inStock}
             >
               <ShoppingCart size={18} />
-              {addedToCart ? "Added to Cart!" : product.inStock ? "Add to Cart" : "Out of Stock"}
+              {addedToCart
+                ? "Added to Cart!"
+                : product.inStock
+                  ? "Add to Cart"
+                  : "Out of Stock"}
             </Button>
             <button
               onClick={toggleFavorite}

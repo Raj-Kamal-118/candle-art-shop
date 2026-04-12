@@ -1,9 +1,17 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import dynamic from "next/dynamic";
 import {
-  Plus, Pencil, Trash2, Search, Package, Upload,
-  ChevronDown, ChevronUp, GripVertical,
+  Plus,
+  Pencil,
+  Trash2,
+  Search,
+  Package,
+  Upload,
+  ChevronDown,
+  ChevronUp,
+  GripVertical,
 } from "lucide-react";
 import {
   DndContext,
@@ -22,15 +30,25 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Product, Category, CustomizationOption, VariantPricing } from "@/lib/types";
+import {
+  Product,
+  Category,
+  CustomizationOption,
+  VariantPricing,
+} from "@/lib/types";
 import { formatPrice } from "@/lib/utils";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+import "react-quill/dist/quill.snow.css";
+
 // ─── Variant pricing helpers ──────────────────────────────────────────────────
 
 function buildVariantKeys(options: CustomizationOption[]): string[][] {
-  const pricingOptions = options.filter((o) => o.affectsPrice && o.type === "select" && o.options?.length);
+  const pricingOptions = options.filter(
+    (o) => o.affectsPrice && o.type === "select" && o.options?.length,
+  );
   if (pricingOptions.length === 0) return [];
   const combos: string[][] = [[]];
   for (const opt of pricingOptions) {
@@ -59,8 +77,14 @@ function SortableProductRow({
   onEdit: (p: Product) => void;
   onDelete: (id: string) => void;
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id: product.id });
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: product.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -86,9 +110,15 @@ function SortableProductRow({
       </td>
       <td className="px-5 py-4">
         <div className="flex items-center gap-3">
-          <img src={product.images[0]} alt={product.name} className="w-10 h-10 rounded-xl object-cover" />
+          <img
+            src={product.images[0]}
+            alt={product.name}
+            className="w-10 h-10 rounded-xl object-cover"
+          />
           <div>
-            <p className="font-medium text-gray-900 line-clamp-1">{product.name}</p>
+            <p className="font-medium text-gray-900 line-clamp-1">
+              {product.name}
+            </p>
             <p className="text-xs text-gray-400">
               {product.featured ? "Featured · " : ""}
               {product.customizable ? "Customizable" : ""}
@@ -98,23 +128,35 @@ function SortableProductRow({
       </td>
       <td className="px-4 py-4 text-gray-600">{categoryName}</td>
       <td className="px-4 py-4">
-        <span className="font-semibold text-gray-900">{formatPrice(product.price)}</span>
+        <span className="font-semibold text-gray-900">
+          {formatPrice(product.price)}
+        </span>
         {product.compareAtPrice && (
-          <span className="text-xs text-gray-400 line-through ml-1">{formatPrice(product.compareAtPrice)}</span>
+          <span className="text-xs text-gray-400 line-through ml-1">
+            {formatPrice(product.compareAtPrice)}
+          </span>
         )}
       </td>
       <td className="px-4 py-4 text-gray-600">{product.stockCount}</td>
       <td className="px-4 py-4">
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${product.inStock ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
+        <span
+          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${product.inStock ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
+        >
           {product.inStock ? "In Stock" : "Out of Stock"}
         </span>
       </td>
       <td className="px-5 py-4">
         <div className="flex items-center justify-end gap-2">
-          <button onClick={() => onEdit(product)} className="p-2 text-gray-400 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition-colors">
+          <button
+            onClick={() => onEdit(product)}
+            className="p-2 text-gray-400 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition-colors"
+          >
             <Pencil size={15} />
           </button>
-          <button onClick={() => onDelete(product.id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+          <button
+            onClick={() => onDelete(product.id)}
+            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+          >
             <Trash2 size={15} />
           </button>
         </div>
@@ -145,14 +187,16 @@ function CategoryGroup({
 
   const sensors = useSensors(
     useSensor(PointerSensor),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
   );
 
   const filtered = search
     ? products.filter(
         (p) =>
           p.name.toLowerCase().includes(search.toLowerCase()) ||
-          p.description.toLowerCase().includes(search.toLowerCase())
+          p.description.toLowerCase().includes(search.toLowerCase()),
       )
     : products;
 
@@ -172,7 +216,7 @@ function CategoryGroup({
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(
-          reordered.map((p, i) => ({ id: p.id, sortOrder: i + 1 }))
+          reordered.map((p, i) => ({ id: p.id, sortOrder: i + 1 })),
         ),
       });
     } finally {
@@ -190,21 +234,33 @@ function CategoryGroup({
       >
         <div className="flex items-center gap-3">
           {category.image && (
-            <img src={category.image} alt={category.name} className="w-7 h-7 rounded-lg object-cover" />
+            <img
+              src={category.image}
+              alt={category.name}
+              className="w-7 h-7 rounded-lg object-cover"
+            />
           )}
-          <span className="font-semibold text-amber-900 text-sm">{category.name}</span>
+          <span className="font-semibold text-amber-900 text-sm">
+            {category.name}
+          </span>
           <span className="text-xs text-amber-600 bg-amber-100 px-2 py-0.5 rounded-full">
             {filtered.length} product{filtered.length !== 1 ? "s" : ""}
           </span>
           {saving && <span className="text-xs text-amber-600">Saving…</span>}
         </div>
-        {collapsed ? <ChevronDown size={16} className="text-amber-700" /> : <ChevronUp size={16} className="text-amber-700" />}
+        {collapsed ? (
+          <ChevronDown size={16} className="text-amber-700" />
+        ) : (
+          <ChevronUp size={16} className="text-amber-700" />
+        )}
       </button>
 
-      {!collapsed && (
-        filtered.length === 0 ? (
+      {!collapsed &&
+        (filtered.length === 0 ? (
           <div className="p-6 text-center text-gray-400 text-sm">
-            {search ? "No products match your search" : "No products in this category"}
+            {search
+              ? "No products match your search"
+              : "No products in this category"}
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -212,12 +268,24 @@ function CategoryGroup({
               <thead className="bg-gray-50 border-b border-gray-100">
                 <tr>
                   <th className="w-8 pl-3" />
-                  <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Product</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Category</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Price</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Stock</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-                  <th className="text-right px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Actions</th>
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    Product
+                  </th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    Category
+                  </th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    Price
+                  </th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    Stock
+                  </th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    Status
+                  </th>
+                  <th className="text-right px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <DndContext
@@ -244,8 +312,7 @@ function CategoryGroup({
               </DndContext>
             </table>
           </div>
-        )
-      )}
+        ))}
     </div>
   );
 }
@@ -280,7 +347,9 @@ export default function AdminProductsPage() {
 
   const [customOptions, setCustomOptions] = useState<CustomizationOption[]>([]);
   const [variantPricing, setVariantPricing] = useState<VariantPricing>({});
-  const [rawOptionInputs, setRawOptionInputs] = useState<Record<string, string>>({});
+  const [rawOptionInputs, setRawOptionInputs] = useState<
+    Record<string, string>
+  >({});
 
   useEffect(() => {
     Promise.all([
@@ -296,11 +365,13 @@ export default function AdminProductsPage() {
   // Group products by category, preserving category sort order
   const productsByCategory: Record<string, Product[]> = {};
   for (const cat of categories) {
-    productsByCategory[cat.id] = products.filter((p) => p.categoryId === cat.id);
+    productsByCategory[cat.id] = products.filter(
+      (p) => p.categoryId === cat.id,
+    );
   }
   // Uncategorized
   const uncategorized = products.filter(
-    (p) => !categories.find((c) => c.id === p.categoryId)
+    (p) => !categories.find((c) => c.id === p.categoryId),
   );
 
   const handleReorder = (categoryId: string, reordered: Product[]) => {
@@ -350,7 +421,7 @@ export default function AdminProductsPage() {
     const opts = product.customizationOptions || [];
     setCustomOptions(opts);
     setRawOptionInputs(
-      Object.fromEntries(opts.map((o) => [o.id, o.options?.join(", ") || ""]))
+      Object.fromEntries(opts.map((o) => [o.id, o.options?.join(", ") || ""])),
     );
     setVariantPricing(product.variantPricing || {});
     setShowCustomization(!!product.customizable);
@@ -363,10 +434,18 @@ export default function AdminProductsPage() {
       name: form.name,
       description: form.description,
       price: parseFloat(form.price),
-      compareAtPrice: form.compareAtPrice ? parseFloat(form.compareAtPrice) : null,
+      compareAtPrice: form.compareAtPrice
+        ? parseFloat(form.compareAtPrice)
+        : null,
       categoryId: form.categoryId,
-      images: form.images.split(",").map((s) => s.trim()).filter(Boolean),
-      tags: form.tags.split(",").map((s) => s.trim()).filter(Boolean),
+      images: form.images
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean),
+      tags: form.tags
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean),
       inStock: form.inStock,
       stockCount: parseInt(form.stockCount),
       featured: form.featured,
@@ -382,7 +461,9 @@ export default function AdminProductsPage() {
         body: JSON.stringify(payload),
       });
       const updated = await res.json();
-      setProducts((prev) => prev.map((p) => (p.id === editProduct.id ? updated : p)));
+      setProducts((prev) =>
+        prev.map((p) => (p.id === editProduct.id ? updated : p)),
+      );
     } else {
       const res = await fetch("/api/products", {
         method: "POST",
@@ -404,8 +485,14 @@ export default function AdminProductsPage() {
       fd.append("file", file);
       const res = await fetch("/api/upload", { method: "POST", body: fd });
       const { url, error } = await res.json();
-      if (error) { alert(error); return; }
-      setForm((prev) => ({ ...prev, images: prev.images ? `${prev.images}, ${url}` : url }));
+      if (error) {
+        alert(error);
+        return;
+      }
+      setForm((prev) => ({
+        ...prev,
+        images: prev.images ? `${prev.images}, ${url}` : url,
+      }));
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -428,12 +515,15 @@ export default function AdminProductsPage() {
       affectsPrice: false,
     };
     setCustomOptions((prev) => [...prev, newOpt]);
-    setRawOptionInputs((prev) => ({ ...prev, [newOpt.id]: "Option A, Option B" }));
+    setRawOptionInputs((prev) => ({
+      ...prev,
+      [newOpt.id]: "Option A, Option B",
+    }));
   };
 
   const updateOption = (i: number, updates: Partial<CustomizationOption>) => {
     setCustomOptions((prev) =>
-      prev.map((o, idx) => (idx === i ? { ...o, ...updates } : o))
+      prev.map((o, idx) => (idx === i ? { ...o, ...updates } : o)),
     );
     if ("affectsPrice" in updates || "options" in updates) {
       setVariantPricing({});
@@ -450,7 +540,8 @@ export default function AdminProductsPage() {
     .filter((o) => o.affectsPrice && o.type === "select")
     .map((o) => o.label);
 
-  const inputCls = "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400";
+  const inputCls =
+    "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400";
 
   const hasAnyProducts = products.length > 0;
   const matchesSearch = (p: Product) =>
@@ -463,7 +554,10 @@ export default function AdminProductsPage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+            <Search
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              size={16}
+            />
             <input
               type="text"
               placeholder="Search products..."
@@ -483,7 +577,9 @@ export default function AdminProductsPage() {
       </div>
 
       {loading ? (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center text-gray-400">Loading...</div>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center text-gray-400">
+          Loading...
+        </div>
       ) : !hasAnyProducts ? (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
           <Package className="mx-auto text-gray-300 mb-3" size={40} />
@@ -512,7 +608,15 @@ export default function AdminProductsPage() {
           {uncategorized.filter(matchesSearch).length > 0 && (
             <CategoryGroup
               key="uncategorized"
-              category={{ id: "uncategorized", name: "Uncategorized", slug: "", description: "", image: "", productCount: uncategorized.length, createdAt: "" }}
+              category={{
+                id: "uncategorized",
+                name: "Uncategorized",
+                slug: "",
+                description: "",
+                image: "",
+                productCount: uncategorized.length,
+                createdAt: "",
+              }}
               products={uncategorized}
               search={search}
               onEdit={openEdit}
@@ -524,60 +628,177 @@ export default function AdminProductsPage() {
       )}
 
       {/* Add/Edit Modal */}
-      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editProduct ? "Edit Product" : "Add Product"} size="xl">
-        <form onSubmit={handleSubmit} className="space-y-5 max-h-[75vh] overflow-y-auto pr-1">
-
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={editProduct ? "Edit Product" : "Add Product"}
+        size="xl"
+      >
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-5 max-h-[75vh] overflow-y-auto pr-1"
+        >
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
-              <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={inputCls} />
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Name *
+              </label>
+              <input
+                required
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                className={inputCls}
+              />
             </div>
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description *</label>
-              <textarea required rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className={`${inputCls} resize-none`} />
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Description *
+              </label>
+              <div className="bg-white rounded-lg">
+                <ReactQuill
+                  theme="snow"
+                  value={form.description}
+                  onChange={(val) => setForm({ ...form, description: val })}
+                  className="h-40 mb-12"
+                />
+              </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Base Price (₹) *</label>
-              <input required type="number" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className={inputCls} />
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Base Price (₹) *
+              </label>
+              <input
+                required
+                type="number"
+                step="0.01"
+                value={form.price}
+                onChange={(e) => setForm({ ...form, price: e.target.value })}
+                className={inputCls}
+              />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Compare At Price</label>
-              <input type="number" step="0.01" value={form.compareAtPrice} onChange={(e) => setForm({ ...form, compareAtPrice: e.target.value })} className={inputCls} />
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Compare At Price
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                value={form.compareAtPrice}
+                onChange={(e) =>
+                  setForm({ ...form, compareAtPrice: e.target.value })
+                }
+                className={inputCls}
+              />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Category *</label>
-              <select required value={form.categoryId} onChange={(e) => setForm({ ...form, categoryId: e.target.value })} className={inputCls}>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Category *
+              </label>
+              <select
+                required
+                value={form.categoryId}
+                onChange={(e) =>
+                  setForm({ ...form, categoryId: e.target.value })
+                }
+                className={inputCls}
+              >
                 <option value="">Select category</option>
-                {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                {categories.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Stock Count</label>
-              <input type="number" value={form.stockCount} onChange={(e) => setForm({ ...form, stockCount: e.target.value })} className={inputCls} />
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Stock Count
+              </label>
+              <input
+                type="number"
+                value={form.stockCount}
+                onChange={(e) =>
+                  setForm({ ...form, stockCount: e.target.value })
+                }
+                className={inputCls}
+              />
             </div>
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Images</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Images
+              </label>
               <div className="flex gap-2">
-                <input value={form.images} onChange={(e) => setForm({ ...form, images: e.target.value })} placeholder="Paste URL or upload" className={`flex-1 ${inputCls}`} />
-                <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading} className="flex items-center gap-1.5 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50">
+                <input
+                  value={form.images}
+                  onChange={(e) => setForm({ ...form, images: e.target.value })}
+                  placeholder="Paste URL or upload"
+                  className={`flex-1 ${inputCls}`}
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="flex items-center gap-1.5 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50"
+                >
                   <Upload size={14} /> {uploading ? "…" : "Upload"}
                 </button>
               </div>
-              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
-              <p className="text-xs text-gray-400 mt-1">Multiple URLs comma-separated.</p>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleImageUpload}
+              />
+              <p className="text-xs text-gray-400 mt-1">
+                Multiple URLs comma-separated.
+              </p>
+              {form.images && (
+                <div className="flex flex-wrap gap-3 mt-3">
+                  {form.images
+                    .split(",")
+                    .map((i) => i.trim())
+                    .filter(Boolean)
+                    .map((imgUrl, idx) => (
+                      <img
+                        key={idx}
+                        src={imgUrl}
+                        alt={`Product preview ${idx + 1}`}
+                        className="w-24 h-24 object-cover rounded-xl border border-gray-200 shadow-sm"
+                      />
+                    ))}
+                </div>
+              )}
             </div>
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Tags (comma-separated)</label>
-              <input value={form.tags} onChange={(e) => setForm({ ...form, tags: e.target.value })} className={inputCls} />
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Tags (comma-separated)
+              </label>
+              <input
+                value={form.tags}
+                onChange={(e) => setForm({ ...form, tags: e.target.value })}
+                className={inputCls}
+              />
             </div>
             <div className="flex items-center gap-6">
               {(["inStock", "featured", "customizable"] as const).map((key) => (
-                <label key={key} className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" checked={form[key]} onChange={(e) => {
-                    setForm({ ...form, [key]: e.target.checked });
-                    if (key === "customizable") setShowCustomization(e.target.checked);
-                  }} className="accent-amber-600 w-4 h-4" />
-                  <span className="text-sm text-gray-700 capitalize">{key === "inStock" ? "In Stock" : key}</span>
+                <label
+                  key={key}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    checked={form[key]}
+                    onChange={(e) => {
+                      setForm({ ...form, [key]: e.target.checked });
+                      if (key === "customizable")
+                        setShowCustomization(e.target.checked);
+                    }}
+                    className="accent-amber-600 w-4 h-4"
+                  />
+                  <span className="text-sm text-gray-700 capitalize">
+                    {key === "inStock" ? "In Stock" : key}
+                  </span>
                 </label>
               ))}
             </div>
@@ -591,31 +812,65 @@ export default function AdminProductsPage() {
                 className="w-full flex items-center justify-between px-4 py-3 bg-amber-50 text-sm font-medium text-amber-800 hover:bg-amber-100 transition-colors"
               >
                 Customization Options & Variant Pricing
-                {showCustomization ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                {showCustomization ? (
+                  <ChevronUp size={16} />
+                ) : (
+                  <ChevronDown size={16} />
+                )}
               </button>
 
               {showCustomization && (
                 <div className="p-4 space-y-4">
                   <p className="text-xs text-gray-500">
-                    Define options customers can choose from. Mark options as &quot;Affects Price&quot; to set custom pricing per combination.
+                    Define options customers can choose from. Mark options as
+                    &quot;Affects Price&quot; to set custom pricing per
+                    combination.
                   </p>
 
                   {customOptions.map((opt, i) => (
-                    <div key={opt.id} className="border border-gray-200 rounded-xl p-4 space-y-3 bg-white">
+                    <div
+                      key={opt.id}
+                      className="border border-gray-200 rounded-xl p-4 space-y-3 bg-white"
+                    >
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-gray-500">Option {i + 1}</span>
-                        <button type="button" onClick={() => removeOption(i)} className="text-red-400 hover:text-red-600">
+                        <span className="text-xs font-semibold text-gray-500">
+                          Option {i + 1}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => removeOption(i)}
+                          className="text-red-400 hover:text-red-600"
+                        >
                           <Trash2 size={14} />
                         </button>
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <label className="text-xs text-gray-500 mb-1 block">Label</label>
-                          <input className={inputCls} value={opt.label} onChange={(e) => updateOption(i, { label: e.target.value })} />
+                          <label className="text-xs text-gray-500 mb-1 block">
+                            Label
+                          </label>
+                          <input
+                            className={inputCls}
+                            value={opt.label}
+                            onChange={(e) =>
+                              updateOption(i, { label: e.target.value })
+                            }
+                          />
                         </div>
                         <div>
-                          <label className="text-xs text-gray-500 mb-1 block">Type</label>
-                          <select className={inputCls} value={opt.type} onChange={(e) => updateOption(i, { type: e.target.value as CustomizationOption["type"] })}>
+                          <label className="text-xs text-gray-500 mb-1 block">
+                            Type
+                          </label>
+                          <select
+                            className={inputCls}
+                            value={opt.type}
+                            onChange={(e) =>
+                              updateOption(i, {
+                                type: e.target
+                                  .value as CustomizationOption["type"],
+                              })
+                            }
+                          >
                             <option value="select">Select (dropdown)</option>
                             <option value="text">Text (free input)</option>
                             <option value="color">Colour picker</option>
@@ -624,12 +879,21 @@ export default function AdminProductsPage() {
                       </div>
                       {opt.type === "select" && (
                         <div>
-                          <label className="text-xs text-gray-500 mb-1 block">Options (comma-separated)</label>
+                          <label className="text-xs text-gray-500 mb-1 block">
+                            Options (comma-separated)
+                          </label>
                           <input
                             className={inputCls}
-                            value={rawOptionInputs[opt.id] ?? opt.options?.join(", ") ?? ""}
+                            value={
+                              rawOptionInputs[opt.id] ??
+                              opt.options?.join(", ") ??
+                              ""
+                            }
                             onChange={(e) =>
-                              setRawOptionInputs((prev) => ({ ...prev, [opt.id]: e.target.value }))
+                              setRawOptionInputs((prev) => ({
+                                ...prev,
+                                [opt.id]: e.target.value,
+                              }))
                             }
                             onBlur={(e) => {
                               const parsed = e.target.value
@@ -637,7 +901,10 @@ export default function AdminProductsPage() {
                                 .map((s) => s.trim())
                                 .filter(Boolean);
                               updateOption(i, { options: parsed });
-                              setRawOptionInputs((prev) => ({ ...prev, [opt.id]: parsed.join(", ") }));
+                              setRawOptionInputs((prev) => ({
+                                ...prev,
+                                [opt.id]: parsed.join(", "),
+                              }));
                             }}
                             placeholder="Option A, Option B, Option C"
                           />
@@ -648,10 +915,17 @@ export default function AdminProductsPage() {
                           <input
                             type="checkbox"
                             checked={opt.affectsPrice || false}
-                            onChange={(e) => updateOption(i, { affectsPrice: e.target.checked })}
+                            onChange={(e) =>
+                              updateOption(i, {
+                                affectsPrice: e.target.checked,
+                              })
+                            }
                             className="accent-amber-600 w-4 h-4"
                           />
-                          <span className="text-xs text-gray-700">Affects Price (enable variant pricing for this option)</span>
+                          <span className="text-xs text-gray-700">
+                            Affects Price (enable variant pricing for this
+                            option)
+                          </span>
                         </label>
                       )}
                     </div>
@@ -669,27 +943,45 @@ export default function AdminProductsPage() {
                     <div className="mt-4">
                       <div className="flex items-center justify-between mb-2">
                         <p className="text-xs font-semibold text-gray-700">
-                          Variant Pricing Matrix ({variantCombos.length} combinations)
+                          Variant Pricing Matrix ({variantCombos.length}{" "}
+                          combinations)
                         </p>
-                        <p className="text-xs text-gray-400">Leave 0 to use base price</p>
+                        <p className="text-xs text-gray-400">
+                          Leave 0 to use base price
+                        </p>
                       </div>
                       <div className="border border-gray-200 rounded-xl overflow-hidden">
                         <table className="w-full text-xs">
                           <thead className="bg-gray-50">
                             <tr>
                               {pricingOptionLabels.map((l) => (
-                                <th key={l} className="text-left px-3 py-2 font-medium text-gray-500">{l}</th>
+                                <th
+                                  key={l}
+                                  className="text-left px-3 py-2 font-medium text-gray-500"
+                                >
+                                  {l}
+                                </th>
                               ))}
-                              <th className="text-left px-3 py-2 font-medium text-gray-500">Price (₹)</th>
+                              <th className="text-left px-3 py-2 font-medium text-gray-500">
+                                Price (₹)
+                              </th>
                             </tr>
                           </thead>
                           <tbody>
                             {variantCombos.map((combo) => {
                               const key = combo.join("|");
                               return (
-                                <tr key={key} className="border-t border-gray-100">
+                                <tr
+                                  key={key}
+                                  className="border-t border-gray-100"
+                                >
                                   {combo.map((val, vi) => (
-                                    <td key={vi} className="px-3 py-2 text-gray-700">{val}</td>
+                                    <td
+                                      key={vi}
+                                      className="px-3 py-2 text-gray-700"
+                                    >
+                                      {val}
+                                    </td>
                                   ))}
                                   <td className="px-3 py-2">
                                     <input
@@ -721,17 +1013,36 @@ export default function AdminProductsPage() {
           )}
 
           <div className="flex gap-3 justify-end pt-2">
-            <Button variant="outline" onClick={() => setModalOpen(false)} type="button">Cancel</Button>
-            <Button type="submit">{editProduct ? "Save Changes" : "Create Product"}</Button>
+            <Button
+              variant="outline"
+              onClick={() => setModalOpen(false)}
+              type="button"
+            >
+              Cancel
+            </Button>
+            <Button type="submit">
+              {editProduct ? "Save Changes" : "Create Product"}
+            </Button>
           </div>
         </form>
       </Modal>
 
-      <Modal isOpen={!!deleteId} onClose={() => setDeleteId(null)} title="Delete Product" size="sm">
-        <p className="text-gray-600 mb-5">Are you sure you want to delete this product? This cannot be undone.</p>
+      <Modal
+        isOpen={!!deleteId}
+        onClose={() => setDeleteId(null)}
+        title="Delete Product"
+        size="sm"
+      >
+        <p className="text-gray-600 mb-5">
+          Are you sure you want to delete this product? This cannot be undone.
+        </p>
         <div className="flex gap-3 justify-end">
-          <Button variant="outline" onClick={() => setDeleteId(null)}>Cancel</Button>
-          <Button variant="danger" onClick={handleDelete}>Delete</Button>
+          <Button variant="outline" onClick={() => setDeleteId(null)}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleDelete}>
+            Delete
+          </Button>
         </div>
       </Modal>
     </div>

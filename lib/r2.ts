@@ -27,5 +27,5 @@ export async function uploadToR2(
     })
   );
 
-  return `${process.env.R2_PUBLIC_URL}/${key}`;
+  return `${process.env.R2_PUBLIC_URL}/${process.env.R2_BUCKET_NAME}/${key}`;
 }

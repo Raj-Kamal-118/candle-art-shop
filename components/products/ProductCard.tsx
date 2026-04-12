@@ -40,7 +40,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const discount = product.compareAtPrice
     ? Math.round(
         ((product.compareAtPrice - product.price) / product.compareAtPrice) *
-          100
+          100,
       )
     : null;
 
@@ -56,7 +56,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           />
 
           {/* Hover overlay */}
-          <div className="absolute inset-0 bg-brown-900/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+          <div className="hidden md:flex absolute inset-0 bg-brown-900/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 items-center justify-center">
             <div className="flex items-center gap-2">
               <button
                 onClick={handleAddToCart}
@@ -108,29 +108,38 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
 
         {/* Content */}
-        <div className="p-4">
-          <p className="text-xs text-amber-600 font-medium uppercase tracking-wide mb-1">
+        <div className="p-3 sm:p-4 flex flex-col h-[100px] sm:h-[120px]">
+          <p className="text-[10px] sm:text-xs text-amber-600 font-medium uppercase tracking-wide mb-1 truncate">
             {product.customizable ? "Customizable" : "Ready to Ship"}
           </p>
-          <h3 className="font-semibold text-brown-900 text-sm leading-tight mb-3 group-hover:text-amber-700 transition-colors line-clamp-2">
+          <h3 className="font-semibold text-brown-900 text-xs sm:text-sm leading-tight mb-auto group-hover:text-amber-700 transition-colors line-clamp-2">
             {product.name}
           </h3>
-          <div className="flex items-center justify-between">
-            <div className="flex items-baseline gap-2">
-              <span className="text-base font-bold text-brown-900">
-                {formatPrice(product.price)}
-              </span>
-              {product.compareAtPrice && (
-                <span className="text-xs text-brown-400 line-through">
-                  {formatPrice(product.compareAtPrice)}
+          <div className="flex items-end justify-between mt-2 gap-1">
+            <div className="flex flex-col">
+              <div className="flex items-baseline gap-1.5 flex-wrap">
+                <span className="text-sm sm:text-base font-bold text-brown-900">
+                  {formatPrice(product.price)}
+                </span>
+                {product.compareAtPrice && (
+                  <span className="text-[10px] sm:text-xs text-brown-400 line-through">
+                    {formatPrice(product.compareAtPrice)}
+                  </span>
+                )}
+              </div>
+              {product.stockCount < 10 && product.inStock && (
+                <span className="text-[10px] text-amber-600 font-medium hidden md:block">
+                  Only {product.stockCount} left
                 </span>
               )}
             </div>
-            {product.stockCount < 10 && product.inStock && (
-              <span className="text-xs text-amber-600 font-medium">
-                Only {product.stockCount} left
-              </span>
-            )}
+            <button
+              onClick={handleAddToCart}
+              className="md:hidden flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-amber-500 transition-colors shrink-0 shadow-sm"
+              aria-label="Add to Cart"
+            >
+              <ShoppingCart size={13} />
+            </button>
           </div>
         </div>
       </div>
