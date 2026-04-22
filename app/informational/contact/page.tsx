@@ -1,111 +1,174 @@
 "use client";
 
 import { useState } from "react";
-import { Send, MapPin, Phone, Mail, CheckCircle } from "lucide-react";
-import Button from "@/components/ui/Button";
+import { MessageCircle, Mail, Instagram, MapPin, ArrowRight, Check } from "lucide-react";
+import InfoShell from "@/components/informational/InfoShell";
+
+const channels = [
+  { Icon: MessageCircle, label: "WhatsApp", value: "+91 80091 70754", note: "Replies within an hour", href: "https://wa.me/918009170754", hi: true },
+  { Icon: Mail, label: "Email", value: "artisanhouse.in@gmail.com", note: "Replies within a day", href: "mailto:artisanhouse.in@gmail.com" },
+  { Icon: Instagram, label: "Instagram", value: "@artisanhouse.in", note: "DMs welcome", href: "https://instagram.com/artisanhouse.in" },
+  { Icon: MapPin, label: "Studio", value: "Bengaluru, India", note: "Visits by appointment", href: "#" },
+];
 
 export default function ContactPage() {
-  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setStatus("submitting");
-
     const formData = new FormData(e.currentTarget);
-    const data = {
-      name: formData.get("name"),
-      email: formData.get("email"),
-      message: formData.get("message"),
-    };
-
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          name: formData.get("name"),
+          email: formData.get("email"),
+          subject: formData.get("subject"),
+          message: formData.get("message"),
+        }),
       });
-
-      if (res.ok) setStatus("success");
+      if (res.ok) setSubmitted(true);
       else setStatus("error");
-    } catch (error) {
+    } catch {
       setStatus("error");
     }
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-20">
-      <div className="text-center max-w-2xl mx-auto mb-16">
-        <h1 className="font-serif text-4xl font-bold text-brown-900 dark:text-amber-100 mb-4">Get in Touch</h1>
-        <p className="text-brown-600 dark:text-amber-100/70">
-          Have a question about an order, a custom request, or just want to say hello? We'd love to hear from you.
-        </p>
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-12 items-start">
-        {/* Contact Info */}
-        <div className="bg-cream-100 dark:bg-[#1a1830] rounded-3xl p-8 sm:p-12 border border-cream-200 dark:border-amber-900/30">
-          <h2 className="text-2xl font-serif font-bold text-brown-900 dark:text-amber-100 mb-8">Contact Information</h2>
-          <div className="space-y-6">
-            <div className="flex items-start gap-4">
-              <div className="p-3 bg-white dark:bg-[#0f0e1c] rounded-full text-amber-600 shadow-sm"><MapPin size={24} /></div>
-              <div>
-                <h3 className="font-semibold text-brown-900 dark:text-amber-100">Studio Address</h3>
-                <p className="text-brown-600 dark:text-amber-100/70 mt-1">123 Artisan Lane<br/>Craft City, CR 12345</p>
+    <InfoShell
+      eyebrow="Get in Touch"
+      title={
+        <>
+          Say <span className="text-coral-600 italic">hello.</span>
+        </>
+      }
+      subtitle="Whether it's a custom request, a care question, or just a story about where our candle lives now — we love hearing it."
+    >
+      <div className="grid grid-cols-1 md:grid-cols-[320px_1fr] gap-10 items-start">
+        <div className="flex flex-col gap-3.5">
+          {channels.map(({ Icon, label, value, note, href, hi }) => (
+            <a
+              key={label}
+              href={href}
+              className={`flex items-start gap-3.5 p-[18px] rounded-2xl border transition-all hover:-translate-y-0.5 ${
+                hi
+                  ? "bg-forest-50 dark:bg-forest-900/30 border-forest-100 dark:border-forest-800"
+                  : "bg-white dark:bg-[#1a1830] border-cream-200 dark:border-amber-900/30"
+              }`}
+            >
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center flex-none ${
+                  hi
+                    ? "bg-forest-700 text-white"
+                    : "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300"
+                }`}
+              >
+                <Icon size={16} />
               </div>
-            </div>
-            <div className="flex items-start gap-4">
-              <div className="p-3 bg-white dark:bg-[#0f0e1c] rounded-full text-amber-600 shadow-sm"><Phone size={24} /></div>
-              <div>
-                <h3 className="font-semibold text-brown-900 dark:text-amber-100">Phone & WhatsApp</h3>
-                <p className="text-brown-600 dark:text-amber-100/70 mt-1">+91 800 917 0754</p>
+              <div className="flex-1">
+                <div className="text-[11px] uppercase tracking-[0.1em] text-brown-500 dark:text-amber-100/50 mb-0.5">
+                  {label}
+                </div>
+                <div className="text-[15px] font-semibold text-brown-900 dark:text-amber-100 mb-0.5">
+                  {value}
+                </div>
+                <div className="text-xs text-brown-500 dark:text-amber-100/50">{note}</div>
               </div>
-            </div>
-            <div className="flex items-start gap-4">
-              <div className="p-3 bg-white dark:bg-[#0f0e1c] rounded-full text-amber-600 shadow-sm"><Mail size={24} /></div>
-              <div>
-                <h3 className="font-semibold text-brown-900 dark:text-amber-100">Email Address</h3>
-                <p className="text-brown-600 dark:text-amber-100/70 mt-1">artisanhouse.in@gmail.com</p>
-              </div>
-            </div>
-          </div>
+            </a>
+          ))}
         </div>
 
-        {/* Contact Form */}
-        <div className="bg-white dark:bg-[#1a1830] rounded-3xl p-8 sm:p-12 shadow-sm border border-cream-200 dark:border-amber-900/30">
-          {status === "success" ? (
-            <div className="text-center py-12">
-              <CheckCircle size={48} className="text-green-500 mx-auto mb-4" />
-              <h3 className="text-2xl font-serif font-bold text-brown-900 dark:text-amber-100 mb-2">Message Sent!</h3>
-              <p className="text-brown-600 dark:text-amber-100/70 mb-8">We've received your message and will get back to you as soon as possible.</p>
-              <Button onClick={() => setStatus("idle")}>Send Another Message</Button>
+        <div className="bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-900/30 rounded-[20px] p-8 md:p-9">
+          {submitted ? (
+            <div className="text-center py-10">
+              <div className="w-16 h-16 rounded-full bg-coral-100 text-coral-700 inline-flex items-center justify-center mb-5">
+                <Check size={28} />
+              </div>
+              <h3 className="font-serif text-[28px] font-bold text-brown-900 dark:text-amber-100 mb-2.5">
+                Message sent.
+              </h3>
+              <p className="text-[15px] text-brown-600 dark:text-amber-100/60">
+                We'll be in touch within a day — often sooner.
+              </p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-brown-900 dark:text-amber-100 mb-2">Your Name</label>
-                <input name="name" required type="text" className="w-full px-4 py-3 rounded-xl bg-cream-50 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 focus:ring-2 focus:ring-amber-500 outline-none text-brown-900 dark:text-amber-100" placeholder="Jane Doe" />
+            <form onSubmit={handleSubmit}>
+              <h2 className="font-serif text-[26px] font-bold text-brown-900 dark:text-amber-100 mb-6">
+                Send us a note
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-brown-800 dark:text-amber-100 mb-1.5">
+                    Name
+                  </label>
+                  <input
+                    name="name"
+                    required
+                    placeholder="Priya Menon"
+                    className="w-full px-3.5 py-2.5 border border-brown-300 dark:border-amber-900/30 rounded-[10px] text-sm text-brown-900 dark:text-amber-100 bg-white dark:bg-[#0f0e1c] focus:ring-2 focus:ring-amber-300 outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-brown-800 dark:text-amber-100 mb-1.5">
+                    Email
+                  </label>
+                  <input
+                    name="email"
+                    type="email"
+                    required
+                    placeholder="priya@example.com"
+                    className="w-full px-3.5 py-2.5 border border-brown-300 dark:border-amber-900/30 rounded-[10px] text-sm text-brown-900 dark:text-amber-100 bg-white dark:bg-[#0f0e1c] focus:ring-2 focus:ring-amber-300 outline-none"
+                  />
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-brown-900 dark:text-amber-100 mb-2">Email Address</label>
-                <input name="email" required type="email" className="w-full px-4 py-3 rounded-xl bg-cream-50 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 focus:ring-2 focus:ring-amber-500 outline-none text-brown-900 dark:text-amber-100" placeholder="jane@example.com" />
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-brown-800 dark:text-amber-100 mb-1.5">
+                  What's this about?
+                </label>
+                <select
+                  name="subject"
+                  className="w-full px-3.5 py-2.5 border border-brown-300 dark:border-amber-900/30 rounded-[10px] text-sm text-brown-900 dark:text-amber-100 bg-white dark:bg-[#0f0e1c] focus:ring-2 focus:ring-amber-300 outline-none"
+                >
+                  <option>Custom candle inquiry</option>
+                  <option>Custom magnet inquiry</option>
+                  <option>Order question</option>
+                  <option>Wholesale / bulk gifting</option>
+                  <option>Press / collaboration</option>
+                  <option>Something else</option>
+                </select>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-brown-900 dark:text-amber-100 mb-2">Your Message</label>
-                <textarea name="message" required rows={5} className="w-full px-4 py-3 rounded-xl bg-cream-50 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 focus:ring-2 focus:ring-amber-500 outline-none text-brown-900 dark:text-amber-100 resize-none" placeholder="How can we help you?"></textarea>
+              <div className="mb-5">
+                <label className="block text-sm font-medium text-brown-800 dark:text-amber-100 mb-1.5">
+                  Your message
+                </label>
+                <textarea
+                  name="message"
+                  required
+                  rows={5}
+                  placeholder="Tell us the story..."
+                  className="w-full px-3.5 py-2.5 border border-brown-300 dark:border-amber-900/30 rounded-[10px] text-sm text-brown-900 dark:text-amber-100 bg-white dark:bg-[#0f0e1c] focus:ring-2 focus:ring-amber-300 outline-none resize-y"
+                />
               </div>
-              
               {status === "error" && (
-                <p className="text-red-500 text-sm">Something went wrong. Please try again or email us directly.</p>
+                <p className="text-coral-600 text-sm mb-4">
+                  Something went wrong. Please try again or email us directly.
+                </p>
               )}
-
-              <Button type="submit" className="w-full flex justify-center gap-2" disabled={status === "submitting"}>
-                <Send size={18} />
-                {status === "submitting" ? "Sending..." : "Send Message"}
-              </Button>
+              <button
+                type="submit"
+                disabled={status === "submitting"}
+                className="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-coral-600 hover:bg-coral-700 text-white font-semibold rounded-xl shadow-lg shadow-coral-200 dark:shadow-coral-900/30 hover:-translate-y-0.5 transition-all disabled:opacity-60"
+              >
+                {status === "submitting" ? "Sending..." : "Send message"}
+                <ArrowRight size={16} />
+              </button>
             </form>
           )}
         </div>
       </div>
-    </div>
+    </InfoShell>
   );
 }

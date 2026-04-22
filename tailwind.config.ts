@@ -53,6 +53,18 @@ const config: Config = {
           600: "#b88e14",
           700: "#9a7310",
         },
+        brown: {
+          50: "#faf6f2",
+          100: "#f2e8dd",
+          200: "#e4d1bb",
+          300: "#cdb091",
+          400: "#b08a6a",
+          500: "#8e6a4e",
+          600: "#6f513c",
+          700: "#5a4231",
+          800: "#47342a",
+          900: "#362821",
+        },
       },
       fontFamily: {
         serif: ["Georgia", "Cambria", "Times New Roman", "serif"],

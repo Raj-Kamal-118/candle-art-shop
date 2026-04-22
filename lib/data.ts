@@ -29,6 +29,11 @@ function mapProduct(row: Record<string, unknown>): Product {
     customizationOptions:
       (row.customization_options as Product["customizationOptions"]) || [],
     variantPricing: (row.variant_pricing as Product["variantPricing"]) || {},
+    additionalSections:
+      (row.additional_sections as Product["additionalSections"]) || [],
+    characteristics:
+      (row.characteristics as Product["characteristics"]) || [],
+    extraButtons: (row.extra_buttons as Product["extraButtons"]) || [],
     sortOrder: row.sort_order as number | undefined,
     createdAt: row.created_at as string,
     updatedAt: row.updated_at as string,
@@ -197,6 +202,9 @@ export async function createProduct(product: Product): Promise<Product> {
       customizable: product.customizable,
       customization_options: product.customizationOptions ?? [],
       variant_pricing: product.variantPricing ?? {},
+      additional_sections: product.additionalSections ?? [],
+      characteristics: product.characteristics ?? [],
+      extra_buttons: product.extraButtons ?? [],
       created_at: product.createdAt,
       updated_at: product.updatedAt,
     })
@@ -232,6 +240,12 @@ export async function updateProduct(
     dbUpdates.customization_options = updates.customizationOptions;
   if (updates.variantPricing !== undefined)
     dbUpdates.variant_pricing = updates.variantPricing;
+  if (updates.additionalSections !== undefined)
+    dbUpdates.additional_sections = updates.additionalSections;
+  if (updates.characteristics !== undefined)
+    dbUpdates.characteristics = updates.characteristics;
+  if (updates.extraButtons !== undefined)
+    dbUpdates.extra_buttons = updates.extraButtons;
   if (updates.updatedAt !== undefined)
     dbUpdates.updated_at = updates.updatedAt;
   if (updates.sortOrder !== undefined)

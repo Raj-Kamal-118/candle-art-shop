@@ -41,6 +41,7 @@ function CheckoutContent() {
   const [paymentError, setPaymentError] = useState("");
   const [orderId, setOrderId] = useState<string | null>(null);
   const [paymentRef, setPaymentRef] = useState<string | null>(null);
+  const [redirecting, setRedirecting] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [verifiedUser, setVerifiedUser] = useState<User | null>(currentUser);
 
@@ -56,10 +57,10 @@ function CheckoutContent() {
     const callbackRef = searchParams.get("ref");
 
     if (callbackOrderId && callbackStatus === "SUCCESS") {
-      setOrderId(callbackOrderId);
-      if (callbackRef) setPaymentRef(callbackRef);
+      setRedirecting(true);
       clearCart();
-      setStep("confirmation");
+      router.replace(`/order/${callbackOrderId}`);
+      return;
     } else if (callbackStatus === "FAILED") {
       setPaymentError("Payment failed or was cancelled. Please try again.");
     }
@@ -76,7 +77,7 @@ function CheckoutContent() {
   const codFee = paymentMethod === "cod" ? 50 : 0;
   const total = subtotal - discountAmount + shipping + codFee;
 
-  if (cartItems.length === 0 && step !== "confirmation") {
+  if (cartItems.length === 0 && step !== "confirmation" && !redirecting) {
     router.push("/cart");
     return null;
   }
@@ -167,9 +168,10 @@ function CheckoutContent() {
           throw new Error("Failed to initialize payment gateway");
         }
       } else {
-        setOrderId(order.id);
+        setRedirecting(true);
         clearCart();
-        setStep("confirmation");
+        router.replace(`/order/${order.id}`);
+        return;
       }
     } catch (error) {
       setPaymentError("Something went wrong while placing your order.");

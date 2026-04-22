@@ -78,6 +78,11 @@ export default function OTPLoginModal({
         setError(data.error || "Verification failed");
         return;
       }
+      await fetch("/api/auth/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: data.user.id }),
+      });
       setCurrentUser(data.user);
       onSuccess?.(data.user);
       onClose();

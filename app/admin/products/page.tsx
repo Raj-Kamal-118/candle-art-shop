@@ -35,13 +35,15 @@ import {
   Category,
   CustomizationOption,
   VariantPricing,
+  AdditionalSection,
+  ProductCharacteristic,
+  ExtraButton,
 } from "@/lib/types";
 import { formatPrice } from "@/lib/utils";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
-import "react-quill/dist/quill.snow.css";
 
 // ─── Variant pricing helpers ──────────────────────────────────────────────────
 
@@ -350,6 +352,14 @@ export default function AdminProductsPage() {
   const [rawOptionInputs, setRawOptionInputs] = useState<
     Record<string, string>
   >({});
+  const [additionalSections, setAdditionalSections] = useState<
+    AdditionalSection[]
+  >([]);
+  const [characteristics, setCharacteristics] = useState<
+    ProductCharacteristic[]
+  >([]);
+  const [extraButtons, setExtraButtons] = useState<ExtraButton[]>([]);
+  const sectionFileInputs = useRef<Record<string, HTMLInputElement | null>>({});
 
   useEffect(() => {
     Promise.all([
@@ -399,6 +409,9 @@ export default function AdminProductsPage() {
     setCustomOptions([]);
     setVariantPricing({});
     setRawOptionInputs({});
+    setAdditionalSections([]);
+    setCharacteristics([]);
+    setExtraButtons([]);
     setShowCustomization(false);
     setModalOpen(true);
   };
@@ -424,6 +437,9 @@ export default function AdminProductsPage() {
       Object.fromEntries(opts.map((o) => [o.id, o.options?.join(", ") || ""])),
     );
     setVariantPricing(product.variantPricing || {});
+    setAdditionalSections(product.additionalSections || []);
+    setCharacteristics(product.characteristics || []);
+    setExtraButtons(product.extraButtons || []);
     setShowCustomization(!!product.customizable);
     setModalOpen(true);
   };
@@ -452,6 +468,9 @@ export default function AdminProductsPage() {
       customizable: form.customizable,
       customizationOptions: customOptions,
       variantPricing,
+      additionalSections,
+      characteristics,
+      extraButtons,
     };
 
     if (editProduct) {
@@ -551,6 +570,11 @@ export default function AdminProductsPage() {
 
   return (
     <div className="space-y-6">
+      <link
+        rel="stylesheet"
+        href="https://unpkg.com/react-quill@1.3.3/dist/quill.snow.css"
+      />
+
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="relative">
@@ -1011,6 +1035,342 @@ export default function AdminProductsPage() {
               )}
             </div>
           )}
+
+          {/* ── Characteristics ───────────────────────────────────────── */}
+          <div className="border border-cream-200 rounded-xl overflow-hidden">
+            <div className="px-4 py-3 bg-cream-50 flex items-center justify-between">
+              <div>
+                <div className="text-sm font-semibold text-brown-900">
+                  Product characteristics
+                </div>
+                <div className="text-xs text-brown-500">
+                  Short specs shown under description (e.g. Burn time · Wick · Wax)
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() =>
+                  setCharacteristics((prev) => [
+                    ...prev,
+                    {
+                      id: `ch-${Date.now()}`,
+                      label: "",
+                      value: "",
+                      icon: "",
+                    },
+                  ])
+                }
+                className="text-xs text-amber-700 hover:text-amber-800 flex items-center gap-1 font-medium"
+              >
+                <Plus size={12} /> Add
+              </button>
+            </div>
+            {characteristics.length > 0 && (
+              <div className="p-4 space-y-3">
+                {characteristics.map((c, i) => (
+                  <div
+                    key={c.id}
+                    className="grid grid-cols-[1fr_1fr_1fr_auto] gap-2 items-start"
+                  >
+                    <input
+                      placeholder="Label (e.g. Burn time)"
+                      value={c.label}
+                      onChange={(e) =>
+                        setCharacteristics((prev) =>
+                          prev.map((x, idx) =>
+                            idx === i ? { ...x, label: e.target.value } : x,
+                          ),
+                        )
+                      }
+                      className={inputCls}
+                    />
+                    <input
+                      placeholder="Value (e.g. 50 hours)"
+                      value={c.value}
+                      onChange={(e) =>
+                        setCharacteristics((prev) =>
+                          prev.map((x, idx) =>
+                            idx === i ? { ...x, value: e.target.value } : x,
+                          ),
+                        )
+                      }
+                      className={inputCls}
+                    />
+                    <input
+                      placeholder="Icon (lucide name, optional)"
+                      value={c.icon || ""}
+                      onChange={(e) =>
+                        setCharacteristics((prev) =>
+                          prev.map((x, idx) =>
+                            idx === i ? { ...x, icon: e.target.value } : x,
+                          ),
+                        )
+                      }
+                      className={inputCls}
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setCharacteristics((prev) =>
+                          prev.filter((_, idx) => idx !== i),
+                        )
+                      }
+                      className="p-2 text-red-400 hover:text-red-600"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* ── Extra buttons ─────────────────────────────────────────── */}
+          <div className="border border-cream-200 rounded-xl overflow-hidden">
+            <div className="px-4 py-3 bg-cream-50 flex items-center justify-between">
+              <div>
+                <div className="text-sm font-semibold text-brown-900">
+                  Extra action buttons
+                </div>
+                <div className="text-xs text-brown-500">
+                  Shown under the Add to Cart button (e.g. &ldquo;Design your
+                  own&rdquo; → /custom-candle)
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() =>
+                  setExtraButtons((prev) => [
+                    ...prev,
+                    {
+                      id: `btn-${Date.now()}`,
+                      label: "",
+                      href: "",
+                      variant: "dashed",
+                    },
+                  ])
+                }
+                className="text-xs text-amber-700 hover:text-amber-800 flex items-center gap-1 font-medium"
+              >
+                <Plus size={12} /> Add
+              </button>
+            </div>
+            {extraButtons.length > 0 && (
+              <div className="p-4 space-y-3">
+                {extraButtons.map((b, i) => (
+                  <div
+                    key={b.id}
+                    className="grid grid-cols-[1fr_1.2fr_140px_auto] gap-2 items-start"
+                  >
+                    <input
+                      placeholder="Label"
+                      value={b.label}
+                      onChange={(e) =>
+                        setExtraButtons((prev) =>
+                          prev.map((x, idx) =>
+                            idx === i ? { ...x, label: e.target.value } : x,
+                          ),
+                        )
+                      }
+                      className={inputCls}
+                    />
+                    <input
+                      placeholder="/custom-candle or https://..."
+                      value={b.href}
+                      onChange={(e) =>
+                        setExtraButtons((prev) =>
+                          prev.map((x, idx) =>
+                            idx === i ? { ...x, href: e.target.value } : x,
+                          ),
+                        )
+                      }
+                      className={inputCls}
+                    />
+                    <select
+                      value={b.variant || "dashed"}
+                      onChange={(e) =>
+                        setExtraButtons((prev) =>
+                          prev.map((x, idx) =>
+                            idx === i
+                              ? {
+                                  ...x,
+                                  variant: e.target
+                                    .value as ExtraButton["variant"],
+                                }
+                              : x,
+                          ),
+                        )
+                      }
+                      className={inputCls}
+                    >
+                      <option value="dashed">Dashed (handoff style)</option>
+                      <option value="outline">Outline</option>
+                      <option value="primary">Primary coral</option>
+                    </select>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setExtraButtons((prev) =>
+                          prev.filter((_, idx) => idx !== i),
+                        )
+                      }
+                      className="p-2 text-red-400 hover:text-red-600"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* ── Additional rich-text sections ─────────────────────────── */}
+          <div className="border border-cream-200 rounded-xl overflow-hidden">
+            <div className="px-4 py-3 bg-cream-50 flex items-center justify-between">
+              <div>
+                <div className="text-sm font-semibold text-brown-900">
+                  Additional sections
+                </div>
+                <div className="text-xs text-brown-500">
+                  Rendered at the bottom of the product page. Each has a
+                  heading, rich-text body, and optional image.
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() =>
+                  setAdditionalSections((prev) => [
+                    ...prev,
+                    {
+                      id: `sec-${Date.now()}`,
+                      heading: "",
+                      body: "",
+                      image: "",
+                    },
+                  ])
+                }
+                className="text-xs text-amber-700 hover:text-amber-800 flex items-center gap-1 font-medium"
+              >
+                <Plus size={12} /> Add section
+              </button>
+            </div>
+            {additionalSections.length > 0 && (
+              <div className="p-4 space-y-5">
+                {additionalSections.map((s, i) => (
+                  <div
+                    key={s.id}
+                    className="border border-gray-200 rounded-xl p-4 space-y-3 bg-white"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-gray-500">
+                        Section {i + 1}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setAdditionalSections((prev) =>
+                            prev.filter((_, idx) => idx !== i),
+                          )
+                        }
+                        className="text-red-400 hover:text-red-600"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                    <input
+                      placeholder="Heading"
+                      value={s.heading}
+                      onChange={(e) =>
+                        setAdditionalSections((prev) =>
+                          prev.map((x, idx) =>
+                            idx === i ? { ...x, heading: e.target.value } : x,
+                          ),
+                        )
+                      }
+                      className={inputCls}
+                    />
+                    <div className="bg-white rounded-lg">
+                      <ReactQuill
+                        theme="snow"
+                        value={s.body}
+                        onChange={(val) =>
+                          setAdditionalSections((prev) =>
+                            prev.map((x, idx) =>
+                              idx === i ? { ...x, body: val } : x,
+                            ),
+                          )
+                        }
+                        className="h-32 mb-12"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-500 mb-1 block">
+                        Image (optional)
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          placeholder="Image URL"
+                          value={s.image || ""}
+                          onChange={(e) =>
+                            setAdditionalSections((prev) =>
+                              prev.map((x, idx) =>
+                                idx === i
+                                  ? { ...x, image: e.target.value }
+                                  : x,
+                              ),
+                            )
+                          }
+                          className={`flex-1 ${inputCls}`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => sectionFileInputs.current[s.id]?.click()}
+                          className="flex items-center gap-1.5 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50"
+                        >
+                          <Upload size={14} /> Upload
+                        </button>
+                        <input
+                          ref={(el) => {
+                            sectionFileInputs.current[s.id] = el;
+                          }}
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            const fd = new FormData();
+                            fd.append("file", file);
+                            const res = await fetch("/api/upload", {
+                              method: "POST",
+                              body: fd,
+                            });
+                            const { url, error } = await res.json();
+                            if (error) {
+                              alert(error);
+                              return;
+                            }
+                            setAdditionalSections((prev) =>
+                              prev.map((x, idx) =>
+                                idx === i ? { ...x, image: url } : x,
+                              ),
+                            );
+                          }}
+                        />
+                      </div>
+                      {s.image && (
+                        <img
+                          src={s.image}
+                          alt=""
+                          className="mt-2 w-32 h-20 object-cover rounded-lg border border-gray-200"
+                        />
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
           <div className="flex gap-3 justify-end pt-2">
             <Button

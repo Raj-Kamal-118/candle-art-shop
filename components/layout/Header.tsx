@@ -9,14 +9,12 @@ import {
   Search,
   Menu,
   X,
-  Moon,
-  Sun,
   User,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useStore } from "@/lib/store";
-import { useTheme } from "@/components/layout/ThemeProvider";
 import ArtisanLogo from "@/components/ui/ArtisanLogo";
+import ThemeSwitch from "@/components/layout/ThemeSwitch";
 
 export default function Header() {
   const pathname = usePathname();
@@ -27,7 +25,6 @@ export default function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [scrolled, setScrolled] = useState(false);
-  const { theme, toggle } = useTheme();
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
@@ -72,7 +69,7 @@ export default function Header() {
           </div>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-7">
+          <nav className="hidden lg:flex items-center gap-7">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -89,19 +86,18 @@ export default function Header() {
           </nav>
 
           {/* Right actions */}
-          <div className="flex items-center gap-2">
-            {/* Dark mode toggle */}
-            <button
-              onClick={toggle}
-              className="p-2 text-forest-600 dark:text-amber-300 hover:text-coral-600 dark:hover:text-amber-400 transition-colors rounded-full hover:bg-coral-50 dark:hover:bg-amber-900/30"
-              aria-label="Toggle dark mode"
-            >
-              {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
+          <div className="flex items-center gap-1 lg:gap-2">
+            {/* Theme flip-switch — visually separated from icon actions */}
+            <ThemeSwitch />
+            <span
+              aria-hidden
+              className="hidden lg:block mx-1 h-6 w-px bg-cream-300 dark:bg-amber-900/40"
+            />
 
+            {/* Search, Account, Favorites — desktop only; mobile uses the drawer */}
             <button
               onClick={() => setSearchOpen(!searchOpen)}
-              className="p-2 text-forest-600 dark:text-amber-100/70 hover:text-coral-600 dark:hover:text-amber-400 transition-colors rounded-full hover:bg-coral-50 dark:hover:bg-amber-900/30"
+              className="hidden lg:inline-flex p-2 text-forest-600 dark:text-amber-100/70 hover:text-coral-600 dark:hover:text-amber-400 transition-colors rounded-full hover:bg-coral-50 dark:hover:bg-amber-900/30"
               aria-label="Search"
             >
               <Search size={20} />
@@ -109,7 +105,7 @@ export default function Header() {
 
             <Link
               href="/account"
-              className="p-2 text-forest-600 dark:text-amber-100/70 hover:text-coral-600 dark:hover:text-amber-400 transition-colors rounded-full hover:bg-coral-50 dark:hover:bg-amber-900/30"
+              className="hidden lg:inline-flex p-2 text-forest-600 dark:text-amber-100/70 hover:text-coral-600 dark:hover:text-amber-400 transition-colors rounded-full hover:bg-coral-50 dark:hover:bg-amber-900/30"
               aria-label="My Account"
             >
               <User size={20} />
@@ -117,7 +113,7 @@ export default function Header() {
 
             <Link
               href="/favorites"
-              className="relative p-2 text-forest-600 dark:text-amber-100/70 hover:text-coral-600 dark:hover:text-amber-400 transition-colors rounded-full hover:bg-coral-50 dark:hover:bg-amber-900/30"
+              className="hidden lg:inline-flex relative p-2 text-forest-600 dark:text-amber-100/70 hover:text-coral-600 dark:hover:text-amber-400 transition-colors rounded-full hover:bg-coral-50 dark:hover:bg-amber-900/30"
               aria-label="Favorites"
             >
               <Heart size={20} />
@@ -128,6 +124,7 @@ export default function Header() {
               )}
             </Link>
 
+            {/* Cart — always visible */}
             <Link
               href="/cart"
               className="relative p-2 text-forest-600 dark:text-amber-100/70 hover:text-coral-600 dark:hover:text-amber-400 transition-colors rounded-full hover:bg-coral-50 dark:hover:bg-amber-900/30"
@@ -143,7 +140,7 @@ export default function Header() {
 
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="md:hidden p-2 text-forest-600 dark:text-amber-100/70 hover:text-coral-600 dark:hover:text-amber-400 transition-colors rounded-full hover:bg-coral-50 dark:hover:bg-amber-900/30"
+              className="lg:hidden p-2 text-forest-600 dark:text-amber-100/70 hover:text-coral-600 dark:hover:text-amber-400 transition-colors rounded-full hover:bg-coral-50 dark:hover:bg-amber-900/30"
               aria-label="Menu"
             >
               {menuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -184,13 +181,14 @@ export default function Header() {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="md:hidden overflow-hidden bg-white dark:bg-[#0f0e1c] border-t border-forest-100 dark:border-amber-900/20"
+            className="lg:hidden overflow-hidden bg-white dark:bg-[#0f0e1c] border-t border-forest-100 dark:border-amber-900/20"
           >
             <nav className="px-4 py-4 flex flex-col gap-1">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
+                  onClick={() => setMenuOpen(false)}
                   className={`px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                     pathname === link.href
                       ? "bg-coral-50 dark:bg-amber-900/30 text-coral-700 dark:text-amber-300"
@@ -200,6 +198,40 @@ export default function Header() {
                   {link.label}
                 </Link>
               ))}
+
+              <div className="mt-2 pt-3 border-t border-cream-200 dark:border-amber-900/30 grid grid-cols-3 gap-2">
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    setSearchOpen(true);
+                  }}
+                  className="flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-forest-700 dark:text-amber-100/70 hover:bg-forest-50 dark:hover:bg-amber-900/20"
+                >
+                  <Search size={18} />
+                  <span className="text-xs font-medium">Search</span>
+                </button>
+                <Link
+                  href="/account"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-forest-700 dark:text-amber-100/70 hover:bg-forest-50 dark:hover:bg-amber-900/20"
+                >
+                  <User size={18} />
+                  <span className="text-xs font-medium">Account</span>
+                </Link>
+                <Link
+                  href="/favorites"
+                  onClick={() => setMenuOpen(false)}
+                  className="relative flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-forest-700 dark:text-amber-100/70 hover:bg-forest-50 dark:hover:bg-amber-900/20"
+                >
+                  <Heart size={18} />
+                  <span className="text-xs font-medium">Favorites</span>
+                  {favCount > 0 && (
+                    <span className="absolute top-1.5 right-4 w-4 h-4 bg-coral-500 text-white text-[10px] rounded-full flex items-center justify-center font-medium">
+                      {favCount}
+                    </span>
+                  )}
+                </Link>
+              </div>
             </nav>
           </motion.div>
         )}

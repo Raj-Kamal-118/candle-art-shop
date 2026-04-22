@@ -142,6 +142,11 @@ export default function AuthModal({
             createdAt: data.user.created_at,
             updatedAt: data.user.updated_at || data.user.created_at,
           };
+          await fetch("/api/auth/session", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId: userObj.id }),
+          });
           setCurrentUser(userObj);
           onSuccess?.(userObj);
           onClose();

@@ -38,6 +38,27 @@ export interface CustomizationOption {
 // e.g. { "Normal|Yes": 2999, "Soy|Yes": 3999 }
 export type VariantPricing = Record<string, number>;
 
+export interface AdditionalSection {
+  id: string;
+  heading: string;
+  body: string; // rich text HTML (from ReactQuill)
+  image?: string;
+}
+
+export interface ProductCharacteristic {
+  id: string;
+  label: string; // e.g. "Burn time", "Wax", "Wick"
+  value: string; // e.g. "50 hours", "100% Soy", "Cotton"
+  icon?: string; // optional lucide icon name
+}
+
+export interface ExtraButton {
+  id: string;
+  label: string;
+  href: string;
+  variant?: "primary" | "outline" | "dashed";
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -54,6 +75,9 @@ export interface Product {
   customizable: boolean;
   customizationOptions?: CustomizationOption[];
   variantPricing?: VariantPricing; // Feature 3
+  additionalSections?: AdditionalSection[];
+  characteristics?: ProductCharacteristic[];
+  extraButtons?: ExtraButton[];
   sortOrder?: number;
   createdAt: string;
   updatedAt: string;

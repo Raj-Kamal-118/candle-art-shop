@@ -105,3 +105,11 @@ CREATE INDEX IF NOT EXISTS idx_otp_sessions_phone      ON otp_sessions(phone);
 CREATE INDEX IF NOT EXISTS idx_otp_sessions_expires_at ON otp_sessions(expires_at);
 CREATE INDEX IF NOT EXISTS idx_orders_user_id          ON orders(user_id);
 CREATE INDEX IF NOT EXISTS idx_users_phone             ON users(phone);
+
+-- ── Product content extensions ────────────────────────────────────────────────
+-- Additional rich-text sections below description, characteristics badges
+-- (e.g. Burn time / Wick / Wax), and extra CTA buttons under Add to Cart.
+ALTER TABLE products
+  ADD COLUMN IF NOT EXISTS additional_sections JSONB NOT NULL DEFAULT '[]',
+  ADD COLUMN IF NOT EXISTS characteristics     JSONB NOT NULL DEFAULT '[]',
+  ADD COLUMN IF NOT EXISTS extra_buttons       JSONB NOT NULL DEFAULT '[]';

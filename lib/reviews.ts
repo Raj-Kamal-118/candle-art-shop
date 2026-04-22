@@ -13,3 +13,13 @@ export async function getApprovedReviews() {
     .order("created_at", { ascending: false });
   return data || [];
 }
+
+export async function getReviewById(id: string) {
+  const { data } = await supabase
+    .from("reviews")
+    .select("*")
+    .eq("id", id)
+    .eq("approved", true)
+    .maybeSingle();
+  return data;
+}
