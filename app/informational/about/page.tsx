@@ -47,7 +47,7 @@ export default function AboutPage() {
             hand-poured by two sisters.
           </h1>
           <p className="text-lg md:text-xl leading-[1.6] text-brown-700 dark:text-amber-100/70 font-light max-w-[680px] mx-auto">
-            Artisan House began in 2021 in a kitchen in Bengaluru, with a single
+            Artisan House began in 2021 in a kitchen in Varanasi, with a single
             cotton wick and a borrowed melting pot. Today we ship candles and
             clay art across India — still hand-poured, still in small batches of
             six.

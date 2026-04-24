@@ -118,6 +118,8 @@ export interface OrderItem {
   price: number;
   quantity: number;
   customizations?: Record<string, string>;
+  /** Populated when this order item represents a gift set bundle */
+  giftSet?: CartGiftSet;
 }
 
 export interface Order {
@@ -143,6 +145,54 @@ export interface AdminCredentials {
   password: string;
 }
 
+// ── Gift Sets ─────────────────────────────────────────────────────────────────
+
+export interface GiftSet {
+  id: string;
+  slug: string;
+  name: string;
+  tagline?: string;
+  description?: string;
+  occasions: string[];
+  price: number;   // in paise (bundle price)
+  saving: number;  // in paise (discount vs. sum of individual product prices)
+  image?: string;
+  accent: string;
+  status: 'live' | 'draft' | 'archived';
+  /** Resolved products inside this set — populated on detail fetches */
+  items?: Product[];
+  sortOrder?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface GiftBuilderPick {
+  id: string;
+  qty: number;
+}
+
+/** Product snapshot stored inside a CartGiftSet — avoids re-fetching at cart/order render time */
+export interface CartGiftSetPick {
+  id: string;
+  qty: number;
+  name: string;
+  image: string;
+  price: number; // paise
+}
+
+export interface CartGiftSet {
+  kind: 'premade' | 'custom';
+  setId?: string;
+  picks: CartGiftSetPick[];
+  ribbon: string;
+  box: string;
+  card: {
+    style: string;
+    recipient: string;
+    note: string;
+  };
+}
+
 // ── Cart ──────────────────────────────────────────────────────────────────────
 
 export interface CartItem {
@@ -151,6 +201,8 @@ export interface CartItem {
   customizations?: Record<string, string>;
   /** Resolved variant price — may differ from product.price when variantPricing applies */
   price?: number;
+  /** Present when this cart item is a gift set bundle */
+  giftSet?: CartGiftSet;
 }
 
 // ── Hero Section (Feature 1) ──────────────────────────────────────────────────
@@ -178,6 +230,12 @@ export interface HeroStat {
 
 export type HeroBackgroundType = "gradient" | "color" | "image" | "video";
 
+export interface HeroImage {
+  url: string;
+  name?: string;
+  link?: string;
+}
+
 export interface HeroSettings {
   id: string;
   badgeText: string;
@@ -189,7 +247,7 @@ export interface HeroSettings {
   backgroundType: HeroBackgroundType;
   backgroundValue?: string;
   showImages: boolean;
-  images: string[];
+  images: (string | HeroImage)[];
   showStats: boolean;
   stats: HeroStat[];
   floatingBadgeText?: string;

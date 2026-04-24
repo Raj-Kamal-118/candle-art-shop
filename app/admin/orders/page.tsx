@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { ShoppingBag, ChevronDown, ChevronUp } from "lucide-react";
-import { Order } from "@/lib/types";
+import { Order, OrderItem } from "@/lib/types";
 import Badge from "@/components/ui/Badge";
 import CopyFeedbackLink from "@/components/admin/CopyFeedbackLink";
 
@@ -181,27 +181,63 @@ export default function AdminOrdersPage() {
                           Items Ordered
                         </h4>
                         <div className="space-y-3">
-                          {order.items.map((item, i) => (
-                            <div
-                              key={i}
-                              className="flex items-center gap-3 bg-white rounded-xl p-3"
-                            >
-                              <img
-                                src={item.productImage}
-                                alt={item.productName}
-                                className="w-10 h-10 rounded-lg object-cover"
-                              />
-                              <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-gray-800 line-clamp-1">
-                                  {item.productName}
-                                </p>
-                                <p className="text-xs text-gray-500">
-                                  Qty: {item.quantity} × ₹{item.price}
+                          {order.items.map((item: OrderItem, i: number) => (
+                            <div key={i}>
+                              <div className="flex items-center gap-3 bg-white rounded-xl p-3">
+                                {item.giftSet ? (
+                                  <div className="w-10 h-10 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-center text-xl flex-shrink-0">
+                                    🎁
+                                  </div>
+                                ) : (
+                                  <img
+                                    src={item.productImage}
+                                    alt={item.productName}
+                                    className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
+                                  />
+                                )}
+                                <div className="flex-1 min-w-0">
+                                  {item.giftSet && (
+                                    <p className="text-xs font-semibold uppercase tracking-wide text-amber-700 mb-0.5">
+                                      {item.giftSet.kind === "custom" ? "Custom Gift Set" : "Gift Set"}
+                                    </p>
+                                  )}
+                                  <p className="text-sm font-medium text-gray-800 line-clamp-1">
+                                    {item.productName}
+                                  </p>
+                                  {item.giftSet?.card.recipient && (
+                                    <p className="text-xs text-gray-400 italic">For {item.giftSet.card.recipient}</p>
+                                  )}
+                                  <p className="text-xs text-gray-500">
+                                    Qty: {item.quantity} · {item.giftSet ? `${item.giftSet.picks.reduce((s, p) => s + p.qty, 0)} products inside` : `₹${(item.price / 100).toFixed(0)} each`}
+                                  </p>
+                                </div>
+                                <p className="text-sm font-semibold text-gray-900 flex-shrink-0">
+                                  ₹{(item.price * item.quantity / 100).toFixed(0)}
                                 </p>
                               </div>
-                              <p className="text-sm font-semibold text-gray-900">
-                                ₹{(item.price * item.quantity).toFixed(2)}
-                              </p>
+                              {item.giftSet?.picks && item.giftSet.picks.length > 0 && (
+                                <div className="mt-1 rounded-xl border border-amber-100 overflow-hidden ml-13" style={{ marginLeft: 52 }}>
+                                  {item.giftSet.picks.map((pick, pi) => (
+                                    <div key={pi} className="flex items-center gap-2 px-3 py-1.5 border-b border-amber-50 last:border-b-0 bg-amber-50">
+                                      {pick.image ? (
+                                        // eslint-disable-next-line @next/next/no-img-element
+                                        <img src={pick.image} alt={pick.name} className="w-6 h-6 rounded object-cover flex-shrink-0" />
+                                      ) : (
+                                        <div className="w-6 h-6 rounded bg-white flex items-center justify-center text-xs flex-shrink-0">🕯️</div>
+                                      )}
+                                      <span className="text-xs text-gray-700 flex-1 truncate">
+                                        {pick.name}{pick.qty > 1 && <span className="text-gray-400"> × {pick.qty}</span>}
+                                      </span>
+                                      <span className="text-xs text-gray-500 flex-shrink-0">₹{(pick.price * pick.qty / 100).toFixed(0)}</span>
+                                    </div>
+                                  ))}
+                                  {item.giftSet.card.note && (
+                                    <div className="px-3 py-1.5 bg-white border-t border-amber-100">
+                                      <p className="text-xs text-amber-800 italic">&ldquo;{item.giftSet.card.note}&rdquo;</p>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           ))}
                         </div>

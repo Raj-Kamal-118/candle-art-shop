@@ -74,7 +74,7 @@ export default function PrivacyPage() {
         <b className="text-brown-900 dark:text-amber-100">Questions?</b>{" "}
         We&apos;d rather answer them than have you guess. WhatsApp us on{" "}
         <a
-          href="https://wa.me/918009170754"
+          href="https://wa.me/919519486785"
           className="text-coral-700 dark:text-coral-400 font-semibold hover:underline"
         >
           +91 80091 70754

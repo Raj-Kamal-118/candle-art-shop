@@ -8,6 +8,8 @@ import {
   CreditCard,
   Tag,
   ShieldCheck,
+  User as UserIcon,
+  Sparkles,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { Address, DiscountCode, User } from "@/lib/types";
@@ -124,10 +126,11 @@ function CheckoutContent() {
       const orderItems = cartItems.map((item) => ({
         productId: item.product.id,
         productName: item.product.name,
-        productImage: item.product.images[0],
+        productImage: item.product.images?.[0] ?? "",
         price: item.price ?? item.product.price,
         quantity: item.quantity,
         customizations: item.customizations,
+        ...(item.giftSet ? { giftSet: item.giftSet } : {}),
       }));
 
       const res = await fetch("/api/orders", {
@@ -190,247 +193,344 @@ function CheckoutContent() {
   const currentStepIndex = steps.findIndex((s) => s.id === step);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
-      <h1 className="font-serif text-3xl font-bold text-brown-900 mb-8 text-center">
-        Checkout
-      </h1>
-
-      {/* Step indicator */}
-      <div className="flex items-center justify-center mb-10">
-        {steps.map((s, i) => {
-          const Icon = s.icon;
-          const isActive = s.id === step;
-          const isPast = currentStepIndex > i;
-          return (
-            <div key={s.id} className="flex items-center">
-              <div
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  isActive
-                    ? "bg-amber-700 text-white"
-                    : isPast
-                      ? "bg-green-600 text-white"
-                      : "bg-cream-200 text-brown-500"
-                }`}
+    <main className="min-h-screen bg-[var(--home-bg-alt)] dark:bg-[#1a1612] pb-20">
+      {/* Editorial Header */}
+      <section className="relative overflow-hidden text-center p-12 lg:pb-16 border-b border-cream-200 dark:border-amber-900/20 bg-[var(--home-bg)] dark:bg-[#100e0a]">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6">
+          <p className="text-[11px] font-semibold text-amber-700 dark:text-amber-500 uppercase tracking-[0.24em] mb-5">
+            ✦ Secure Checkout ✦
+          </p>
+          <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-bold text-forest-900 dark:text-amber-50 leading-tight mb-6">
+            Almost{" "}
+            <span style={{ position: "relative", display: "inline-block" }}>
+              <span
+                className="dark:candle-text-glow"
+                style={{
+                  fontFamily: "var(--font-script)",
+                  fontStyle: "normal",
+                  color: "var(--home-coral)",
+                  fontWeight: 700,
+                  fontSize: "1.08em",
+                }}
               >
-                <Icon size={15} />
-                <span className="hidden sm:inline">{s.label}</span>
-              </div>
-              {i < steps.length - 1 && (
-                <div
-                  className={`w-8 sm:w-12 h-0.5 mx-1 ${isPast ? "bg-green-400" : "bg-cream-300"}`}
+                yours
+              </span>
+              <svg
+                aria-hidden="true"
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  bottom: -4,
+                  width: "100%",
+                  height: 12,
+                  overflow: "visible",
+                }}
+                viewBox="0 0 200 12"
+                preserveAspectRatio="none"
+              >
+                <path
+                  d="M0,6 C30,0 60,12 100,6 C140,0 170,12 200,6"
+                  fill="none"
+                  stroke="var(--home-coral)"
+                  strokeWidth="3"
+                  strokeLinecap="round"
                 />
+              </svg>
+            </span>
+          </h1>
+          <p className="font-serif italic text-lg text-brown-500 dark:text-amber-100/60 max-w-lg mx-auto">
+            Just a few more details to get these handcrafted pieces on their way
+            to you.
+          </p>
+        </div>
+      </section>
+
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-12">
+        {/* Step indicator */}
+        <div className="flex items-center justify-center mb-12">
+          {steps.map((s, i) => {
+            const Icon = s.icon;
+            const isActive = s.id === step;
+            const isPast = currentStepIndex > i;
+            return (
+              <div key={s.id} className="flex items-center">
+                <div
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors shadow-sm ${
+                    isActive
+                      ? "bg-coral-600 dark:bg-amber-600 text-white"
+                      : isPast
+                        ? "bg-forest-700 dark:bg-forest-600 text-white"
+                        : "bg-white dark:bg-[#1a1830] text-brown-500 dark:text-amber-100/50 border border-cream-200 dark:border-amber-900/30"
+                  }`}
+                >
+                  <Icon size={15} />
+                  <span className="hidden sm:inline">{s.label}</span>
+                </div>
+                {i < steps.length - 1 && (
+                  <div
+                    className={`w-8 sm:w-12 h-0.5 mx-2 rounded-full ${isPast ? "bg-forest-400 dark:bg-forest-500" : "bg-cream-300 dark:bg-amber-900/30"}`}
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {step === "confirmation" ? (
+          <div className="max-w-xl mx-auto text-center py-16 px-4 bg-white dark:bg-[#1a1830] rounded-3xl shadow-[0_12px_32px_rgba(28,18,9,0.06)] border border-cream-200 dark:border-amber-900/30">
+            <div className="w-24 h-24 bg-cream-100 dark:bg-amber-900/20 border border-cream-200 dark:border-amber-900/30 rounded-full flex items-center justify-center mx-auto mb-8 shadow-sm">
+              <CheckCircle
+                className="text-coral-600 dark:text-amber-500"
+                size={48}
+              />
+            </div>
+            <p className="text-[11px] font-semibold text-amber-700 dark:text-amber-500 uppercase tracking-[0.24em] mb-4">
+              ✦ Order Received ✦
+            </p>
+            <h2 className="font-serif text-4xl sm:text-5xl font-bold text-brown-900 dark:text-amber-50 mb-6 leading-tight">
+              Thank you.
+            </h2>
+            <p className="text-brown-600 dark:text-amber-100/70 mb-8 max-w-md mx-auto leading-relaxed">
+              Your purchase has been securely processed. We're getting your
+              handcrafted pieces ready for their journey.
+            </p>
+            <div className="bg-cream-50 dark:bg-amber-900/10 rounded-xl p-6 mb-10 max-w-sm mx-auto border border-cream-100 dark:border-amber-900/20">
+              <p
+                className={`text-sm text-brown-800 dark:text-amber-100 font-medium ${paymentRef ? "mb-2" : ""}`}
+              >
+                Order ID:{" "}
+                <span className="font-bold text-coral-600 dark:text-amber-400">
+                  {orderId}
+                </span>
+              </p>
+              {paymentRef && (
+                <p className="text-sm text-brown-800 dark:text-amber-100 font-medium">
+                  Payment Ref:{" "}
+                  <span className="font-bold text-coral-600 dark:text-amber-400">
+                    {paymentRef}
+                  </span>
+                </p>
               )}
             </div>
-          );
-        })}
-      </div>
-
-      {step === "confirmation" ? (
-        <div className="max-w-lg mx-auto text-center py-8">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle className="text-green-600" size={40} />
-          </div>
-          <h2 className="font-serif text-3xl font-bold text-brown-900 mb-3">
-            Order Confirmed!
-          </h2>
-          <p className="text-brown-500 mb-2">
-            Thank you for your purchase. Your order has been placed
-            successfully.
-          </p>
-          <p
-            className={`text-sm text-amber-700 font-medium ${paymentRef ? "mb-1" : "mb-8"}`}
-          >
-            Order ID: {orderId}
-          </p>
-          {paymentRef && (
-            <p className="text-sm text-brown-500 mb-8">
-              Payment Ref:{" "}
-              <span className="font-semibold text-brown-900">{paymentRef}</span>
-            </p>
-          )}
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button onClick={() => router.push("/")} size="lg">
-              Continue Shopping
-            </Button>
-            {verifiedUser && (
-              <Button
-                variant="outline"
-                onClick={() => router.push("/account")}
-                size="lg"
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button
+                onClick={() => router.push("/")}
+                className="inline-flex items-center justify-center gap-2 bg-coral-600 dark:bg-amber-600 text-white px-8 py-3.5 rounded-xl font-semibold hover:bg-coral-700 dark:hover:bg-amber-500 transition-all duration-200 shadow-lg shadow-coral-200 dark:shadow-amber-900/30 hover:-translate-y-0.5 text-sm"
               >
-                View My Orders
-              </Button>
-            )}
+                Continue Shopping
+              </button>
+              {verifiedUser && (
+                <button
+                  onClick={() => router.push("/account")}
+                  className="inline-flex items-center justify-center gap-2 bg-white dark:bg-[#1a1830] dark:border dark:border-amber-700/30 text-forest-800 dark:text-amber-200 px-8 py-3.5 rounded-xl font-semibold hover:bg-cream-100 dark:hover:bg-amber-900/20 transition-all duration-200 shadow-md hover:shadow-lg border border-cream-200 text-sm"
+                >
+                  View My Orders
+                </button>
+              )}
+            </div>
           </div>
-        </div>
-      ) : (
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Main form */}
-          <div className="lg:col-span-2 space-y-6">
-            {step === "address" && (
-              <div className="bg-white rounded-2xl p-6 shadow-sm border border-cream-200">
-                <div className="flex items-center justify-between mb-5">
-                  <h2 className="font-serif text-xl font-bold text-brown-900">
-                    Shipping Address
-                  </h2>
-                  {verifiedUser && (
-                    <span className="flex items-center gap-1.5 text-xs text-green-700 bg-green-50 border border-green-200 px-3 py-1.5 rounded-full font-medium">
-                      <ShieldCheck size={12} />
-                      Logged in
-                    </span>
-                  )}
-                </div>
-                {!verifiedUser && (
-                  <div className="bg-amber-50 rounded-xl p-4 mb-6 border border-amber-200 flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-semibold text-brown-900">
-                        Already have an account?
+        ) : (
+          <div className="grid lg:grid-cols-3 gap-8 lg:gap-12">
+            {/* Main form */}
+            <div className="lg:col-span-2 space-y-6">
+              {step === "address" && (
+                <>
+                  {!verifiedUser ? (
+                    <div className="bg-white dark:bg-[#1a1830] rounded-3xl p-8 sm:p-12 shadow-[0_12px_32px_rgba(28,18,9,0.06)] border border-cream-200 dark:border-amber-900/30 text-center">
+                      <div className="w-20 h-20 bg-cream-50 dark:bg-amber-900/10 border border-cream-100 dark:border-amber-900/20 rounded-full flex items-center justify-center mx-auto mb-8 text-amber-700 dark:text-amber-400 shadow-sm">
+                        <UserIcon size={32} />
+                      </div>
+                      <h2 className="font-serif text-3xl md:text-4xl font-bold text-brown-900 dark:text-amber-100 mb-5">
+                        Let's make it official
+                      </h2>
+                      <p className="text-brown-600 dark:text-amber-100/70 mb-10 max-w-md mx-auto leading-relaxed">
+                        We require you to log in or create an account before
+                        placing an order. This ensures you can easily track your
+                        handcrafted pieces, manage your orders, and access your
+                        saved favorites anytime from your account.
                       </p>
-                      <p className="text-xs text-brown-600 mt-0.5">
-                        Log in for a faster checkout experience.
+                      <button
+                        onClick={() => setAuthModalOpen(true)}
+                        className="inline-flex items-center justify-center gap-2 bg-coral-600 dark:bg-amber-600 text-white px-10 py-4 rounded-xl font-semibold hover:bg-coral-700 dark:hover:bg-amber-500 transition-all duration-200 shadow-lg shadow-coral-200 dark:shadow-amber-900/30 hover:-translate-y-0.5"
+                      >
+                        Log in or Sign up
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="bg-white dark:bg-[#1a1830] rounded-3xl p-6 sm:p-8 shadow-[0_4px_12px_rgba(28,18,9,0.05)] border border-cream-200 dark:border-amber-900/30">
+                      <div className="bg-cream-50 dark:bg-[#151326] rounded-2xl p-5 sm:p-6 mb-8 border border-cream-100 dark:border-amber-900/20 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-5 shadow-sm">
+                        <div className="w-12 h-12 bg-coral-100 dark:bg-amber-900/40 border border-coral-200 dark:border-amber-700/30 rounded-full flex items-center justify-center text-coral-700 dark:text-amber-400 shrink-0">
+                          <Sparkles size={20} />
+                        </div>
+                        <div>
+                          <h3 className="font-serif text-xl font-bold text-brown-900 dark:text-amber-100 mb-2">
+                            Welcome back,{" "}
+                            {verifiedUser.name?.split(" ")[0] || "friend"}!
+                          </h3>
+                          <p className="text-sm text-brown-600 dark:text-amber-100/70 leading-relaxed">
+                            We're so glad you're here. Let's get your order on
+                            its way. Please provide your delivery details below.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between mb-6">
+                        <h2 className="font-serif text-2xl font-bold text-brown-900 dark:text-amber-100">
+                          Shipping Address
+                        </h2>
+                      </div>
+                      <AddressForm
+                        onSubmit={handleAddressSubmit}
+                        submitLabel="Continue to Payment"
+                      />
+                    </div>
+                  )}
+                </>
+              )}
+
+              {step === "payment" && shippingAddress && (
+                <>
+                  {/* Address & verification summary */}
+                  <div className="bg-white dark:bg-[#1a1830] rounded-3xl p-6 shadow-[0_4px_12px_rgba(28,18,9,0.05)] border border-cream-200 dark:border-amber-900/30 mb-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="font-serif text-lg font-bold text-brown-900 dark:text-amber-100 flex items-center gap-2">
+                        <MapPin
+                          size={18}
+                          className="text-amber-600 dark:text-amber-400"
+                        />
+                        Shipping to
+                      </h3>
+                      <button
+                        onClick={() => setStep("address")}
+                        className="text-xs text-coral-600 hover:text-coral-700 dark:text-amber-400 dark:hover:text-amber-300 font-semibold uppercase tracking-wide"
+                      >
+                        Edit
+                      </button>
+                    </div>
+                    <div className="bg-cream-50 dark:bg-[#151326] p-5 rounded-2xl border border-cream-100 dark:border-amber-900/20">
+                      <p className="text-sm text-brown-700 dark:text-amber-100/80 leading-relaxed">
+                        <span className="font-semibold">
+                          {shippingAddress.fullName}
+                        </span>
+                        <br />
+                        {shippingAddress.address1}
+                        {shippingAddress.address2
+                          ? `, ${shippingAddress.address2}`
+                          : ""}
+                        <br />
+                        {shippingAddress.city}, {shippingAddress.state}{" "}
+                        {shippingAddress.postalCode}
+                      </p>
+                      {verifiedUser && (
+                        <p className="mt-4 pt-4 border-t border-cream-200 dark:border-amber-900/30 flex items-center gap-1.5 text-xs text-forest-600 dark:text-amber-300/80 font-medium">
+                          <ShieldCheck size={14} />
+                          Logged in as {verifiedUser.email || verifiedUser.name}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="bg-white dark:bg-[#1a1830] rounded-3xl p-6 sm:p-8 shadow-[0_4px_12px_rgba(28,18,9,0.05)] border border-cream-200 dark:border-amber-900/30">
+                    <h2 className="font-serif text-2xl font-bold text-brown-900 dark:text-amber-100 mb-6">
+                      Payment Method
+                    </h2>
+                    {paymentError && (
+                      <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 text-sm font-medium rounded-xl border border-red-200 dark:border-red-800/50 flex items-start gap-3">
+                        <ShieldCheck size={18} className="shrink-0 mt-0.5" />
+                        {paymentError}
+                      </div>
+                    )}
+                    <PaymentStep
+                      total={total}
+                      method={paymentMethod}
+                      onMethodChange={setPaymentMethod}
+                      onSubmit={handlePlaceOrder}
+                      loading={placingOrder}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Order summary */}
+            <div className="space-y-6">
+              <OrderSummary
+                items={cartItems}
+                discount={discountAmount}
+                discountCode={discountCode}
+                codFee={codFee}
+              />
+
+              {/* Discount code */}
+              <div className="bg-white dark:bg-[#1a1830] rounded-3xl p-6 shadow-[0_4px_12px_rgba(28,18,9,0.05)] border border-cream-200 dark:border-amber-900/30">
+                <h3 className="font-serif text-lg font-bold text-brown-900 dark:text-amber-100 mb-4 flex items-center gap-2">
+                  <Tag
+                    size={16}
+                    className="text-amber-600 dark:text-amber-400"
+                  />
+                  Discount Code
+                </h3>
+                {appliedDiscount ? (
+                  <div className="flex items-center justify-between bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-800/30 rounded-xl px-4 py-3 shadow-sm">
+                    <div>
+                      <p className="text-sm font-bold text-green-800 dark:text-green-400">
+                        {discountCode}
+                      </p>
+                      <p className="text-xs font-medium text-green-600 dark:text-green-500 mt-0.5">
+                        -{formatPrice(discountAmount)} saved
                       </p>
                     </div>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setAuthModalOpen(true)}
-                    >
-                      Log in
-                    </Button>
-                  </div>
-                )}
-                <AddressForm
-                  onSubmit={handleAddressSubmit}
-                  submitLabel="Continue to Payment"
-                />
-              </div>
-            )}
-
-            {step === "payment" && shippingAddress && (
-              <>
-                {/* Address & verification summary */}
-                <div className="bg-white rounded-2xl p-5 shadow-sm border border-cream-200">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold text-brown-900 text-sm flex items-center gap-2">
-                      <MapPin size={15} className="text-amber-600" />
-                      Shipping to
-                    </h3>
                     <button
-                      onClick={() => setStep("address")}
-                      className="text-xs text-amber-700 hover:text-amber-800 font-medium"
+                      onClick={() => {
+                        setAppliedDiscount(null);
+                        setDiscountCode("");
+                      }}
+                      className="text-xs font-semibold text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 uppercase tracking-wider"
                     >
-                      Edit
+                      Remove
                     </button>
                   </div>
-                  <p className="text-sm text-brown-700">
-                    {shippingAddress.fullName}, {shippingAddress.address1}
-                    {shippingAddress.address2
-                      ? `, ${shippingAddress.address2}`
-                      : ""}
-                    , {shippingAddress.city}, {shippingAddress.state}{" "}
-                    {shippingAddress.postalCode}
-                  </p>
-                  {verifiedUser && (
-                    <p className="mt-2 flex items-center gap-1.5 text-xs text-green-700 font-medium">
-                      <ShieldCheck size={12} />
-                      Logged in as: {verifiedUser.email || verifiedUser.name}
-                    </p>
-                  )}
-                </div>
-
-                <div className="bg-white rounded-2xl p-6 shadow-sm border border-cream-200">
-                  {paymentError && (
-                    <div className="mb-4 p-3 bg-red-50 text-red-700 text-sm font-medium rounded-lg border border-red-200">
-                      {paymentError}
-                    </div>
-                  )}
-                  <PaymentStep
-                    total={total}
-                    method={paymentMethod}
-                    onMethodChange={setPaymentMethod}
-                    onSubmit={handlePlaceOrder}
-                    loading={placingOrder}
-                  />
-                </div>
-              </>
-            )}
-          </div>
-
-          {/* Order summary */}
-          <div className="space-y-4">
-            <OrderSummary
-              items={cartItems}
-              discount={discountAmount}
-              discountCode={discountCode}
-              codFee={codFee}
-            />
-
-            {/* Discount code */}
-            <div className="bg-white rounded-2xl p-5 shadow-sm border border-cream-200">
-              <h3 className="font-semibold text-brown-900 text-sm mb-3 flex items-center gap-2">
-                <Tag size={14} className="text-amber-600" />
-                Discount Code
-              </h3>
-              {appliedDiscount ? (
-                <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg px-3 py-2">
-                  <div>
-                    <p className="text-sm font-semibold text-green-800">
-                      {discountCode}
-                    </p>
-                    <p className="text-xs text-green-600">
-                      -{formatPrice(discountAmount)} saved
-                    </p>
+                ) : (
+                  <div className="flex gap-3">
+                    <input
+                      type="text"
+                      value={discountInput}
+                      onChange={(e) =>
+                        setDiscountInput(e.target.value.toUpperCase())
+                      }
+                      placeholder="Enter code"
+                      className="flex-1 px-4 py-2.5 text-sm border border-brown-300 dark:border-amber-900/40 rounded-xl bg-white dark:bg-[#151326] text-brown-900 dark:text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-400 dark:focus:ring-amber-500 placeholder:text-brown-400 dark:placeholder:text-amber-100/30"
+                      onKeyDown={(e) =>
+                        e.key === "Enter" && handleApplyDiscount()
+                      }
+                    />
+                    <button
+                      onClick={handleApplyDiscount}
+                      disabled={applyingDiscount}
+                      className="inline-flex items-center justify-center px-5 py-2.5 bg-white dark:bg-[#1a1830] dark:border dark:border-amber-700/30 text-forest-800 dark:text-amber-200 rounded-xl font-semibold hover:bg-cream-100 dark:hover:bg-amber-900/20 transition-all duration-200 shadow-sm border border-cream-200 text-sm disabled:opacity-50"
+                    >
+                      {applyingDiscount ? "..." : "Apply"}
+                    </button>
                   </div>
-                  <button
-                    onClick={() => {
-                      setAppliedDiscount(null);
-                      setDiscountCode("");
-                    }}
-                    className="text-xs text-red-500 hover:text-red-700"
-                  >
-                    Remove
-                  </button>
-                </div>
-              ) : (
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={discountInput}
-                    onChange={(e) =>
-                      setDiscountInput(e.target.value.toUpperCase())
-                    }
-                    placeholder="Enter code"
-                    className="flex-1 px-3 py-2 text-sm border border-brown-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400"
-                    onKeyDown={(e) =>
-                      e.key === "Enter" && handleApplyDiscount()
-                    }
-                  />
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleApplyDiscount}
-                    loading={applyingDiscount}
-                  >
-                    Apply
-                  </Button>
-                </div>
-              )}
-              {discountError && (
-                <p className="mt-2 text-xs text-red-600">{discountError}</p>
-              )}
+                )}
+                {discountError && (
+                  <p className="mt-3 text-xs font-medium text-red-600 dark:text-red-400">
+                    {discountError}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Auth Modal */}
-      <AuthModal
-        isOpen={authModalOpen}
-        onClose={() => setAuthModalOpen(false)}
-        onSuccess={handleAuthSuccess}
-        title="Log in / Sign up"
-      />
-    </div>
+        {/* Auth Modal */}
+        <AuthModal
+          isOpen={authModalOpen}
+          onClose={() => setAuthModalOpen(false)}
+          onSuccess={handleAuthSuccess}
+          title="Log in / Sign up"
+        />
+      </div>
+    </main>
   );
 }
 

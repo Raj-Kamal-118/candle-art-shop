@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   X,
   Mail,
@@ -48,8 +48,6 @@ export default function AuthModal({
   const [message, setMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [capsLockOn, setCapsLockOn] = useState(false);
-
-  if (!isOpen) return null;
 
   const passwordStrength = useMemo(() => {
     if (!password) return null;
@@ -165,6 +163,8 @@ export default function AuthModal({
     }
   };
 
+  if (!isOpen) return null;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
@@ -176,7 +176,7 @@ export default function AuthModal({
       <div className="relative bg-white dark:bg-[#1a1830] rounded-2xl shadow-2xl w-full max-w-md p-6 dark:border dark:border-amber-900/30">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-amber-300 rounded-lg transition-colors"
+          className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-amber-300 rounded-lg transition-colors z-20"
         >
           <X size={18} />
         </button>

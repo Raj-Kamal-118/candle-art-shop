@@ -89,8 +89,8 @@ export default function ProductDetailPage() {
 
   if (loading) {
     return (
-      <div className="bg-cream-50 dark:bg-[#0f0e1c] min-h-screen">
-        <div className="max-w-7xl mx-auto px-4 py-12">
+      <div className="bg-[var(--home-bg-alt)] dark:bg-[#1a1612] min-h-screen">
+        <div className="max-w-[1440px] mx-auto px-4 py-12">
           <div className="animate-pulse grid lg:grid-cols-2 gap-12">
             <div className="aspect-square bg-cream-200 dark:bg-amber-900/20 rounded-3xl" />
             <div className="space-y-4">
@@ -106,7 +106,7 @@ export default function ProductDetailPage() {
 
   if (!product) {
     return (
-      <div className="bg-cream-50 dark:bg-[#0f0e1c] max-w-7xl mx-auto px-4 py-20 text-center min-h-screen">
+      <div className="bg-[var(--home-bg-alt)] dark:bg-[#1a1612] max-w-[1440px] mx-auto px-4 py-20 text-center min-h-screen">
         <p className="text-brown-500 dark:text-amber-100/60 text-lg">
           Product not found.
         </p>
@@ -133,8 +133,8 @@ export default function ProductDetailPage() {
   const extras = product.extraButtons ?? [];
 
   return (
-    <div className="bg-cream-50 dark:bg-[#0f0e1c] min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+    <div className="bg-[var(--home-bg-alt)] dark:bg-[#1a1612] min-h-screen">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-10 lg:py-16">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-xs text-brown-500 dark:text-amber-100/50 mb-8">
           <Link href="/" className="hover:text-amber-700">
@@ -174,9 +174,10 @@ export default function ProductDetailPage() {
           <div className="space-y-4">
             <motion.div
               key={selectedImage}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="aspect-square rounded-3xl overflow-hidden bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-900/30 shadow-sm"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4 }}
+              className="aspect-square rounded-3xl overflow-hidden bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-900/30 shadow-[0_16px_40px_rgba(28,18,9,0.08)] dark:shadow-amber-900/20"
             >
               <img
                 src={product.images[selectedImage]}
@@ -191,13 +192,17 @@ export default function ProductDetailPage() {
                   <button
                     key={i}
                     onClick={() => setSelectedImage(i)}
-                    className={`w-20 h-20 rounded-xl overflow-hidden border-2 transition-colors ${
+                    className={`w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-200 bg-white dark:bg-[#1a1830] ${
                       selectedImage === i
-                        ? "border-coral-400 shadow-md"
-                        : "border-transparent opacity-60 hover:opacity-100"
+                        ? "border-coral-500 shadow-md scale-105"
+                        : "border-transparent opacity-60 hover:opacity-100 hover:scale-105"
                     }`}
                   >
-                    <img src={img} alt="" className="w-full h-full object-cover" />
+                    <img
+                      src={img}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
                   </button>
                 ))}
               </div>
@@ -217,8 +222,12 @@ export default function ProductDetailPage() {
                 </Link>
               )}
               {product.featured && <Badge>Featured</Badge>}
-              {product.customizable && <Badge variant="info">Customizable</Badge>}
-              {!product.inStock && <Badge variant="warning">Out of Stock</Badge>}
+              {product.customizable && (
+                <Badge variant="info">Customizable</Badge>
+              )}
+              {!product.inStock && (
+                <Badge variant="warning">Out of Stock</Badge>
+              )}
             </div>
 
             <h1 className="font-serif text-4xl sm:text-5xl font-bold text-brown-900 dark:text-amber-100 leading-[1.05] mb-4">
@@ -276,7 +285,7 @@ export default function ProductDetailPage() {
                   return (
                     <div
                       key={c.id}
-                      className="flex items-start gap-3 p-3 rounded-xl bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-900/30"
+                      className="flex items-start gap-3 p-3 rounded-xl bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-900/30 shadow-sm hover:shadow-md transition-shadow"
                     >
                       <div className="w-9 h-9 rounded-full bg-coral-100 text-coral-700 flex items-center justify-center flex-none">
                         <Icon size={16} />
@@ -393,14 +402,14 @@ export default function ProductDetailPage() {
               <button
                 onClick={handleAddToCart}
                 disabled={!product.inStock}
-                className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-coral-600 hover:bg-coral-700 text-white font-semibold rounded-xl shadow-lg shadow-coral-200 dark:shadow-coral-900/30 hover:-translate-y-0.5 transition-all disabled:opacity-60 disabled:translate-y-0"
+                className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-coral-600 hover:bg-coral-700 dark:bg-amber-600 dark:hover:bg-amber-700 text-white font-semibold rounded-xl shadow-lg shadow-coral-200 dark:shadow-amber-900/30 hover:-translate-y-0.5 transition-all disabled:opacity-60 disabled:translate-y-0"
               >
                 <ShoppingCart size={18} />
                 {addedToCart
                   ? "Added to cart!"
                   : product.inStock
-                  ? "Add to cart"
-                  : "Out of stock"}
+                    ? "Add to cart"
+                    : "Out of stock"}
               </button>
               <button
                 onClick={toggleFavorite}
@@ -422,10 +431,10 @@ export default function ProductDetailPage() {
                     "inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold transition-all hover:-translate-y-0.5";
                   const cls =
                     b.variant === "primary"
-                      ? `${base} bg-coral-600 hover:bg-coral-700 text-white shadow-lg shadow-coral-200 dark:shadow-coral-900/30`
+                      ? `${base} bg-coral-600 hover:bg-coral-700 dark:bg-amber-600 dark:hover:bg-amber-700 text-white shadow-lg shadow-coral-200 dark:shadow-amber-900/30`
                       : b.variant === "outline"
-                      ? `${base} border-2 border-brown-300 dark:border-amber-900/30 text-brown-900 dark:text-amber-100 hover:border-amber-400`
-                      : `${base} border-2 border-dashed border-amber-400 text-amber-800 dark:text-amber-300 bg-amber-50/40 dark:bg-amber-900/10 hover:bg-amber-50 dark:hover:bg-amber-900/20`;
+                        ? `${base} border-2 border-brown-300 dark:border-amber-900/30 text-brown-900 dark:text-amber-100 hover:border-amber-400 dark:hover:border-amber-500`
+                        : `${base} border-2 border-dashed border-amber-400 text-amber-800 dark:text-amber-300 bg-amber-50/40 dark:bg-amber-900/10 hover:bg-amber-50 dark:hover:bg-amber-900/20`;
                   const internal = b.href.startsWith("/");
                   const children = (
                     <>
@@ -456,8 +465,16 @@ export default function ProductDetailPage() {
             <div className="grid grid-cols-3 gap-4 pt-6 border-t border-cream-200 dark:border-amber-900/30">
               {[
                 { icon: Truck, label: "Free shipping", sub: "Over ₹2,499" },
-                { icon: Shield, label: "Secure payment", sub: "100% protected" },
-                { icon: RotateCcw, label: "Easy returns", sub: "48-hour policy" },
+                {
+                  icon: Shield,
+                  label: "Secure payment",
+                  sub: "100% protected",
+                },
+                {
+                  icon: RotateCcw,
+                  label: "Easy returns",
+                  sub: "48-hour policy",
+                },
               ].map((badge) => {
                 const Icon = badge.icon;
                 return (
@@ -539,7 +556,7 @@ function ProductTabs({
               {isActive && (
                 <motion.span
                   layoutId="product-tab-underline"
-                  className="absolute left-0 right-0 -bottom-px h-0.5 bg-coral-500"
+                  className="absolute left-0 right-0 -bottom-px h-0.5 bg-coral-600 dark:bg-amber-500"
                 />
               )}
             </button>

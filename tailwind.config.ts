@@ -37,9 +37,9 @@ const config: Config = {
           200: "#fbccc9",
           300: "#f7a9a4",
           400: "#f07b72",
-          500: "#e56058",
-          600: "#D76E60",
-          700: "#a34038",
+        500: "#ec7362",
+        600: "#e85d4a",
+        700: "#d64834",
           800: "#873730",
           900: "#70322c",
         },
@@ -67,8 +67,9 @@ const config: Config = {
         },
       },
       fontFamily: {
-        serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+        serif: ["var(--font-serif)", "Georgia", "Cambria", "Times New Roman", "serif"],
         sans: ["Inter", "system-ui", "sans-serif"],
+        script: ["var(--font-script)", "cursive"],
       },
       animation: {
         "fade-in": "fadeIn 0.5s ease-in-out",

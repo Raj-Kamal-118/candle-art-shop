@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -13,9 +14,9 @@ const addressSchema = z.object({
   phone: z.string().min(10, "Phone number is required"),
   address1: z.string().min(5, "Address is required"),
   address2: z.string().optional(),
+  postalCode: z.string().regex(/^[1-9][0-9]{5}$/, "Invalid 6-digit PIN code"),
   city: z.string().min(2, "City is required"),
   state: z.string().min(2, "State is required"),
-  postalCode: z.string().min(4, "Postal code is required"),
   country: z.string().min(2, "Country is required"),
 });
 
@@ -35,11 +36,33 @@ export default function AddressForm({
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<AddressFormData>({
     resolver: zodResolver(addressSchema),
     defaultValues: defaultValues || { country: "India" },
   });
+
+  const postalCode = watch("postalCode");
+
+  useEffect(() => {
+    if (postalCode && /^[1-9][0-9]{5}$/.test(postalCode)) {
+      fetch(`https://api.postalpincode.in/pincode/${postalCode}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && data[0] && data[0].Status === "Success") {
+            const postOffice = data[0].PostOffice[0];
+            setValue("city", postOffice.District || postOffice.Block, {
+              shouldValidate: true,
+            });
+            setValue("state", postOffice.State, { shouldValidate: true });
+            setValue("country", "India", { shouldValidate: true });
+          }
+        })
+        .catch(console.error);
+    }
+  }, [postalCode, setValue]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -82,6 +105,13 @@ export default function AddressForm({
           />
         </div>
         <Input
+          label="PIN Code"
+          placeholder="400001"
+          maxLength={6}
+          error={errors.postalCode?.message}
+          {...register("postalCode")}
+        />
+        <Input
           label="City"
           placeholder="Mumbai"
           error={errors.city?.message}
@@ -93,27 +123,16 @@ export default function AddressForm({
           error={errors.state?.message}
           {...register("state")}
         />
-        <Input
-          label="Postal Code"
-          placeholder="400001"
-          error={errors.postalCode?.message}
-          {...register("postalCode")}
-        />
         <div>
           <label className="block text-sm font-medium text-brown-800 mb-1.5">
             Country
           </label>
           <select
             {...register("country")}
-            className="w-full px-4 py-2.5 text-sm border border-brown-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-amber-400"
+            className="w-full px-4 py-2.5 text-sm border border-brown-300 dark:border-amber-900/30 rounded-lg bg-gray-50 dark:bg-black/20 text-brown-500 dark:text-amber-100/50 focus:outline-none pointer-events-none"
+            tabIndex={-1}
           >
             <option value="India">India</option>
-            <option value="United States">United States</option>
-            <option value="Canada">Canada</option>
-            <option value="United Kingdom">United Kingdom</option>
-            <option value="Australia">Australia</option>
-            <option value="Germany">Germany</option>
-            <option value="France">France</option>
           </select>
         </div>
       </div>

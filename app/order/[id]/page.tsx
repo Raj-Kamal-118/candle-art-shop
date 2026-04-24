@@ -58,10 +58,34 @@ export default function OrderSuccessPage() {
   const arriving = formatRange(createdAt);
 
   const journey = [
-    { Icon: Check, label: "Order received", date: "Today", done: true, active: false },
-    { Icon: Flame, label: "Hand-poured in studio", date: "Next 1–2 days", done: false, active: true },
-    { Icon: Package, label: "Wrapped & dispatched", date: "In 2–3 days", done: false, active: false },
-    { Icon: Home, label: "Arrives at your door", date: arriving, done: false, active: false },
+    {
+      Icon: Check,
+      label: "Order received",
+      date: "Today",
+      done: true,
+      active: false,
+    },
+    {
+      Icon: Flame,
+      label: "Hand-poured in studio",
+      date: "Next 1–2 days",
+      done: false,
+      active: true,
+    },
+    {
+      Icon: Package,
+      label: "Wrapped & dispatched",
+      date: "In 2–3 days",
+      done: false,
+      active: false,
+    },
+    {
+      Icon: Home,
+      label: "Arrives at your door",
+      date: arriving,
+      done: false,
+      active: false,
+    },
   ];
 
   return (
@@ -100,9 +124,9 @@ export default function OrderSuccessPage() {
           Your story <span className="text-coral-600 italic">begins.</span>
         </h1>
         <p className="text-lg leading-[1.7] text-brown-700 dark:text-amber-100/70 max-w-[520px] mx-auto mb-10">
-          Thank you, {firstName}. We&apos;ve started hand-pouring your order in our
-          Bengaluru studio. You&apos;ll hear from us again when it ships — with a
-          little something extra.
+          Thank you, {firstName}. We&apos;ve started hand-pouring your order in
+          our Varanasi studio. You&apos;ll hear from us again when it ships —
+          with a little something extra.
         </p>
 
         <div className="inline-flex flex-wrap items-center gap-6 md:gap-8 bg-white dark:bg-[#1a1830] rounded-2xl px-6 md:px-9 py-5 shadow-sm border border-cream-200 dark:border-amber-900/30 mb-10">
@@ -141,11 +165,16 @@ export default function OrderSuccessPage() {
           {journey.map(({ Icon, label, date, done, active }, i, arr) => {
             const last = i === arr.length - 1;
             return (
-              <div key={label} className={`relative flex gap-4 items-start ${last ? "" : "pb-4"}`}>
+              <div
+                key={label}
+                className={`relative flex gap-4 items-start ${last ? "" : "pb-4"}`}
+              >
                 {!last && (
                   <div
                     className={`absolute left-[15px] top-8 bottom-0 w-0.5 ${
-                      done ? "bg-amber-500" : "bg-cream-200 dark:bg-amber-900/30"
+                      done
+                        ? "bg-amber-500"
+                        : "bg-cream-200 dark:bg-amber-900/30"
                     }`}
                   />
                 )}
@@ -154,8 +183,8 @@ export default function OrderSuccessPage() {
                     done
                       ? "bg-amber-600 text-white"
                       : active
-                      ? "bg-coral-500 text-white shadow-[0_0_0_6px_rgba(215,110,96,.15)]"
-                      : "bg-cream-100 dark:bg-amber-900/20 text-brown-500 dark:text-amber-100/50"
+                        ? "bg-coral-500 text-white shadow-[0_0_0_6px_rgba(215,110,96,.15)]"
+                        : "bg-cream-100 dark:bg-amber-900/20 text-brown-500 dark:text-amber-100/50"
                   }`}
                 >
                   <Icon size={14} />

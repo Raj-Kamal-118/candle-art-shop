@@ -37,7 +37,7 @@ const sections = [
   {
     Icon: Scale,
     heading: "Governing law",
-    body: "These terms are governed by the laws of India. Any disputes will be resolved in the courts of Bengaluru, Karnataka. If any one clause turns out to be unenforceable, the rest still stand.",
+    body: "These terms are governed by the laws of India. Any disputes will be resolved in the courts of Varanasi, Karnataka. If any one clause turns out to be unenforceable, the rest still stand.",
   },
 ];
 

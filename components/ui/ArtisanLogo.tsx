@@ -1,6 +1,10 @@
 import Link from "next/link";
 
-export default function ArtisanLogo() {
+export default function ArtisanLogo({
+  variant = "default",
+}: {
+  variant?: "default" | "light";
+} = {}) {
   return (
     <Link
       href="/"
@@ -13,10 +17,14 @@ export default function ArtisanLogo() {
         />
       </div>
       <div className="leading-none text-center md:text-left">
-        <span className="block font-serif text-lg font-bold text-forest-900 dark:text-amber-100 tracking-wide">
+        <span
+          className={`block font-serif text-lg font-bold tracking-wide ${variant === "light" ? "text-amber-100" : "text-forest-900 dark:text-amber-100"}`}
+        >
           Artisan House
         </span>
-        <span className="block text-[9px] font-medium text-gold-600 dark:text-amber-400 tracking-[0.15em] uppercase">
+        <span
+          className={`block text-[9px] font-medium tracking-[0.15em] uppercase ${variant === "light" ? "text-amber-400" : "text-gold-600 dark:text-amber-400"}`}
+        >
           Candles · Clays · Crafts
         </span>
       </div>

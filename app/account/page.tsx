@@ -15,7 +15,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
-import { Order } from "@/lib/types";
+import { Order, OrderItem } from "@/lib/types";
 import { formatPrice } from "@/lib/utils";
 import AuthModal from "@/components/auth/AuthModal";
 
@@ -260,32 +260,67 @@ export default function AccountPage() {
 
                     {/* Items */}
                     <div className="space-y-3">
-                      {order.items.map((item, i) => (
-                        <div key={i} className="flex items-center gap-3">
-                          <img
-                            src={item.productImage}
-                            alt={item.productName}
-                            className="w-14 h-14 rounded-xl object-cover flex-none"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-brown-900 line-clamp-1">
-                              {item.productName}
-                            </p>
-                            {item.customizations &&
-                              Object.keys(item.customizations).length > 0 && (
-                                <p className="text-xs text-brown-400 mt-0.5">
-                                  {Object.entries(item.customizations)
-                                    .map(([k, v]) => `${k}: ${v}`)
-                                    .join(" · ")}
+                      {order.items.map((item: OrderItem, i: number) => (
+                        <div key={i}>
+                          <div className="flex items-center gap-3">
+                            {item.giftSet ? (
+                              <div className="w-14 h-14 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center flex-none text-2xl">
+                                🎁
+                              </div>
+                            ) : (
+                              <img
+                                src={item.productImage}
+                                alt={item.productName}
+                                className="w-14 h-14 rounded-xl object-cover flex-none"
+                              />
+                            )}
+                            <div className="flex-1 min-w-0">
+                              {item.giftSet && (
+                                <p className="text-xs font-medium uppercase tracking-widest text-amber-700 mb-0.5">
+                                  {item.giftSet.kind === "custom" ? "Custom Gift Set" : "Gift Set"}
                                 </p>
                               )}
-                            <p className="text-xs text-brown-500 mt-0.5">
-                              Qty {item.quantity} × {formatPrice(item.price)}
+                              <p className="text-sm font-medium text-brown-900 line-clamp-1">
+                                {item.productName}
+                              </p>
+                              {item.giftSet?.card.recipient && (
+                                <p className="text-xs text-brown-400 mt-0.5 italic">For {item.giftSet.card.recipient}</p>
+                              )}
+                              {!item.giftSet && item.customizations &&
+                                Object.keys(item.customizations).length > 0 && (
+                                  <p className="text-xs text-brown-400 mt-0.5">
+                                    {Object.entries(item.customizations)
+                                      .map(([k, v]) => `${k}: ${v}`)
+                                      .join(" · ")}
+                                  </p>
+                                )}
+                              <p className="text-xs text-brown-500 mt-0.5">
+                                Qty {item.quantity} × {formatPrice(item.price)}
+                              </p>
+                            </div>
+                            <p className="text-sm font-semibold text-brown-900 flex-none">
+                              {formatPrice(item.price * item.quantity)}
                             </p>
                           </div>
-                          <p className="text-sm font-semibold text-brown-900 flex-none">
-                            {formatPrice(item.price * item.quantity)}
-                          </p>
+                          {/* Gift set contents */}
+                          {item.giftSet?.picks && item.giftSet.picks.length > 0 && (
+                            <div className="mt-2 rounded-xl border border-cream-200 overflow-hidden" style={{ marginLeft: 68 }}>
+                              {item.giftSet.picks.map((pick, pi) => (
+                                <div key={pi} className="flex items-center gap-2 px-3 py-1.5 border-b border-cream-100 last:border-b-0 bg-cream-50">
+                                  {pick.image ? (
+                                    // eslint-disable-next-line @next/next/no-img-element
+                                    <img src={pick.image} alt={pick.name} className="w-7 h-7 rounded object-cover flex-shrink-0" />
+                                  ) : (
+                                    <div className="w-7 h-7 rounded bg-amber-50 flex items-center justify-center text-sm flex-shrink-0">🕯️</div>
+                                  )}
+                                  <span className="text-xs text-brown-700 flex-1 truncate">
+                                    {pick.name}{pick.qty > 1 && <span className="text-brown-400"> × {pick.qty}</span>}
+                                  </span>
+                                  <span className="text-xs text-brown-500 flex-shrink-0">{formatPrice(pick.price * pick.qty)}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>

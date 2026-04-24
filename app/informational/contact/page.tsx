@@ -1,14 +1,46 @@
 "use client";
 
 import { useState } from "react";
-import { MessageCircle, Mail, Instagram, MapPin, ArrowRight, Check } from "lucide-react";
+import {
+  MessageCircle,
+  Mail,
+  Instagram,
+  MapPin,
+  ArrowRight,
+  Check,
+} from "lucide-react";
 import InfoShell from "@/components/informational/InfoShell";
 
 const channels = [
-  { Icon: MessageCircle, label: "WhatsApp", value: "+91 80091 70754", note: "Replies within an hour", href: "https://wa.me/918009170754", hi: true },
-  { Icon: Mail, label: "Email", value: "artisanhouse.in@gmail.com", note: "Replies within a day", href: "mailto:artisanhouse.in@gmail.com" },
-  { Icon: Instagram, label: "Instagram", value: "@artisanhouse.in", note: "DMs welcome", href: "https://instagram.com/artisanhouse.in" },
-  { Icon: MapPin, label: "Studio", value: "Bengaluru, India", note: "Visits by appointment", href: "#" },
+  {
+    Icon: MessageCircle,
+    label: "WhatsApp",
+    value: "+91 80091 70754",
+    note: "Replies within an hour",
+    href: "https://wa.me/919519486785",
+    hi: true,
+  },
+  {
+    Icon: Mail,
+    label: "Email",
+    value: "artisanhouse.in@gmail.com",
+    note: "Replies within a day",
+    href: "mailto:artisanhouse.in@gmail.com",
+  },
+  {
+    Icon: Instagram,
+    label: "Instagram",
+    value: "@artisanhouse.in",
+    note: "DMs welcome",
+    href: "https://instagram.com/artisanhouse.in",
+  },
+  {
+    Icon: MapPin,
+    label: "Studio",
+    value: "Varanasi, India",
+    note: "Visits by appointment",
+    href: "#",
+  },
 ];
 
 export default function ContactPage() {
@@ -75,7 +107,9 @@ export default function ContactPage() {
                 <div className="text-[15px] font-semibold text-brown-900 dark:text-amber-100 mb-0.5">
                   {value}
                 </div>
-                <div className="text-xs text-brown-500 dark:text-amber-100/50">{note}</div>
+                <div className="text-xs text-brown-500 dark:text-amber-100/50">
+                  {note}
+                </div>
               </div>
             </a>
           ))}

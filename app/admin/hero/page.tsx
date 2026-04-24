@@ -16,6 +16,7 @@ import {
   HeroButton,
   HeroStat,
   HeroButtonIcon,
+  HeroImage,
 } from "@/lib/types";
 import Button from "@/components/ui/Button";
 
@@ -55,10 +56,26 @@ const defaultSettings: HeroSettings = {
   backgroundValue: "",
   showImages: true,
   images: [
-    "https://picsum.photos/seed/hero1/400/550",
-    "https://picsum.photos/seed/hero3/400/400",
-    "https://picsum.photos/seed/hero2/400/400",
-    "https://picsum.photos/seed/hero4/400/550",
+    {
+      url: "https://picsum.photos/seed/hero1/400/550",
+      name: "Hand-poured Candles",
+      link: "/categories/scented-candles",
+    },
+    {
+      url: "https://picsum.photos/seed/hero3/400/400",
+      name: "Clay Art",
+      link: "/categories/custom-artwork",
+    },
+    {
+      url: "https://picsum.photos/seed/hero2/400/400",
+      name: "Gift Sets",
+      link: "/gift-sets",
+    },
+    {
+      url: "https://picsum.photos/seed/hero4/400/550",
+      name: "Home Decor",
+      link: "/products",
+    },
   ],
   showStats: true,
   stats: [
@@ -88,6 +105,11 @@ export default function AdminHeroPage() {
     fetch("/api/hero-settings")
       .then((r) => r.json())
       .then((data) => {
+        if (data && data.images) {
+          data.images = data.images.map((img: any) =>
+            typeof img === "string" ? { url: img, name: "", link: "" } : img,
+          );
+        }
         setSettings({ ...defaultSettings, ...data });
         setLoading(false);
       })
@@ -126,6 +148,12 @@ export default function AdminHeroPage() {
     onUrl(url);
   };
 
+  const updateImage = (index: number, updates: Partial<HeroImage>) => {
+    const newImages = [...(settings.images as HeroImage[])];
+    newImages[index] = { ...newImages[index], ...updates };
+    setSettings({ ...settings, images: newImages });
+  };
+
   const handleImageUpload = async (
     index: number,
     e: React.ChangeEvent<HTMLInputElement>,
@@ -135,9 +163,7 @@ export default function AdminHeroPage() {
     setUploading(index);
     try {
       await uploadImage(file, (url) => {
-        const newImages = [...settings.images];
-        newImages[index] = url;
-        setSettings({ ...settings, images: newImages });
+        updateImage(index, { url });
       });
     } finally {
       setUploading(null);
@@ -622,49 +648,66 @@ export default function AdminHeroPage() {
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              {[0, 1, 2, 3].map((i) => (
-                <div key={i} className="space-y-2">
-                  <label className="text-xs text-gray-500">Image {i + 1}</label>
-                  <div className="relative aspect-square rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
-                    {settings.images[i] ? (
-                      <img
-                        src={settings.images[i]}
-                        alt={`Hero ${i + 1}`}
-                        className="w-full h-full object-cover"
+              {[0, 1, 2, 3].map((i) => {
+                const img = (settings.images[i] as HeroImage) || {
+                  url: "",
+                  name: "",
+                  link: "",
+                };
+                return (
+                  <div key={i} className="space-y-2">
+                    <label className="text-xs text-gray-500">
+                      Image {i + 1}
+                    </label>
+                    <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
+                      {img.url ? (
+                        <img
+                          src={img.url}
+                          alt={`Hero ${i + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                          No image
+                        </div>
+                      )}
+                      <button
+                        onClick={() => fileRefs[i].current?.click()}
+                        disabled={uploading === i}
+                        className="absolute bottom-2 right-2 bg-white/90 text-gray-700 p-1.5 rounded-lg text-xs flex items-center gap-1 shadow hover:bg-white"
+                      >
+                        <Upload size={12} />
+                        {uploading === i ? "…" : "Upload"}
+                      </button>
+                      <input
+                        ref={fileRefs[i]}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => handleImageUpload(i, e)}
                       />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
-                        No image
-                      </div>
-                    )}
-                    <button
-                      onClick={() => fileRefs[i].current?.click()}
-                      disabled={uploading === i}
-                      className="absolute bottom-2 right-2 bg-white/90 text-gray-700 p-1.5 rounded-lg text-xs flex items-center gap-1 shadow hover:bg-white"
-                    >
-                      <Upload size={12} />
-                      {uploading === i ? "…" : "Upload"}
-                    </button>
+                    </div>
                     <input
-                      ref={fileRefs[i]}
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => handleImageUpload(i, e)}
+                      className={`${inputCls} text-xs`}
+                      value={img.url || ""}
+                      onChange={(e) => updateImage(i, { url: e.target.value })}
+                      placeholder="Image URL"
+                    />
+                    <input
+                      className={`${inputCls} text-xs`}
+                      value={img.name || ""}
+                      onChange={(e) => updateImage(i, { name: e.target.value })}
+                      placeholder="Title (e.g. Candles)"
+                    />
+                    <input
+                      className={`${inputCls} text-xs`}
+                      value={img.link || ""}
+                      onChange={(e) => updateImage(i, { link: e.target.value })}
+                      placeholder="Link (e.g. /categories/scented-candles)"
                     />
                   </div>
-                  <input
-                    className={`${inputCls} text-xs`}
-                    value={settings.images[i] || ""}
-                    onChange={(e) => {
-                      const newImages = [...settings.images];
-                      newImages[i] = e.target.value;
-                      setSettings({ ...settings, images: newImages });
-                    }}
-                    placeholder="Or paste URL"
-                  />
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
         </div>

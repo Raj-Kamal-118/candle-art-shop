@@ -31,6 +31,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { Category, BannerButton } from "@/lib/types";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
+import MultiImageUploader from "@/components/admin/MultiImageUploader";
 
 // ─── Sortable row ─────────────────────────────────────────────────────────────
 
@@ -470,7 +471,7 @@ export default function AdminCategoriesPage() {
               <img
                 src={form.image}
                 alt="Category preview"
-                className="mt-3 w-32 h-32 object-cover rounded-xl border border-gray-200 shadow-sm"
+                className="mt-3 object-cover rounded-xl border border-gray-200 shadow-sm"
               />
             )}
           </div>
@@ -538,44 +539,28 @@ export default function AdminCategoriesPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Banner Image (optional — will use bg colour if omitted)
+                    Banner Images (optional — drag and drop multiple images)
                   </label>
-                  <div className="flex gap-2">
-                    <input
-                      value={form.bannerImage}
-                      onChange={(e) =>
-                        setForm({ ...form, bannerImage: e.target.value })
-                      }
-                      placeholder="Image URL or upload"
-                      className={`flex-1 ${inputCls}`}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => bannerRef.current?.click()}
-                      disabled={uploading === "banner"}
-                      className="flex items-center gap-1.5 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50"
-                    >
-                      <Upload size={14} />{" "}
-                      {uploading === "banner" ? "…" : "Upload"}
-                    </button>
-                    <input
-                      ref={bannerRef}
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => {
-                        const f = e.target.files?.[0];
-                        if (f) uploadImage(f, "banner");
-                      }}
-                    />
-                  </div>
-                  {form.bannerImage && (
-                    <img
-                      src={form.bannerImage}
-                      alt="Banner preview"
-                      className="mt-2 w-full h-28 object-cover rounded-xl"
-                    />
-                  )}
+                  <MultiImageUploader
+                    value={form.bannerImage}
+                    onChange={(newUrls) =>
+                      setForm({ ...form, bannerImage: newUrls })
+                    }
+                    onUpload={async (files) => {
+                      const uploadPromises = files.map(async (file) => {
+                        const fd = new FormData();
+                        fd.append("file", file);
+                        const res = await fetch("/api/upload", {
+                          method: "POST",
+                          body: fd,
+                        });
+                        const { url, error } = await res.json();
+                        return error ? null : url;
+                      });
+                      const results = await Promise.all(uploadPromises);
+                      return results.filter(Boolean) as string[];
+                    }}
+                  />
                 </div>
 
                 <div>

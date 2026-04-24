@@ -2,6 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Home page craft theme tokens ──────────────────────────────────── */
+:root {
+  --home-bg:      #fefdf8;
+  --home-bg-alt:  #f9f5ee;
+  --home-card:    #ffffff;
+  --home-accent:  #f0e8d8;
+  --home-ghost:   #f0e8d8;
+  --home-text:    #1a3828;
+  --home-muted:   #7c5c3a;
+  --home-border:  #e8dfc8;
+  --home-amber:   #b45309;
+  --home-coral:   #e85d4a;
+  --home-wave:    #d97706;
+}
+.dark {
+  --home-bg:      #100e0a;
+  --home-bg-alt:  #1a1612;
+  --home-card:    #201c16;
+  --home-accent:  #2a2218;
+  --home-ghost:   #2a2218;
+  --home-text:    #fefdf8;
+  --home-muted:   #c9a47a;
+  --home-border:  rgba(232,223,200,.10);
+  --home-amber:   #e09020;
+  --home-coral:   #e07050;
+  --home-wave:    #e09020;
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -18,7 +46,7 @@
   }
 
   h1, h2, h3 {
-    font-family: Georgia, Cambria, 'Times New Roman', serif;
+    font-family: var(--font-serif, Georgia, Cambria, 'Times New Roman', serif);
   }
 }
 

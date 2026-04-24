@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { CartItem, Product, User } from "./types";
+import { CartGiftSet, CartItem, Product, User } from "./types";
 import { getVariantPrice } from "./utils";
 
 interface CartStore {
@@ -11,7 +11,7 @@ interface CartStore {
   savedForLaterItems: CartItem[];
   currentUser: User | null;
 
-  addToCart: (product: Product, quantity?: number, customizations?: Record<string, string>) => void;
+  addToCart: (product: Product, quantity?: number, customizations?: Record<string, string>, giftSet?: CartGiftSet) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
@@ -39,13 +39,13 @@ export const useStore = create<CartStore>()(
       savedForLaterItems: [],
       currentUser: null,
 
-      addToCart: (product, quantity = 1, customizations) => {
+      addToCart: (product, quantity = 1, customizations, giftSet) => {
         const price = getVariantPrice(product, customizations);
         set((state) => {
           const existing = state.cartItems.find(
             (item) => item.product.id === product.id
           );
-          if (existing) {
+          if (existing && !giftSet) {
             return {
               cartItems: state.cartItems.map((item) =>
                 item.product.id === product.id
@@ -57,7 +57,7 @@ export const useStore = create<CartStore>()(
           return {
             cartItems: [
               ...state.cartItems,
-              { product, quantity, customizations, price },
+              { product, quantity, customizations, price, giftSet },
             ],
           };
         });

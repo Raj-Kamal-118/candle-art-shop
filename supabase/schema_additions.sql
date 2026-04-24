@@ -15,12 +15,7 @@ CREATE TABLE IF NOT EXISTS hero_settings (
   background_type       TEXT NOT NULL DEFAULT 'gradient' CHECK (background_type IN ('gradient', 'color', 'image', 'video')),
   background_value      TEXT,
   show_images           BOOLEAN NOT NULL DEFAULT TRUE,
-  images                TEXT[] NOT NULL DEFAULT ARRAY[
-    'https://picsum.photos/seed/hero1/400/550',
-    'https://picsum.photos/seed/hero3/400/400',
-    'https://picsum.photos/seed/hero2/400/400',
-    'https://picsum.photos/seed/hero4/400/550'
-  ],
+  images                JSONB NOT NULL DEFAULT '[{"url":"https://picsum.photos/seed/hero1/400/550","name":"Hand-poured Candles","link":"/categories/scented-candles"},{"url":"https://picsum.photos/seed/hero3/400/400","name":"Clay Art","link":"/categories/custom-artwork"},{"url":"https://picsum.photos/seed/hero2/400/400","name":"Gift Sets","link":"/gift-sets"},{"url":"https://picsum.photos/seed/hero4/400/550","name":"Home Decor","link":"/products"}]'::jsonb,
   show_stats            BOOLEAN NOT NULL DEFAULT TRUE,
   stats                 JSONB NOT NULL DEFAULT '[{"value":"500+","label":"Happy Customers"},{"value":"100%","label":"Natural Ingredients"},{"value":"11","label":"Signature Products"}]',
   floating_badge_text   TEXT DEFAULT 'Free shipping on Orders over ₹999',
@@ -28,6 +23,19 @@ CREATE TABLE IF NOT EXISTS hero_settings (
 );
 
 INSERT INTO hero_settings (id) VALUES ('main') ON CONFLICT (id) DO NOTHING;
+
+-- Ensure existing installations update the array type to JSONB
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'hero_settings' AND column_name = 'images' AND data_type = 'ARRAY'
+  ) THEN
+    ALTER TABLE hero_settings ALTER COLUMN images DROP DEFAULT;
+    ALTER TABLE hero_settings ALTER COLUMN images TYPE JSONB USING to_jsonb(images);
+    ALTER TABLE hero_settings ALTER COLUMN images SET DEFAULT '[{"url":"https://picsum.photos/seed/hero1/400/550","name":"Hand-poured Candles","link":"/categories/scented-candles"},{"url":"https://picsum.photos/seed/hero3/400/400","name":"Clay Art","link":"/categories/custom-artwork"},{"url":"https://picsum.photos/seed/hero2/400/400","name":"Gift Sets","link":"/gift-sets"},{"url":"https://picsum.photos/seed/hero4/400/550","name":"Home Decor","link":"/products"}]'::jsonb;
+  END IF;
+END $$;
 
 ALTER TABLE hero_settings ENABLE ROW LEVEL SECURITY;
 

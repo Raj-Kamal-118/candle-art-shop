@@ -3,14 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import {
-  ShoppingCart,
-  Heart,
-  Search,
-  Menu,
-  X,
-  User,
-} from "lucide-react";
+import { ShoppingCart, Heart, Search, Menu, X, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useStore } from "@/lib/store";
 import ArtisanLogo from "@/components/ui/ArtisanLogo";
@@ -50,8 +43,9 @@ export default function Header() {
     { href: "/", label: "Home" },
     { href: "/products", label: "Shop" },
     { href: "/categories/scented-candles", label: "Candles" },
-    { href: "/categories/fridge-magnets", label: "Magnet" },
-    { href: "/categories/gift-sets", label: "Gift Sets" },
+    { href: "/categories/fridge-magnets", label: "Magnets" },
+    { href: "/categories/key-chain", label: "Key Chains" },
+    { href: "/gift-sets", label: "Gift Sets", badge: "New" },
   ];
 
   return (
@@ -62,27 +56,36 @@ export default function Header() {
           : "bg-white/80 dark:bg-[#0a0a16]/80 backdrop-blur-sm"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-24 md:h-20">
           <div className="scale-[0.85] md:scale-100 origin-left flex-shrink-0 -mt-4">
             <ArtisanLogo />
           </div>
 
           {/* Desktop Nav */}
-          <nav className="hidden lg:flex items-center gap-7">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`text-sm font-medium transition-colors hover:text-coral-600 dark:hover:text-amber-400 ${
-                  pathname === link.href
-                    ? "text-coral-600 dark:text-amber-400 border-b-2 border-coral-500 dark:border-amber-500 pb-0.5"
-                    : "text-forest-700 dark:text-amber-100/70"
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
+          <nav className="hidden lg:block">
+            <ul className="flex items-center gap-8">
+              {navLinks.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className={`relative text-sm font-medium transition-colors hover:text-coral-600 dark:hover:text-amber-400 py-2 ${
+                      pathname === link.href ||
+                      pathname.startsWith(link.href + "/")
+                        ? "text-coral-600 dark:text-amber-400 border-b-2 border-coral-600 dark:border-amber-500"
+                        : "text-forest-700 dark:text-amber-100/70 border-b-2 border-transparent"
+                    }`}
+                  >
+                    {link.label}
+                    {"badge" in link && link.badge && (
+                      <span className="absolute -top-1 -right-6 text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-coral-600 text-white leading-none shadow-sm">
+                        {link.badge}
+                      </span>
+                    )}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </nav>
 
           {/* Right actions */}
@@ -118,7 +121,7 @@ export default function Header() {
             >
               <Heart size={20} />
               {favCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-coral-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-coral-600 border-2 border-white dark:border-[#0a0a16] text-white text-[9px] rounded-full flex items-center justify-center font-bold shadow-sm">
                   {favCount}
                 </span>
               )}
@@ -132,7 +135,7 @@ export default function Header() {
             >
               <ShoppingCart size={20} />
               {cartCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-coral-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-coral-600 border-2 border-white dark:border-[#0a0a16] text-white text-[9px] rounded-full flex items-center justify-center font-bold shadow-sm">
                   {cartCount > 9 ? "9+" : cartCount}
                 </span>
               )}
@@ -157,16 +160,34 @@ export default function Header() {
               exit={{ height: 0, opacity: 0 }}
               className="overflow-hidden"
             >
-              <div className="pb-3">
-                <form onSubmit={handleSearch}>
+              <div className="pb-4">
+                <form
+                  onSubmit={handleSearch}
+                  className="max-w-2xl mx-auto relative mt-1"
+                >
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                    <Search
+                      size={16}
+                      className="text-forest-400 dark:text-amber-100/40"
+                    />
+                  </div>
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search candles, clay art, gift sets..."
                     autoFocus
-                    className="w-full px-4 py-2.5 bg-forest-50 dark:bg-[#1a1830] border border-forest-200 dark:border-amber-900/40 rounded-lg text-sm dark:text-amber-100 focus:outline-none focus:ring-2 focus:ring-coral-400 dark:focus:ring-amber-500 focus:border-transparent placeholder:text-forest-400 dark:placeholder:text-amber-100/30"
+                    className="w-full pl-10 pr-10 py-3 bg-forest-50 dark:bg-[#1a1830] border border-forest-200 dark:border-amber-900/40 rounded-xl text-sm dark:text-amber-100 focus:outline-none focus:ring-2 focus:ring-coral-400 dark:focus:ring-amber-500 focus:border-transparent placeholder:text-forest-400 dark:placeholder:text-amber-100/30 shadow-inner"
                   />
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setSearchQuery("")}
+                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-forest-400 hover:text-coral-600 dark:hover:text-amber-400 transition-colors"
+                    >
+                      <X size={16} />
+                    </button>
+                  )}
                 </form>
               </div>
             </motion.div>
@@ -183,21 +204,25 @@ export default function Header() {
             exit={{ height: 0, opacity: 0 }}
             className="lg:hidden overflow-hidden bg-white dark:bg-[#0f0e1c] border-t border-forest-100 dark:border-amber-900/20"
           >
-            <nav className="px-4 py-4 flex flex-col gap-1">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMenuOpen(false)}
-                  className={`px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                    pathname === link.href
-                      ? "bg-coral-50 dark:bg-amber-900/30 text-coral-700 dark:text-amber-300"
-                      : "text-forest-700 dark:text-amber-100/70 hover:bg-forest-50 dark:hover:bg-amber-900/20"
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
+            <nav className="px-4 py-4 flex flex-col">
+              <ul className="flex flex-col gap-1">
+                {navLinks.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      onClick={() => setMenuOpen(false)}
+                      className={`block px-3 py-3 rounded-xl text-sm font-medium transition-colors ${
+                        pathname === link.href ||
+                        pathname.startsWith(link.href + "/")
+                          ? "bg-coral-50 dark:bg-amber-900/30 text-coral-700 dark:text-amber-300"
+                          : "text-forest-700 dark:text-amber-100/70 hover:bg-forest-50 dark:hover:bg-amber-900/20"
+                      }`}
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
 
               <div className="mt-2 pt-3 border-t border-cream-200 dark:border-amber-900/30 grid grid-cols-3 gap-2">
                 <button
@@ -226,7 +251,7 @@ export default function Header() {
                   <Heart size={18} />
                   <span className="text-xs font-medium">Favorites</span>
                   {favCount > 0 && (
-                    <span className="absolute top-1.5 right-4 w-4 h-4 bg-coral-500 text-white text-[10px] rounded-full flex items-center justify-center font-medium">
+                    <span className="absolute top-1.5 right-4 w-4 h-4 bg-coral-600 text-white text-[9px] border-2 border-white dark:border-[#0f0e1c] rounded-full flex items-center justify-center font-bold">
                       {favCount}
                     </span>
                   )}

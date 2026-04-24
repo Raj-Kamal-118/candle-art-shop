@@ -19,14 +19,30 @@ const options = [
 ];
 
 const journey = [
-  { Icon: Check, label: "Order received", desc: "Confirmation within a minute, by email and WhatsApp." },
-  { Icon: Flame, label: "Hand-poured", desc: "We pour in batches of six, so customizable pieces take 2–5 days." },
-  { Icon: Package, label: "Wrapped & dispatched", desc: "Tissue, kraft, a thank-you note, and a tracking link." },
-  { Icon: Home, label: "Arrives at your door", desc: "Standard 3–5 days · Express 1–2 days. We'll WhatsApp you on delivery day." },
+  {
+    Icon: Check,
+    label: "Order received",
+    desc: "Confirmation within a minute, by email and WhatsApp.",
+  },
+  {
+    Icon: Flame,
+    label: "Hand-poured",
+    desc: "We pour in batches of six, so customizable pieces take 2–5 days.",
+  },
+  {
+    Icon: Package,
+    label: "Wrapped & dispatched",
+    desc: "Tissue, kraft, a thank-you note, and a tracking link.",
+  },
+  {
+    Icon: Home,
+    label: "Arrives at your door",
+    desc: "Standard 3–5 days · Express 1–2 days. We'll WhatsApp you on delivery day.",
+  },
 ];
 
 const zones: Array<[string, string, string]> = [
-  ["Bengaluru (local)", "1–2 days", "Free over ₹1,499"],
+  ["Varanasi (local)", "1–2 days", "Free over ₹1,499"],
   ["Metro cities", "2–3 days", "Free over ₹2,499"],
   ["Rest of India", "4–7 days", "Free over ₹2,999"],
   ["International", "Not available", "Coming 2026"],
@@ -108,11 +124,17 @@ export default function ShippingPage() {
             <div
               key={row[0]}
               className={`grid grid-cols-[1.5fr_1fr_1.5fr] px-6 py-4 text-sm items-center ${
-                i === 0 ? "" : "border-t border-cream-100 dark:border-amber-900/20"
+                i === 0
+                  ? ""
+                  : "border-t border-cream-100 dark:border-amber-900/20"
               }`}
             >
-              <div className="font-medium text-brown-900 dark:text-amber-100">{row[0]}</div>
-              <div className="text-brown-600 dark:text-amber-100/60">{row[1]}</div>
+              <div className="font-medium text-brown-900 dark:text-amber-100">
+                {row[0]}
+              </div>
+              <div className="text-brown-600 dark:text-amber-100/60">
+                {row[1]}
+              </div>
               <div
                 className={
                   isComing

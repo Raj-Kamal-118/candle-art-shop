@@ -11,6 +11,7 @@ import {
   LogOut,
   Layers,
   MessageSquare,
+  Gift,
 } from "lucide-react";
 import ArtisanLogo from "../ui/ArtisanLogo";
 
@@ -21,6 +22,7 @@ const navItems = [
   { href: "/admin/categories", label: "Categories", icon: Tag },
   { href: "/admin/discounts", label: "Discounts", icon: Percent },
   { href: "/admin/orders", label: "Orders", icon: ShoppingBag },
+  { href: "/admin/gift-sets", label: "Gift Sets", icon: Gift },
   { href: "/admin/quotes", label: "Quotes", icon: MessageSquare },
   { href: "/admin/reviews", label: "Reviews", icon: MessageSquare },
 ];
