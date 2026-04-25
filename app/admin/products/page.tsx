@@ -460,13 +460,13 @@ export default function AdminProductsPage() {
       visibleOnStorefront: product.visibleOnStorefront ?? true,
       isUpsell: product.isUpsell ?? false,
       upsellMessage: product.upsellMessage || "",
-      upsellRules: product.upsellRules || {
-        always: false,
-        minCartValue: 0,
-        categoryId: "",
-        freeAtCartValue: 0,
-        needsTextInput: false,
-        textInputLabel: "Gift message",
+      upsellRules: {
+        always: product.upsellRules?.always ?? false,
+        minCartValue: product.upsellRules?.minCartValue ?? 0,
+        categoryId: product.upsellRules?.categoryId ?? "",
+        freeAtCartValue: product.upsellRules?.freeAtCartValue ?? 0,
+        needsTextInput: product.upsellRules?.needsTextInput ?? false,
+        textInputLabel: product.upsellRules?.textInputLabel ?? "Gift message",
       },
     });
     const opts = product.customizationOptions || [];

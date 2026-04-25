@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Enforce one-time use per customer if we have their identity
-    if ((discount as any).oneUsePerCustomer && (userId || phone)) {
+    if (discount.oneUsePerCustomer && (userId || phone)) {
       const alreadyUsed = await hasUserUsedDiscount(code, userId, phone);
       if (alreadyUsed) {
         return NextResponse.json(

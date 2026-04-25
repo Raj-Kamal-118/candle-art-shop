@@ -106,6 +106,7 @@ export interface DiscountCode {
   usedCount: number;
   expiresAt: string;
   active: boolean;
+  oneUsePerCustomer?: boolean;
 }
 
 // ── Addresses & Orders ────────────────────────────────────────────────────────

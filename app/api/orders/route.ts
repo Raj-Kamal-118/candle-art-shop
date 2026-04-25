@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Enforce one-time use per customer
-      if ((discount as any).oneUsePerCustomer) {
+      if (discount.oneUsePerCustomer) {
         const alreadyUsed = await hasUserUsedDiscount(body.discountCode, userId, customerPhone);
         if (alreadyUsed) {
           return NextResponse.json({ error: "You have already used this discount code" }, { status: 400 });

@@ -40,7 +40,7 @@ function mapProduct(row: Record<string, unknown>): Product {
     // cSpell:disable-next-line
     upsellMessage: row.upsell_message as string | undefined,
     // cSpell:disable-next-line
-    upsellRules: (row.upsell_rules as any) || {},
+    upsellRules: (row.upsell_rules as Product["upsellRules"]) || {},
     sortOrder: row.sort_order as number | undefined,
     createdAt: row.created_at as string,
     updatedAt: row.updated_at as string,
@@ -458,7 +458,7 @@ export async function createDiscount(
       used_count: discount.usedCount,
       expires_at: discount.expiresAt,
       active: discount.active,
-      one_use_per_customer: (discount as any).oneUsePerCustomer ?? false,
+      one_use_per_customer: discount.oneUsePerCustomer ?? false,
     })
     .select()
     .single();
@@ -482,8 +482,8 @@ export async function updateDiscount(
   if (updates.expiresAt !== undefined)
     dbUpdates.expires_at = updates.expiresAt;
   if (updates.active !== undefined) dbUpdates.active = updates.active;
-  if ((updates as any).oneUsePerCustomer !== undefined)
-    dbUpdates.one_use_per_customer = (updates as any).oneUsePerCustomer;
+  if (updates.oneUsePerCustomer !== undefined)
+    dbUpdates.one_use_per_customer = updates.oneUsePerCustomer;
 
   const { data, error } = await supabase
     .from("discounts")
