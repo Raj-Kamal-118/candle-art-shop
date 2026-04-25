@@ -24,12 +24,12 @@ export default function SecondaryHeader({
         alt="Header Background"
         className="absolute inset-0 w-full h-full object-cover"
       />
-      <div className="absolute inset-0 bg-black/20 dark:bg-black/40" />
+      <div className="absolute inset-0 bg-black/25 dark:bg-black/40" />
       <div className="relative z-10 max-w-[1440px] mx-auto px-4 sm:px-6">
         <p className="text-[11px] font-semibold text-amber-400 uppercase tracking-[0.24em] drop-shadow-sm">
           {eyebrow}
         </p>
-        <h1 className="font-serif text-6xl font-bold leading-tight mb-3 drop-shadow-md text-forest-900 dark:text-amber-50">
+        <h1 className="font-serif text-6xl font-bold leading-tight mb-3 drop-shadow-md text-white">
           {titlePrefix && `${titlePrefix} `}
           <span style={{ position: "relative", display: "inline-block" }}>
             <span
