@@ -3,6 +3,7 @@
 import ProductGrid from "@/components/products/ProductGrid";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { Sparkles, Gift } from "lucide-react";
 import { useCategoryData } from "./CategoryProvider";
 
@@ -94,9 +95,12 @@ export default function CategoryPage() {
       <section className="relative p-8 border-b border-cream-200 dark:border-amber-900/20 overflow-hidden flex items-center justify-center">
         {/* Background Image */}
         {category.image && (
-          <img
+          <Image
             src={category.image}
             alt={category.name}
+            fill
+            priority
+            sizes="100vw"
             className="absolute inset-0 w-full h-full object-cover"
           />
         )}

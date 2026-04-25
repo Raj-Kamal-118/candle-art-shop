@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 
 const MATERIALS = [
@@ -382,12 +383,15 @@ export default function MaterialsStrip() {
                     justifyContent: "center",
                     fontSize: 48,
                     marginBottom: 12,
+                    position: "relative",
                   }}
                 >
                   {mat.image ? (
-                    <img
+                    <Image
                       src={mat.image}
                       alt={mat.name}
+                      fill
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                   ) : (

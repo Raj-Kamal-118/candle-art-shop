@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 
 const STEPS = [
@@ -487,12 +488,15 @@ export default function CraftProcess() {
                     justifyContent: "center",
                     fontSize: 72,
                     marginBottom: 24,
+                    position: "relative",
                   }}
                 >
                   {step.image ? (
-                    <img
+                    <Image
                       src={step.image}
                       alt={step.title}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                     />
                   ) : (

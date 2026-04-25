@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { Category, Product } from "@/lib/types";
 import ProductCarousel from "@/components/products/ProductCarousel";
@@ -43,9 +44,11 @@ export default function CategoryBannerSection({
         >
           {/* Background image */}
           {category.bannerImage && (
-            <img
+            <Image
               src={category.bannerImage}
               alt={category.bannerTitle || category.name}
+              fill
+              sizes="(max-width: 1024px) 100vw, 50vw"
               className="absolute inset-0 w-full h-full object-cover"
             />
           )}

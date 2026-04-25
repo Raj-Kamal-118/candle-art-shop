@@ -89,13 +89,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${lora.variable} ${dancing.variable}`}
     >
-      <head>
-        <link
-          rel="preconnect"
-          href="https://pub-1f6a6fc4e92548b987db5dbea7cd456e.r2.dev"
-          crossOrigin="anonymous"
-        />
-      </head>
+      <head></head>
       <body>
         <script
           type="application/ld+json"
