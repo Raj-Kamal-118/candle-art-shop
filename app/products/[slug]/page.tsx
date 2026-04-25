@@ -28,6 +28,7 @@ import { Product, Category } from "@/lib/types";
 import { useStore } from "@/lib/store";
 import { formatPrice, getVariantPrice } from "@/lib/utils";
 import Badge from "@/components/ui/Badge";
+import { useProductData } from "./ProductProvider";
 
 // Minimal lucide name → icon lookup for characteristic chips.
 const ICONS: Record<string, any> = {
@@ -45,34 +46,18 @@ const ICONS: Record<string, any> = {
 };
 
 export default function ProductDetailPage() {
-  const { slug } = useParams() as { slug: string };
   const router = useRouter();
   const { addToCart, addToFavorites, removeFromFavorites, isFavorite } =
     useStore();
 
-  const [product, setProduct] = useState<Product | null>(null);
-  const [category, setCategory] = useState<Category | null>(null);
+  const { product, category } = useProductData();
+
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [customizations, setCustomizations] = useState<Record<string, string>>(
     {},
   );
   const [addedToCart, setAddedToCart] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch(`/api/products/slug/${slug}`)
-      .then((r) => r.json())
-      .then((data) => {
-        setProduct(data);
-        if (data.categoryId) {
-          fetch(`/api/categories/${data.categoryId}`)
-            .then((r) => r.json())
-            .then(setCategory);
-        }
-      })
-      .finally(() => setLoading(false));
-  }, [slug]);
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -107,23 +92,6 @@ export default function ProductDetailPage() {
     if (isFavorite(product.id)) removeFromFavorites(product.id);
     else addToFavorites(product);
   };
-
-  if (loading) {
-    return (
-      <div className="bg-[var(--home-bg-alt)] dark:bg-[#1a1612] min-h-screen">
-        <div className="max-w-[1440px] mx-auto px-4 py-12">
-          <div className="animate-pulse grid lg:grid-cols-2 gap-12">
-            <div className="aspect-square bg-cream-200 dark:bg-amber-900/20 rounded-3xl" />
-            <div className="space-y-4">
-              <div className="h-6 bg-cream-200 dark:bg-amber-900/20 rounded w-1/4" />
-              <div className="h-8 bg-cream-200 dark:bg-amber-900/20 rounded w-3/4" />
-              <div className="h-4 bg-cream-200 dark:bg-amber-900/20 rounded w-1/2" />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   if (!product) {
     return (

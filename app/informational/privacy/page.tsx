@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import { Lock, Eye, Share2, UserCheck, Archive } from "lucide-react";
 import SecondaryHeader from "@/components/layout/SecondaryHeader";
 
@@ -28,6 +29,12 @@ const sections = [
     body: "Order records stay with us for 7 years — that's the statutory requirement for GST invoices in India. Account and contact data is kept only for as long as you have an account with us, plus a short grace period after you ask us to delete it.",
   },
 ];
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description:
+    "Learn how Artisan House carefully handles, uses, and protects your personal data. We value your privacy as much as our craftsmanship.",
+};
 
 export default function PrivacyPage() {
   const lastUpdated = new Date().toLocaleDateString("en-IN", {

@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import {
   FileText,
   ShoppingBag,
@@ -40,6 +41,12 @@ const sections = [
     body: "These terms are governed by the laws of India. Any disputes will be resolved in the courts of Varanasi, Karnataka. If any one clause turns out to be unenforceable, the rest still stand.",
   },
 ];
+
+export const metadata: Metadata = {
+  title: "Terms of Service",
+  description:
+    "Read the terms of service for Artisan House. Honest, human-readable rules for browsing and buying our handcrafted candles and clay pieces.",
+};
 
 export default function TermsPage() {
   const lastUpdated = new Date().toLocaleDateString("en-IN", {

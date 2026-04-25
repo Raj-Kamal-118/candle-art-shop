@@ -1,50 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
-import { Category, Product } from "@/lib/types";
 import ProductGrid from "@/components/products/ProductGrid";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Sparkles, Gift } from "lucide-react";
+import { useCategoryData } from "./CategoryProvider";
 
 export default function CategoryPage() {
-  const { slug } = useParams() as { slug: string };
-  const [category, setCategory] = useState<Category | null>(null);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("/api/categories")
-      .then((r) => r.json())
-      .then((cats: Category[]) => {
-        const cat = cats.find((c) => c.slug === slug);
-        if (cat) {
-          setCategory(cat);
-          return fetch(`/api/products?categoryId=${cat.id}`).then((r) =>
-            r.json(),
-          );
-        }
-        return [];
-      })
-      .then(setProducts)
-      .finally(() => setLoading(false));
-  }, [slug]);
-
-  if (loading) {
-    return (
-      <div className="max-w-[1440px] mx-auto px-4 py-32">
-        <div className="animate-pulse space-y-8">
-          <div className="h-48 bg-cream-200 rounded-2xl" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="aspect-square bg-cream-200 rounded-2xl" />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const { category, products } = useCategoryData();
 
   if (!category) {
     return (
@@ -53,6 +16,8 @@ export default function CategoryPage() {
       </div>
     );
   }
+
+  const slug = category.slug;
 
   const displayTitle = category.bannerTitle || category.name || "";
   const titleWords = displayTitle.trim().split(" ");

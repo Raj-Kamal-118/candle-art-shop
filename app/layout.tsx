@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+// @ts-ignore - Next.js handles CSS bundling automatically
 import "./globals.css";
 import { Lora, Dancing_Script } from "next/font/google";
 import Header from "@/components/layout/Header";
@@ -23,9 +24,38 @@ const dancing = Dancing_Script({
 });
 
 export const metadata: Metadata = {
-  title: "Artisan House — Candles | Clays | Crafts",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://www.artisanhouse.in",
+  ),
+  title: {
+    default: "Artisan House — Candles | Clays | Crafts",
+    template: "%s | Artisan House",
+  },
   description:
     "Discover handcrafted candles, clay art, and creative crafts at Artisan House. Each piece is made with love and intention. Shop at artisanhouse.in",
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: "/",
+    siteName: "Artisan House",
+    title: "Artisan House — Candles | Clays | Crafts",
+    description:
+      "Discover handcrafted candles, clay art, and creative crafts at Artisan House.",
+    images: [
+      {
+        url: "/og-image.jpg", // Create a 1200x630 image and place it in the /public folder
+        width: 1200,
+        height: 630,
+        alt: "Artisan House - Handcrafted Candles",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Artisan House — Candles | Clays | Crafts",
+    description:
+      "Discover handcrafted candles, clay art, and creative crafts at Artisan House.",
+  },
 };
 
 export default function RootLayout({
@@ -33,6 +63,22 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const orgSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Artisan House",
+    url: "https://www.artisanhouse.in",
+    logo: "https://pub-1f6a6fc4e92548b987db5dbea7cd456e.r2.dev/candle-art-shop-images/Asset/assets-03%20(2).png",
+    contactPoint: {
+      "@type": "ContactPoint",
+      telephone: "+91-95194-86785",
+      contactType: "customer service",
+      email: "artisanhouse.in@gmail.com",
+      availableLanguage: "English",
+    },
+    sameAs: ["https://www.instagram.com/artisanhouse.in"],
+  };
+
   return (
     <html
       lang="en"
@@ -40,11 +86,17 @@ export default function RootLayout({
       className={`${lora.variable} ${dancing.variable}`}
     >
       <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
+        />
         <ThemeProvider>
           <Header />
           <main className="pt-28 md:pt-20">{children}</main>
           <Footer />
         </ThemeProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
