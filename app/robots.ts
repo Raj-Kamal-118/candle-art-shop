@@ -1,6 +1,8 @@
 import { MetadataRoute } from "next";
 
-export default function robots(): MetadataRoute.Robots {
+export const dynamic = "force-dynamic";
+
+export default async function robots(): Promise<MetadataRoute.Robots> {
   // Fallback to production URL if env var is missing
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.artisanhouse.in";
 

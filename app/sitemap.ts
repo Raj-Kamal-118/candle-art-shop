@@ -1,6 +1,8 @@
 import { MetadataRoute } from "next";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export const dynamic = "force-dynamic";
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Fallback to production URL if env var is missing
   const rawBaseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.artisanhouse.in";
   const baseUrl = rawBaseUrl.replace(/\/$/, ""); // strips accidental trailing slashes
@@ -23,9 +25,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/informational/terms",
   ];
 
+  const now = new Date();
+
   const staticPages = staticRoutes.map((route) => ({
     url: `${baseUrl}${route}`,
-    lastModified: new Date(),
+    lastModified: now,
     changeFrequency: "weekly" as const,
     priority: route === "" ? 1.0 : 0.8,
   }));
@@ -40,7 +44,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const categoryPages = categories.map((slug) => ({
     url: `${baseUrl}/categories/${slug}`,
-    lastModified: new Date(),
+    lastModified: now,
     changeFrequency: "weekly" as const,
     priority: 0.7,
   }));
@@ -70,7 +74,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const productPages = products.map((slug) => ({
     url: `${baseUrl}/products/${slug}`,
-    lastModified: new Date(),
+    lastModified: now,
     changeFrequency: "weekly" as const,
     priority: 0.6,
   }));
@@ -87,7 +91,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const giftSetPages = giftSets.map((slug) => ({
     url: `${baseUrl}/gift-sets/${slug}`,
-    lastModified: new Date(),
+    lastModified: now,
     changeFrequency: "weekly" as const,
     priority: 0.7,
   }));
