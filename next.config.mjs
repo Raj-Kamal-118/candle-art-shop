@@ -26,6 +26,21 @@ const nextConfig = {
     optimizePackageImports: ["lucide-react", "framer-motion"],
     optimizeCss: true,
   },
+  async headers() {
+    return [
+      {
+        // Apply aggressive caching to all static assets in the public folder
+        source:
+          "/(.*).(png|jpg|jpeg|gif|webp|avif|ico|svg|woff|woff2|ttf|otf|mp4)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+    ];
+  },
 };
 
 const bundleAnalyzer = withBundleAnalyzer({

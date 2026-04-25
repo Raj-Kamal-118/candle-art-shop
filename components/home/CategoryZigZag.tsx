@@ -365,12 +365,13 @@ function PhotoStack({
               aria-hidden="true"
             />
             {src ? (
-              <div className="relative w-full h-full rounded-[20px] overflow-hidden">
+              <div className="relative w-full h-full rounded-[20px] overflow-hidden bg-cream-50 dark:bg-black/20">
                 <Image
                   src={src}
                   alt={`${alt} photo ${i + 1}`}
                   fill
-                  sizes="(max-width: 1024px) 100vw, 650px"
+                  sizes="(max-width: 650px) 100vw, 650px"
+                  priority={baseTiltIdx === 0 && i === 0}
                   className="object-cover"
                 />
               </div>

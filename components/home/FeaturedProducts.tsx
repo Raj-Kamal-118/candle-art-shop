@@ -397,12 +397,13 @@ function FeaturedPhotoStack({
             {/* Polaroid Photo Wrapper */}
             <div className="w-full h-full p-2.5 pb-12 md:pb-14 bg-white dark:bg-[#1a1830] rounded-xl border border-gray-100 dark:border-amber-900/30 flex flex-col">
               {img ? (
-                <div className="relative w-full h-full rounded-lg overflow-hidden">
+                <div className="relative w-full h-full rounded-lg overflow-hidden bg-cream-50 dark:bg-black/20">
                   <Image
                     src={img}
                     alt={`${product.name} - view ${idx + 1}`}
                     fill
-                    sizes="(max-width: 768px) 50vw, 350px"
+                    sizes="(max-width: 768px) 100vw, 400px"
+                    priority={activeIndex === 0 && idx === 0}
                     className="object-cover"
                   />
                 </div>

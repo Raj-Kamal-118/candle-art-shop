@@ -52,8 +52,8 @@ export default function Header() {
     <header
       className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
         scrolled
-          ? "bg-white/95 dark:bg-[#0a0a16]/95 backdrop-blur-md shadow-sm dark:shadow-amber-900/10"
-          : "bg-white/80 dark:bg-[#0a0a16]/80 backdrop-blur-sm"
+          ? "bg-cream-200/95 dark:bg-[#0a0a16]/95 backdrop-blur-md shadow-sm dark:shadow-amber-900/10"
+          : "bg-cream-100/90 dark:bg-[#0a0a16]/80 backdrop-blur-sm"
       }`}
     >
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6">
@@ -214,7 +214,7 @@ export default function Header() {
                       className={`block px-3 py-3 rounded-xl text-sm font-medium transition-colors ${
                         pathname === link.href ||
                         pathname.startsWith(link.href + "/")
-                          ? "bg-coral-50 dark:bg-amber-900/30 text-coral-700 dark:text-amber-300"
+                          ? "bg-coral-50 dark:bg-amber-900/30 text-coral-600 dark:text-amber-300"
                           : "text-forest-700 dark:text-amber-100/70 hover:bg-forest-50 dark:hover:bg-amber-900/20"
                       }`}
                     >
