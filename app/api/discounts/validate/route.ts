@@ -1,14 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDiscountByCode } from "@/lib/data";
+import { getDiscountByCode, hasUserUsedDiscount } from "@/lib/data";
 
 export async function POST(request: NextRequest) {
   try {
-    const { code, subtotal } = await request.json();
+    const body = await request.json();
+    const { code, subtotal } = body;
 
-    if (!code) {
+    // Pull userId from session cookie (if logged in) or body fallback
+    const userId =
+      request.cookies.get("user_session")?.value || body.userId || undefined;
+    // Get phone from body if available (from shipping address)
+    const phone = body.phone || undefined;
+
+    if (!code || subtotal === undefined) {
       return NextResponse.json(
-        { error: "Discount code is required" },
-        { status: 400 }
+        { error: "Missing code or subtotal" },
+        { status: 400 },
       );
     }
 
@@ -17,45 +24,55 @@ export async function POST(request: NextRequest) {
     if (!discount) {
       return NextResponse.json(
         { error: "Invalid discount code" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     if (!discount.active) {
       return NextResponse.json(
         { error: "This discount code is no longer active" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    if (new Date(discount.expiresAt) < new Date()) {
+    if (discount.expiresAt && new Date(discount.expiresAt) < new Date()) {
       return NextResponse.json(
         { error: "This discount code has expired" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (discount.usedCount >= discount.maxUses) {
       return NextResponse.json(
         { error: "This discount code has reached its usage limit" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (subtotal < discount.minOrderAmount) {
       return NextResponse.json(
-        {
-          error: `Minimum order amount of ₹${discount.minOrderAmount} required for this code`,
-        },
-        { status: 400 }
+        { error: `Minimum order amount of ₹${discount.minOrderAmount} not met` },
+        { status: 400 },
       );
     }
 
+    // Enforce one-time use per customer if we have their identity
+    if ((discount as any).oneUsePerCustomer && (userId || phone)) {
+      const alreadyUsed = await hasUserUsedDiscount(code, userId, phone);
+      if (alreadyUsed) {
+        return NextResponse.json(
+          { error: "You have already used this discount code" },
+          { status: 400 },
+        );
+      }
+    }
+
     return NextResponse.json({ discount });
-  } catch {
+  } catch (error) {
+    console.error("Discount validation error:", error);
     return NextResponse.json(
-      { error: "Failed to validate discount code" },
-      { status: 500 }
+      { error: "Failed to validate discount" },
+      { status: 500 },
     );
   }
 }

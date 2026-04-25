@@ -76,7 +76,28 @@ export default function ProductDetailPage() {
 
   const handleAddToCart = () => {
     if (!product) return;
-    addToCart(product, quantity, customizations);
+
+    const finalCustomizations = { ...customizations };
+    if (product.customizable && product.customizationOptions) {
+      product.customizationOptions.forEach((opt) => {
+        if (!finalCustomizations[opt.label]) {
+          if (opt.type === "color") {
+            finalCustomizations[opt.label] = "#d97706";
+          } else if (
+            opt.type === "select" &&
+            opt.options &&
+            opt.options.length > 0
+          ) {
+            finalCustomizations[opt.label] = opt.options[0];
+          } else if (opt.type === "text") {
+            finalCustomizations[opt.label] = "";
+          }
+        }
+      });
+    }
+
+    setCustomizations(finalCustomizations);
+    addToCart(product, quantity, finalCustomizations);
     setAddedToCart(true);
     setTimeout(() => setAddedToCart(false), 2000);
   };
@@ -407,9 +428,9 @@ export default function ProductDetailPage() {
                 <ShoppingCart size={18} />
                 {addedToCart
                   ? "Added to cart!"
-                  : product.inStock
-                    ? "Add to cart"
-                    : "Out of stock"}
+                  : !product.inStock
+                    ? "Out of stock"
+                    : "Add to cart"}
               </button>
               <button
                 onClick={toggleFavorite}

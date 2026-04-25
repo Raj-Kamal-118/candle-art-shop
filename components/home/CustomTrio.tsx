@@ -94,11 +94,10 @@ export default function CustomTrio() {
           <h2
             style={{
               fontFamily: "var(--font-serif)",
-              fontSize: "clamp(40px, 6vw, 72px)",
+              fontSize: "clamp(40px, 6vw, 60px)",
               fontWeight: 900,
               color: "var(--home-text)",
               margin: "0 0 16px",
-              letterSpacing: "-.03em",
               lineHeight: 1,
             }}
           >
@@ -111,7 +110,7 @@ export default function CustomTrio() {
                   fontStyle: "normal",
                   color: "var(--home-coral)",
                   fontWeight: 700,
-                  fontSize: "1.1em",
+                  fontSize: "1.08em",
                 }}
               >
                 just for you.

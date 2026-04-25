@@ -12,17 +12,17 @@ interface CartStore {
   currentUser: User | null;
 
   addToCart: (product: Product, quantity?: number, customizations?: Record<string, string>, giftSet?: CartGiftSet) => void;
-  removeFromCart: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  removeFromCart: (productId: string, customizations?: Record<string, string>, giftSet?: CartGiftSet) => void;
+  updateQuantity: (productId: string, quantity: number, customizations?: Record<string, string>, giftSet?: CartGiftSet) => void;
   clearCart: () => void;
 
   addToFavorites: (product: Product) => void;
   removeFromFavorites: (productId: string) => void;
   isFavorite: (productId: string) => boolean;
 
-  saveForLater: (productId: string) => void;
-  moveToCart: (productId: string) => void;
-  removeSavedItem: (productId: string) => void;
+  saveForLater: (productId: string, customizations?: Record<string, string>, giftSet?: CartGiftSet) => void;
+  moveToCart: (productId: string, customizations?: Record<string, string>, giftSet?: CartGiftSet) => void;
+  removeSavedItem: (productId: string, customizations?: Record<string, string>, giftSet?: CartGiftSet) => void;
 
   cartTotal: () => number;
   cartCount: () => number;
@@ -42,16 +42,22 @@ export const useStore = create<CartStore>()(
       addToCart: (product, quantity = 1, customizations, giftSet) => {
         const price = getVariantPrice(product, customizations);
         set((state) => {
-          const existing = state.cartItems.find(
-            (item) => item.product.id === product.id
+          const existingIndex = state.cartItems.findIndex(
+            (item) => 
+              item.product.id === product.id && 
+              JSON.stringify(item.customizations || {}) === JSON.stringify(customizations || {}) &&
+              JSON.stringify(item.giftSet || null) === JSON.stringify(giftSet || null)
           );
-          if (existing && !giftSet) {
+          
+          if (existingIndex >= 0 && !giftSet) {
+            const updatedItems = [...state.cartItems];
+            updatedItems[existingIndex] = {
+              ...updatedItems[existingIndex],
+              quantity: updatedItems[existingIndex].quantity + quantity,
+              price
+            };
             return {
-              cartItems: state.cartItems.map((item) =>
-                item.product.id === product.id
-                  ? { ...item, quantity: item.quantity + quantity, price }
-                  : item
-              ),
+              cartItems: updatedItems,
             };
           }
           return {
@@ -63,22 +69,28 @@ export const useStore = create<CartStore>()(
         });
       },
 
-      removeFromCart: (productId) => {
-        set((state) => ({
-          cartItems: state.cartItems.filter(
-            (item) => item.product.id !== productId
-          ),
-        }));
+      removeFromCart: (productId, customizations, giftSet) => {
+        set((state) => {
+          const itemIndex = state.cartItems.findIndex(
+            (i) => i.product.id === productId && JSON.stringify(i.customizations || {}) === JSON.stringify(customizations || {}) && JSON.stringify(i.giftSet || null) === JSON.stringify(giftSet || null)
+          );
+          if (itemIndex === -1) return state;
+          const newCartItems = [...state.cartItems];
+          newCartItems.splice(itemIndex, 1);
+          return { cartItems: newCartItems };
+        });
       },
 
-      updateQuantity: (productId, quantity) => {
+      updateQuantity: (productId, quantity, customizations, giftSet) => {
         if (quantity <= 0) {
-          get().removeFromCart(productId);
+          get().removeFromCart(productId, customizations, giftSet);
           return;
         }
         set((state) => ({
           cartItems: state.cartItems.map((item) =>
-            item.product.id === productId ? { ...item, quantity } : item
+            (item.product.id === productId && JSON.stringify(item.customizations || {}) === JSON.stringify(customizations || {}) && JSON.stringify(item.giftSet || null) === JSON.stringify(giftSet || null))
+              ? { ...item, quantity }
+              : item
           ),
         }));
       },
@@ -104,42 +116,65 @@ export const useStore = create<CartStore>()(
         return get().favoriteItems.some((p) => p.id === productId);
       },
 
-      saveForLater: (productId) => {
+      saveForLater: (productId, customizations, giftSet) => {
         set((state) => {
-          const item = state.cartItems.find(
-            (i) => i.product.id === productId
+          const itemIndex = state.cartItems.findIndex(
+            (i) => i.product.id === productId && JSON.stringify(i.customizations || {}) === JSON.stringify(customizations || {}) && JSON.stringify(i.giftSet || null) === JSON.stringify(giftSet || null)
           );
-          if (!item) return state;
+          if (itemIndex === -1) return state;
+          const item = state.cartItems[itemIndex];
+          const newCartItems = [...state.cartItems];
+          newCartItems.splice(itemIndex, 1);
           return {
-            cartItems: state.cartItems.filter(
-              (i) => i.product.id !== productId
-            ),
+            cartItems: newCartItems,
             savedForLaterItems: [...state.savedForLaterItems, item],
           };
         });
       },
 
-      moveToCart: (productId) => {
+      moveToCart: (productId, customizations, giftSet) => {
         set((state) => {
-          const item = state.savedForLaterItems.find(
-            (i) => i.product.id === productId
+          const itemIndex = state.savedForLaterItems.findIndex(
+            (i) => i.product.id === productId && JSON.stringify(i.customizations || {}) === JSON.stringify(customizations || {}) && JSON.stringify(i.giftSet || null) === JSON.stringify(giftSet || null)
           );
-          if (!item) return state;
+          if (itemIndex === -1) return state;
+          const item = state.savedForLaterItems[itemIndex];
+          const newSavedItems = [...state.savedForLaterItems];
+          newSavedItems.splice(itemIndex, 1);
+
+          const existingInCartIndex = state.cartItems.findIndex(
+            (i) => i.product.id === productId && JSON.stringify(i.customizations || {}) === JSON.stringify(customizations || {}) && JSON.stringify(i.giftSet || null) === JSON.stringify(giftSet || null)
+          );
+          
+          if (existingInCartIndex >= 0 && !item.giftSet) {
+            const newCartItems = [...state.cartItems];
+            newCartItems[existingInCartIndex] = {
+              ...newCartItems[existingInCartIndex],
+              quantity: newCartItems[existingInCartIndex].quantity + item.quantity
+            };
+            return {
+              savedForLaterItems: newSavedItems,
+              cartItems: newCartItems
+            };
+          }
+
           return {
-            savedForLaterItems: state.savedForLaterItems.filter(
-              (i) => i.product.id !== productId
-            ),
+            savedForLaterItems: newSavedItems,
             cartItems: [...state.cartItems, item],
           };
         });
       },
 
-      removeSavedItem: (productId) => {
-        set((state) => ({
-          savedForLaterItems: state.savedForLaterItems.filter(
-            (i) => i.product.id !== productId
-          ),
-        }));
+      removeSavedItem: (productId, customizations, giftSet) => {
+        set((state) => {
+          const itemIndex = state.savedForLaterItems.findIndex(
+            (i) => i.product.id === productId && JSON.stringify(i.customizations || {}) === JSON.stringify(customizations || {}) && JSON.stringify(i.giftSet || null) === JSON.stringify(giftSet || null)
+          );
+          if (itemIndex === -1) return state;
+          const newSavedItems = [...state.savedForLaterItems];
+          newSavedItems.splice(itemIndex, 1);
+          return { savedForLaterItems: newSavedItems };
+        });
       },
 
       cartTotal: () => {

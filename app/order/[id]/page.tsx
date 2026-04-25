@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { Flame, Check, Package, Home, ArrowRight } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
+import SecondaryHeader from "@/components/layout/SecondaryHeader";
 
 type Order = {
   id: string;
@@ -96,39 +97,17 @@ export default function OrderSuccessPage() {
           "linear-gradient(180deg, var(--cream-100, #faf7f0), var(--cream-50, #fdfcf9), var(--coral-50, #fdf3f2))",
       }}
     >
-      <div
-        className="absolute -top-40 -right-24 w-[400px] h-[400px] rounded-full pointer-events-none"
-        style={{ background: "rgba(251,204,201,.3)", filter: "blur(80px)" }}
-      />
-      <div
-        className="absolute -bottom-40 -left-24 w-[400px] h-[400px] rounded-full pointer-events-none"
-        style={{ background: "rgba(253,230,138,.4)", filter: "blur(80px)" }}
+      <SecondaryHeader
+        eyebrow="✦ Order placed ✦"
+        titlePrefix="Your story"
+        titleHighlighted="begins."
+        description={`Thank you, ${firstName}. We've started hand-pouring your order in
+          our Varanasi studio. You'll hear from us again when it ships —
+          with a little something extra.`}
+        backgroundImage="/images/misc/checkout.png"
       />
 
       <div className="relative max-w-[720px] mx-auto px-6 py-20 text-center">
-        <div className="relative w-24 h-24 rounded-full bg-white mx-auto mb-8 flex items-center justify-center shadow-[0_20px_40px_-10px_rgba(215,110,96,.3)]">
-          <div
-            className="absolute -inset-3 rounded-full -z-0"
-            style={{
-              background: "rgba(253,230,138,.5)",
-              filter: "blur(20px)",
-            }}
-          />
-          <Flame size={44} className="relative text-coral-600" />
-        </div>
-
-        <div className="text-[13px] font-semibold tracking-[0.2em] uppercase text-amber-700 dark:text-amber-400 mb-4">
-          Order placed
-        </div>
-        <h1 className="font-serif text-5xl md:text-[56px] font-bold text-brown-900 dark:text-amber-100 leading-[1.05] mb-5">
-          Your story <span className="text-coral-600 italic">begins.</span>
-        </h1>
-        <p className="text-lg leading-[1.7] text-brown-700 dark:text-amber-100/70 max-w-[520px] mx-auto mb-10">
-          Thank you, {firstName}. We&apos;ve started hand-pouring your order in
-          our Varanasi studio. You&apos;ll hear from us again when it ships —
-          with a little something extra.
-        </p>
-
         <div className="inline-flex flex-wrap items-center gap-6 md:gap-8 bg-white dark:bg-[#1a1830] rounded-2xl px-6 md:px-9 py-5 shadow-sm border border-cream-200 dark:border-amber-900/30 mb-10">
           <div>
             <div className="text-[11px] text-brown-500 dark:text-amber-100/50 uppercase tracking-[0.1em]">

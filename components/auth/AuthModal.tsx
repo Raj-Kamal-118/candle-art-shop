@@ -255,11 +255,6 @@ export default function AuthModal({
                   className="w-full pl-10 pr-4 py-3 text-sm border border-brown-300 dark:border-amber-900/50 rounded-xl bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-400 dark:text-amber-100"
                 />
               </div>
-              {name && (
-                <p className="text-xs text-amber-600 dark:text-amber-400 pl-1 animate-pulse">
-                  Nice to meet you, {name.split(" ")[0]}! ✨
-                </p>
-              )}
             </div>
           )}
 

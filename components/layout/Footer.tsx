@@ -140,7 +140,7 @@ export default function Footer() {
                   <span className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-coral-600 group-hover:border-coral-600 transition-colors flex-shrink-0">
                     <MessageCircle size={14} />
                   </span>
-                  +91 80091 70754
+                  +91 95194 86785
                 </a>
               </li>
               <li>

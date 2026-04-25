@@ -30,6 +30,10 @@ CREATE TABLE IF NOT EXISTS products (
   featured               BOOLEAN  NOT NULL DEFAULT FALSE,
   customizable           BOOLEAN  NOT NULL DEFAULT FALSE,
   customization_options  JSONB    NOT NULL DEFAULT '[]',
+  visible_on_storefront  BOOLEAN  NOT NULL DEFAULT TRUE,
+  is_upsell              BOOLEAN  NOT NULL DEFAULT FALSE,
+  upsell_message         TEXT,
+  upsell_rules           JSONB    NOT NULL DEFAULT '{}',
   created_at             TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at             TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -44,7 +48,8 @@ CREATE TABLE IF NOT EXISTS discounts (
   max_uses          INTEGER NOT NULL DEFAULT 100,
   used_count        INTEGER NOT NULL DEFAULT 0,
   expires_at        TIMESTAMPTZ,
-  active            BOOLEAN NOT NULL DEFAULT TRUE
+  active            BOOLEAN NOT NULL DEFAULT TRUE,
+  one_use_per_customer BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 -- Orders
@@ -86,6 +91,13 @@ ALTER TABLE products    ENABLE ROW LEVEL SECURITY;
 ALTER TABLE discounts   ENABLE ROW LEVEL SECURITY;
 ALTER TABLE orders      ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reviews     ENABLE ROW LEVEL SECURITY;
+
+-- Add columns safely if tables already exist
+ALTER TABLE products ADD COLUMN IF NOT EXISTS visible_on_storefront BOOLEAN NOT NULL DEFAULT TRUE;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS is_upsell BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS upsell_message TEXT;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS upsell_rules JSONB NOT NULL DEFAULT '{}';
+ALTER TABLE discounts ADD COLUMN IF NOT EXISTS one_use_per_customer BOOLEAN NOT NULL DEFAULT FALSE;
 
 -- Service role bypasses RLS automatically, so no policies needed
 -- for the server-side Next.js app. Public (anon) access is blocked.
@@ -159,10 +171,10 @@ ON CONFLICT (id) DO NOTHING;
 -- ============================================================
 -- Seed: discounts
 -- ============================================================
-INSERT INTO discounts (id, code, type, value, min_order_amount, max_uses, used_count, expires_at, active) VALUES
-  ('disc-1', 'WELCOME10',  'percentage', 10,  0,    100, 0, NOW() + INTERVAL '1 year', TRUE),
-  ('disc-2', 'SAVE500',    'fixed',      500, 2000, 50,  0, NOW() + INTERVAL '6 months', TRUE),
-  ('disc-3', 'FESTIVE20',  'percentage', 20,  5000, 200, 0, NOW() + INTERVAL '3 months', TRUE)
+INSERT INTO discounts (id, code, type, value, min_order_amount, max_uses, used_count, expires_at, active, one_use_per_customer) VALUES
+  ('disc-1', 'WELCOME10',  'percentage', 10,  0,    100, 0, NOW() + INTERVAL '1 year', TRUE, TRUE),
+  ('disc-2', 'SAVE500',    'fixed',      500, 2000, 50,  0, NOW() + INTERVAL '6 months', TRUE, FALSE),
+  ('disc-3', 'FESTIVE20',  'percentage', 20,  5000, 200, 0, NOW() + INTERVAL '3 months', TRUE, FALSE)
 ON CONFLICT (id) DO NOTHING;
 
 -- ============================================================

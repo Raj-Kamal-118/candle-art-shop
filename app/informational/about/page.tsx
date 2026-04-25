@@ -1,4 +1,5 @@
 import { Flame, Leaf, Heart, Quote } from "lucide-react";
+import SecondaryHeader from "@/components/layout/SecondaryHeader";
 
 const values = [
   {
@@ -27,37 +28,18 @@ const stats: Array<[string, string]> = [
 
 export default function AboutPage() {
   return (
-    <div className="bg-cream-50 dark:bg-[#0f0e1c]">
-      {/* Hero */}
-      <section className="relative px-6 pt-20 pb-32 overflow-hidden bg-gradient-to-br from-cream-100 to-cream-50 dark:from-[#1a1830] dark:to-[#0f0e1c]">
-        <div
-          className="absolute top-[20%] -right-[10%] w-[500px] h-[500px] rounded-full pointer-events-none"
-          style={{
-            background: "rgba(251,204,201,.25)",
-            filter: "blur(80px)",
-          }}
-        />
-        <div className="relative max-w-[900px] mx-auto text-center">
-          <div className="text-[13px] font-semibold tracking-[0.2em] uppercase text-amber-700 dark:text-amber-400 mb-4">
-            Our Story
-          </div>
-          <h1 className="font-serif text-5xl md:text-6xl lg:text-[72px] font-bold text-brown-900 dark:text-amber-100 leading-[1.02] tracking-tight mb-6">
-            A little <span className="text-coral-600 italic">warmth,</span>
-            <br />
-            hand-poured by two sisters.
-          </h1>
-          <p className="text-lg md:text-xl leading-[1.6] text-brown-700 dark:text-amber-100/70 font-light max-w-[680px] mx-auto">
-            Artisan House began in 2021 in a kitchen in Varanasi, with a single
-            cotton wick and a borrowed melting pot. Today we ship candles and
-            clay art across India — still hand-poured, still in small batches of
-            six.
-          </p>
-        </div>
-      </section>
+    <main className="min-h-screen bg-[var(--home-bg-alt)] dark:bg-[#1a1612] pb-20">
+      <SecondaryHeader
+        eyebrow="✦ Our Story ✦"
+        titlePrefix="A little"
+        titleHighlighted="warmth"
+        titleSuffix="."
+        description="Artisan House began in 2021 in a kitchen in Varanasi, with a single cotton wick and a borrowed melting pot. Today we ship candles and clay art across India — still hand-poured, still in small batches of six."
+      />
 
       {/* Image */}
-      <section className="px-6 pb-20 -mt-16 relative z-10">
-        <div className="max-w-[1180px] mx-auto">
+      <section className="px-4 sm:px-6 py-16 relative z-10">
+        <div className="max-w-[1200px] mx-auto">
           <div className="rounded-3xl overflow-hidden shadow-2xl aspect-[21/9] relative bg-cream-100 dark:bg-[#1a1830]">
             <img
               src="https://loremflickr.com/1400/600/candle,workshop,craft?lock=601"
@@ -126,6 +108,6 @@ export default function AboutPage() {
           ))}
         </div>
       </section>
-    </div>
+    </main>
   );
 }

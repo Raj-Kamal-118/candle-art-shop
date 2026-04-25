@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Plus, Minus, ArrowRight } from "lucide-react";
-import InfoShell from "@/components/informational/InfoShell";
+import SecondaryHeader from "@/components/layout/SecondaryHeader";
 
 const faqs = [
   {
@@ -121,54 +121,54 @@ export default function FAQPage() {
   );
 
   return (
-    <InfoShell
-      eyebrow="Frequently Asked"
-      title={
-        <>
-          Your questions,{" "}
-          <span className="text-coral-600 italic">answered</span>
-        </>
-      }
-      subtitle="Most of what you'd like to know, plus a few things we wish everyone asked sooner."
-      sidebar={sidebar}
-    >
-      <div className="flex flex-col gap-2">
-        {filtered.map((f, i) => {
-          const isOpen = open === i;
-          return (
-            <div
-              key={`${category}-${i}`}
-              className="bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-900/30 rounded-xl overflow-hidden"
-            >
-              <button
-                onClick={() => setOpen(isOpen ? -1 : i)}
-                aria-expanded={isOpen}
-                className="w-full px-6 py-[18px] flex items-center justify-between text-left"
+    <main className="min-h-screen bg-[var(--home-bg-alt)] dark:bg-[#1a1612] pb-20">
+      <SecondaryHeader
+        eyebrow="✦ Frequently Asked ✦"
+        titlePrefix="Your questions,"
+        titleHighlighted="answered"
+        titleSuffix="."
+        description="Most of what you'd like to know, plus a few things we wish everyone asked sooner."
+      />
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-12 grid md:grid-cols-[280px_1fr] gap-10 md:gap-16 items-start">
+        {sidebar}
+        <div className="flex flex-col gap-3">
+          {filtered.map((f, i) => {
+            const isOpen = open === i;
+            return (
+              <div
+                key={`${category}-${i}`}
+                className="bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-900/30 rounded-xl overflow-hidden"
               >
-                <span className="text-[15px] font-semibold text-brown-900 dark:text-amber-100 pr-5">
-                  {f.q}
-                </span>
-                {isOpen ? (
-                  <Minus
-                    size={18}
-                    className="text-amber-700 dark:text-amber-400 flex-none"
-                  />
-                ) : (
-                  <Plus
-                    size={18}
-                    className="text-amber-700 dark:text-amber-400 flex-none"
-                  />
+                <button
+                  onClick={() => setOpen(isOpen ? -1 : i)}
+                  aria-expanded={isOpen}
+                  className="w-full px-6 py-[18px] flex items-center justify-between text-left"
+                >
+                  <span className="text-[15px] font-semibold text-brown-900 dark:text-amber-100 pr-5">
+                    {f.q}
+                  </span>
+                  {isOpen ? (
+                    <Minus
+                      size={18}
+                      className="text-amber-700 dark:text-amber-400 flex-none"
+                    />
+                  ) : (
+                    <Plus
+                      size={18}
+                      className="text-amber-700 dark:text-amber-400 flex-none"
+                    />
+                  )}
+                </button>
+                {isOpen && (
+                  <div className="px-6 pb-5 pt-4 text-[15px] leading-[1.7] text-brown-700 dark:text-amber-100/70 border-t border-cream-100 dark:border-amber-900/20">
+                    {f.a}
+                  </div>
                 )}
-              </button>
-              {isOpen && (
-                <div className="px-6 pb-5 pt-4 text-[15px] leading-[1.7] text-brown-700 dark:text-amber-100/70 border-t border-cream-100 dark:border-amber-900/20">
-                  {f.a}
-                </div>
-              )}
-            </div>
-          );
-        })}
+              </div>
+            );
+          })}
+        </div>
       </div>
-    </InfoShell>
+    </main>
   );
 }

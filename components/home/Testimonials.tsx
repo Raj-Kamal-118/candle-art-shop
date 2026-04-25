@@ -63,7 +63,6 @@ export default function Testimonials({ reviews = [] }: { reviews?: Review[] }) {
               fontWeight: 900,
               color: "var(--home-text)",
               margin: "0 0 14px",
-              letterSpacing: "-.025em",
               lineHeight: 1,
             }}
           >
@@ -76,7 +75,7 @@ export default function Testimonials({ reviews = [] }: { reviews?: Review[] }) {
                   fontStyle: "normal",
                   color: "var(--home-coral)",
                   fontWeight: 700,
-                  fontSize: "1.1em",
+                  fontSize: "1.08em",
                 }}
               >
                 warmth

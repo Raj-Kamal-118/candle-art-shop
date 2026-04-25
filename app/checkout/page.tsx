@@ -19,6 +19,7 @@ import PaymentStep from "@/components/checkout/PaymentStep";
 import OrderSummary from "@/components/checkout/OrderSummary";
 import AuthModal from "@/components/auth/AuthModal";
 import Button from "@/components/ui/Button";
+import SecondaryHeader from "@/components/layout/SecondaryHeader";
 
 type Step = "address" | "payment" | "confirmation";
 
@@ -92,7 +93,12 @@ function CheckoutContent() {
       const res = await fetch("/api/discounts/validate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: discountInput, subtotal }),
+        body: JSON.stringify({
+          code: discountInput,
+          subtotal,
+          userId: verifiedUser?.id,
+          phone: shippingAddress?.phone,
+        }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -141,6 +147,7 @@ function CheckoutContent() {
           subtotal,
           discount: discountAmount,
           shipping,
+          codFee,
           total,
           discountCode: discountCode || undefined,
           shippingAddress,
@@ -152,6 +159,11 @@ function CheckoutContent() {
       });
 
       const order = await res.json();
+
+      if (!res.ok) {
+        throw new Error(order.error || "Failed to place order");
+      }
+
       if (paymentMethod === "online") {
         const ppRes = await fetch("/api/payment/phonepe", {
           method: "POST",
@@ -177,7 +189,11 @@ function CheckoutContent() {
         return;
       }
     } catch (error) {
-      setPaymentError("Something went wrong while placing your order.");
+      setPaymentError(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong while placing your order.",
+      );
       setPlacingOrder(false);
     } finally {
       setPlacingOrder(false);
@@ -195,55 +211,13 @@ function CheckoutContent() {
   return (
     <main className="min-h-screen bg-[var(--home-bg-alt)] dark:bg-[#1a1612] pb-20">
       {/* Editorial Header */}
-      <section className="relative overflow-hidden text-center p-12 lg:pb-16 border-b border-cream-200 dark:border-amber-900/20 bg-[var(--home-bg)] dark:bg-[#100e0a]">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6">
-          <p className="text-[11px] font-semibold text-amber-700 dark:text-amber-500 uppercase tracking-[0.24em] mb-5">
-            ✦ Secure Checkout ✦
-          </p>
-          <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-bold text-forest-900 dark:text-amber-50 leading-tight mb-6">
-            Almost{" "}
-            <span style={{ position: "relative", display: "inline-block" }}>
-              <span
-                className="dark:candle-text-glow"
-                style={{
-                  fontFamily: "var(--font-script)",
-                  fontStyle: "normal",
-                  color: "var(--home-coral)",
-                  fontWeight: 700,
-                  fontSize: "1.08em",
-                }}
-              >
-                yours
-              </span>
-              <svg
-                aria-hidden="true"
-                style={{
-                  position: "absolute",
-                  left: 0,
-                  bottom: -4,
-                  width: "100%",
-                  height: 12,
-                  overflow: "visible",
-                }}
-                viewBox="0 0 200 12"
-                preserveAspectRatio="none"
-              >
-                <path
-                  d="M0,6 C30,0 60,12 100,6 C140,0 170,12 200,6"
-                  fill="none"
-                  stroke="var(--home-coral)"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </span>
-          </h1>
-          <p className="font-serif italic text-lg text-brown-500 dark:text-amber-100/60 max-w-lg mx-auto">
-            Just a few more details to get these handcrafted pieces on their way
-            to you.
-          </p>
-        </div>
-      </section>
+      <SecondaryHeader
+        eyebrow="✦ Secure Checkout ✦"
+        titlePrefix="Almost"
+        titleHighlighted="yours"
+        description="Just a few more details to get these handcrafted pieces on their way to you."
+        backgroundImage="/images/misc/checkout.png"
+      />
 
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-12">
         {/* Step indicator */}

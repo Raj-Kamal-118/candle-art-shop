@@ -34,6 +34,13 @@ function mapProduct(row: Record<string, unknown>): Product {
     characteristics:
       (row.characteristics as Product["characteristics"]) || [],
     extraButtons: (row.extra_buttons as Product["extraButtons"]) || [],
+    visibleOnStorefront: row.visible_on_storefront !== false,
+    // cSpell:disable-next-line
+    isUpsell: (row.is_upsell as boolean) || false,
+    // cSpell:disable-next-line
+    upsellMessage: row.upsell_message as string | undefined,
+    // cSpell:disable-next-line
+    upsellRules: (row.upsell_rules as any) || {},
     sortOrder: row.sort_order as number | undefined,
     createdAt: row.created_at as string,
     updatedAt: row.updated_at as string,
@@ -72,6 +79,7 @@ function mapDiscount(row: Record<string, unknown>): DiscountCode {
     usedCount: row.used_count as number,
     expiresAt: row.expires_at as string,
     active: row.active as boolean,
+    oneUsePerCustomer: row.one_use_per_customer as boolean,
   };
 }
 
@@ -205,6 +213,10 @@ export async function createProduct(product: Product): Promise<Product> {
       additional_sections: product.additionalSections ?? [],
       characteristics: product.characteristics ?? [],
       extra_buttons: product.extraButtons ?? [],
+      visible_on_storefront: product.visibleOnStorefront ?? true,
+      is_upsell: product.isUpsell ?? false,
+      upsell_message: product.upsellMessage ?? null,
+      upsell_rules: product.upsellRules ?? {},
       created_at: product.createdAt,
       updated_at: product.updatedAt,
     })
@@ -246,6 +258,14 @@ export async function updateProduct(
     dbUpdates.characteristics = updates.characteristics;
   if (updates.extraButtons !== undefined)
     dbUpdates.extra_buttons = updates.extraButtons;
+  if (updates.visibleOnStorefront !== undefined)
+    dbUpdates.visible_on_storefront = updates.visibleOnStorefront;
+  if (updates.isUpsell !== undefined)
+    dbUpdates.is_upsell = updates.isUpsell;
+  if (updates.upsellMessage !== undefined)
+    dbUpdates.upsell_message = updates.upsellMessage;
+  if (updates.upsellRules !== undefined)
+    dbUpdates.upsell_rules = updates.upsellRules;
   if (updates.updatedAt !== undefined)
     dbUpdates.updated_at = updates.updatedAt;
   if (updates.sortOrder !== undefined)
@@ -438,6 +458,7 @@ export async function createDiscount(
       used_count: discount.usedCount,
       expires_at: discount.expiresAt,
       active: discount.active,
+      one_use_per_customer: (discount as any).oneUsePerCustomer ?? false,
     })
     .select()
     .single();
@@ -461,6 +482,8 @@ export async function updateDiscount(
   if (updates.expiresAt !== undefined)
     dbUpdates.expires_at = updates.expiresAt;
   if (updates.active !== undefined) dbUpdates.active = updates.active;
+  if ((updates as any).oneUsePerCustomer !== undefined)
+    dbUpdates.one_use_per_customer = (updates as any).oneUsePerCustomer;
 
   const { data, error } = await supabase
     .from("discounts")
@@ -475,6 +498,32 @@ export async function updateDiscount(
 export async function deleteDiscount(id: string): Promise<boolean> {
   const { error } = await supabase.from("discounts").delete().eq("id", id);
   return !error;
+}
+
+export async function hasUserUsedDiscount(
+  code: string,
+  userId?: string,
+  phone?: string
+): Promise<boolean> {
+  if (!userId && !phone) return false; // Can't track guest without identity
+
+  let query = supabase
+    .from("orders")
+    .select("id", { count: "exact", head: true })
+    .ilike("discount_code", code)
+    .neq("status", "cancelled"); // Ignore cancelled orders
+
+  if (userId && phone) {
+    query = query.or(`user_id.eq.${userId},customer_phone.eq.${phone}`);
+  } else if (userId) {
+    query = query.eq("user_id", userId);
+  } else if (phone) {
+    query = query.eq("customer_phone", phone);
+  }
+
+  const { count, error } = await query;
+  if (error) return false;
+  return (count ?? 0) > 0;
 }
 
 // ─── Orders ──────────────────────────────────────────────────────────────────

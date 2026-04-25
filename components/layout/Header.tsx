@@ -121,7 +121,7 @@ export default function Header() {
             >
               <Heart size={20} />
               {favCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-coral-600 border-2 border-white dark:border-[#0a0a16] text-white text-[9px] rounded-full flex items-center justify-center font-bold shadow-sm">
+                <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 bg-coral-600 border-2 border-white dark:border-[#0a0a16] text-white text-[10px] rounded-full flex items-center justify-center font-bold shadow-sm">
                   {favCount}
                 </span>
               )}
@@ -135,7 +135,7 @@ export default function Header() {
             >
               <ShoppingCart size={20} />
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-coral-600 border-2 border-white dark:border-[#0a0a16] text-white text-[9px] rounded-full flex items-center justify-center font-bold shadow-sm">
+                <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 bg-coral-600 border-2 border-white dark:border-[#0a0a16] text-white text-[10px] rounded-full flex items-center justify-center font-bold shadow-sm">
                   {cartCount > 9 ? "9+" : cartCount}
                 </span>
               )}
@@ -251,7 +251,7 @@ export default function Header() {
                   <Heart size={18} />
                   <span className="text-xs font-medium">Favorites</span>
                   {favCount > 0 && (
-                    <span className="absolute top-1.5 right-4 w-4 h-4 bg-coral-600 text-white text-[9px] border-2 border-white dark:border-[#0f0e1c] rounded-full flex items-center justify-center font-bold">
+                    <span className="absolute top-1 right-3 min-w-[20px] h-5 px-1 bg-coral-600 text-white text-[10px] border-2 border-white dark:border-[#0f0e1c] rounded-full flex items-center justify-center font-bold">
                       {favCount}
                     </span>
                   )}

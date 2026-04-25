@@ -78,6 +78,17 @@ export interface Product {
   additionalSections?: AdditionalSection[];
   characteristics?: ProductCharacteristic[];
   extraButtons?: ExtraButton[];
+  visibleOnStorefront?: boolean;
+  isUpsell?: boolean;
+  upsellMessage?: string | null;
+  upsellRules?: {
+    always?: boolean;
+    minCartValue?: number;
+    categoryId?: string;
+    freeAtCartValue?: number;
+    needsTextInput?: boolean;
+    textInputLabel?: string;
+  };
   sortOrder?: number;
   createdAt: string;
   updatedAt: string;

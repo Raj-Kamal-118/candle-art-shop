@@ -57,11 +57,10 @@ export default function FeaturedProducts({
           <h2
             style={{
               fontFamily: "var(--font-serif)",
-              fontSize: "clamp(36px, 5vw, 62px)",
+              fontSize: "clamp(36px, 5vw, 60px)",
               fontWeight: 900,
               color: "var(--home-text)",
               margin: "0 0 16px",
-              letterSpacing: "-.03em",
               lineHeight: 1,
             }}
           >
@@ -74,7 +73,7 @@ export default function FeaturedProducts({
                   fontStyle: "normal",
                   color: "var(--home-coral)",
                   fontWeight: 700,
-                  fontSize: "1.05em",
+                  fontSize: "1.08em",
                 }}
               >
                 collection

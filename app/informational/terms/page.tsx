@@ -6,7 +6,7 @@ import {
   Scale,
   AlertTriangle,
 } from "lucide-react";
-import InfoShell from "@/components/informational/InfoShell";
+import SecondaryHeader from "@/components/layout/SecondaryHeader";
 
 const sections = [
   {
@@ -48,46 +48,48 @@ export default function TermsPage() {
   });
 
   return (
-    <InfoShell
-      eyebrow="Terms of Service"
-      title={
-        <>
-          The <span className="text-coral-600 italic">fine</span> print.
-        </>
-      }
-      subtitle="Not long, not lawyerly. The rules you're signing up to when you shop with us."
-    >
-      <div className="text-[13px] text-brown-500 dark:text-amber-100/50 mb-6">
-        Last updated · {lastUpdated}
-      </div>
+    <main className="min-h-screen bg-[var(--home-bg-alt)] dark:bg-[#1a1612] pb-20">
+      <SecondaryHeader
+        eyebrow="✦ Terms of Service ✦"
+        titlePrefix="The"
+        titleHighlighted="fine"
+        titleSuffix="print."
+        description="Not long, not lawyerly. The rules you're signing up to when you shop with us."
+      />
 
-      <div className="space-y-4">
-        {sections.map(({ Icon, heading, body }) => (
-          <div
-            key={heading}
-            className="bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-900/30 rounded-2xl p-6 md:p-7"
-          >
-            <div className="flex items-start gap-4 mb-3">
-              <div className="w-10 h-10 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 flex items-center justify-center flex-none">
-                <Icon size={18} />
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-12">
+        <div className="text-[13px] text-brown-500 dark:text-amber-100/50 mb-6 text-center md:text-left">
+          Last updated · {lastUpdated}
+        </div>
+
+        <div className="space-y-4">
+          {sections.map(({ Icon, heading, body }) => (
+            <div
+              key={heading}
+              className="bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-900/30 rounded-2xl p-6 md:p-7"
+            >
+              <div className="flex items-start gap-4 mb-3">
+                <div className="w-10 h-10 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 flex items-center justify-center flex-none">
+                  <Icon size={18} />
+                </div>
+                <h2 className="font-serif text-xl md:text-2xl font-bold text-brown-900 dark:text-amber-100 leading-snug pt-1.5">
+                  {heading}
+                </h2>
               </div>
-              <h2 className="font-serif text-xl md:text-2xl font-bold text-brown-900 dark:text-amber-100 leading-snug pt-1.5">
-                {heading}
-              </h2>
+              <p
+                className="text-[15px] leading-[1.7] text-brown-700 dark:text-amber-100/70"
+                dangerouslySetInnerHTML={{ __html: body }}
+              />
             </div>
-            <p
-              className="text-[15px] leading-[1.7] text-brown-700 dark:text-amber-100/70"
-              dangerouslySetInnerHTML={{ __html: body }}
-            />
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      <div className="mt-8 bg-cream-100 dark:bg-[#1a1830] border border-cream-300 dark:border-amber-900/30 rounded-2xl p-6 text-[14px] leading-[1.7] text-brown-800 dark:text-amber-100/80">
-        <b className="text-brown-900 dark:text-amber-100">Changes.</b>{" "}
-        We&apos;ll update this page if anything material shifts. Orders you
-        already placed keep the terms that were in effect when you bought.
+        <div className="mt-8 bg-cream-100 dark:bg-[#1a1830] border border-cream-300 dark:border-amber-900/30 rounded-2xl p-6 text-[14px] leading-[1.7] text-brown-800 dark:text-amber-100/80">
+          <b className="text-brown-900 dark:text-amber-100">Changes.</b>{" "}
+          We&apos;ll update this page if anything material shifts. Orders you
+          already placed keep the terms that were in effect when you bought.
+        </div>
       </div>
-    </InfoShell>
+    </main>
   );
 }

@@ -7,13 +7,15 @@ import {
   Gift,
   ChevronDown,
   ChevronUp,
+  Sparkles,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useStore } from "@/lib/store";
 import CartItemComponent from "@/components/cart/CartItem";
 import CartSummary from "@/components/cart/CartSummary";
 import { formatPrice } from "@/lib/utils";
 import { GS_BOXES, GS_RIBBONS } from "@/lib/stores/giftBuilderStore";
+import SecondaryHeader from "@/components/layout/SecondaryHeader";
 
 function GiftSetCartItem({ item }: { item: import("@/lib/types").CartItem }) {
   const [open, setOpen] = useState(false);
@@ -97,7 +99,13 @@ function GiftSetCartItem({ item }: { item: import("@/lib/types").CartItem }) {
               </button>
             )}
             <button
-              onClick={() => removeFromCart(item.product.id)}
+              onClick={() =>
+                removeFromCart(
+                  item.product.id,
+                  item.customizations,
+                  item.giftSet,
+                )
+              }
               className="text-xs font-medium text-red-400 hover:text-red-600 transition-colors"
             >
               Remove
@@ -158,7 +166,16 @@ function GiftSetCartItem({ item }: { item: import("@/lib/types").CartItem }) {
 }
 
 export default function CartPage() {
-  const { cartItems, savedForLaterItems } = useStore();
+  const { cartItems, savedForLaterItems, addToCart } = useStore();
+  const [upsellProducts, setUpsellProducts] = useState<any[]>([]);
+  const [upsellInputs, setUpsellInputs] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    fetch("/api/products")
+      .then((r) => r.json())
+      .then((data) => setUpsellProducts(data.filter((p: any) => p.isUpsell)))
+      .catch(console.error);
+  }, []);
 
   if (cartItems.length === 0) {
     return (
@@ -198,81 +215,174 @@ export default function CartPage() {
     0,
   );
 
+  const eligibleUpsells = upsellProducts.filter((up) => {
+    // Hide if it's already in the cart
+    if (cartItems.some((item) => item.product.id === up.id)) return false;
+
+    const rules = up.upsellRules || {};
+    if (rules.always) return true;
+    if (rules.minCartValue && subtotal >= rules.minCartValue) return true;
+    if (
+      rules.categoryId &&
+      cartItems.some((i) => i.product.categoryId === rules.categoryId)
+    )
+      return true;
+
+    return false;
+  });
+
   return (
     <main className="min-h-screen bg-[var(--home-bg-alt)] dark:bg-[#1a1612] pb-20">
       {/* Editorial Header */}
-      <section className="relative overflow-hidden text-center p-12 border-b border-cream-200 dark:border-amber-900/20 bg-[var(--home-bg)] dark:bg-[#100e0a]">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6">
-          <p className="text-[11px] font-semibold text-amber-700 dark:text-amber-500 uppercase tracking-[0.24em] mb-5">
-            ✦ Ready for checkout ✦
-          </p>
-          <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-bold text-forest-900 dark:text-amber-50 leading-tight mb-6">
-            Your{" "}
-            <span style={{ position: "relative", display: "inline-block" }}>
-              <span
-                className="dark:candle-text-glow"
-                style={{
-                  fontFamily: "var(--font-script)",
-                  fontStyle: "normal",
-                  color: "var(--home-coral)",
-                  fontWeight: 700,
-                  fontSize: "1.08em",
-                }}
-              >
-                basket
-              </span>
-              <svg
-                aria-hidden="true"
-                style={{
-                  position: "absolute",
-                  left: 0,
-                  bottom: -4,
-                  width: "100%",
-                  height: 12,
-                  overflow: "visible",
-                }}
-                viewBox="0 0 200 12"
-                preserveAspectRatio="none"
-              >
-                <path
-                  d="M0,6 C30,0 60,12 100,6 C140,0 170,12 200,6"
-                  fill="none"
-                  stroke="var(--home-coral)"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </span>
-          </h1>
-          <p
-            style={{
-              fontFamily: "var(--font-serif)",
-              fontStyle: "italic",
-              fontSize: 18,
-              color: "var(--home-muted)",
-              lineHeight: 1.65,
-              maxWidth: 520,
-            }}
-            className="mx-auto"
-          >
-            ({cartItems.reduce((s, i) => s + i.quantity, 0)} items) Handpicked
-            and almost yours.
-          </p>
-        </div>
-      </section>
+      <SecondaryHeader
+        eyebrow="✦ Ready for checkout ✦"
+        titlePrefix="Your"
+        titleHighlighted="basket"
+        description={`(${cartItems.reduce((s, i) => s + i.quantity, 0)} items) Handpicked and almost yours.`}
+        backgroundImage="/images/misc/checkout.png"
+      />
 
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-12 grid lg:grid-cols-3 gap-8">
         {/* Cart items */}
         <div className="lg:col-span-2">
           <div className="bg-white dark:bg-[#1a1830] rounded-2xl p-6 shadow-[0_4px_12px_rgba(28,18,9,0.05)] dark:shadow-none border border-cream-200 dark:border-amber-900/30">
-            {cartItems.map((item) =>
+            {cartItems.map((item, index) =>
               item.product.id.startsWith("giftset-") ? (
-                <GiftSetCartItem key={item.product.id} item={item} />
+                <GiftSetCartItem
+                  key={`${item.product.id}-${index}`}
+                  item={item}
+                />
               ) : (
-                <CartItemComponent key={item.product.id} item={item} />
+                <CartItemComponent
+                  key={`${item.product.id}-${index}`}
+                  item={item}
+                />
               ),
             )}
           </div>
+
+          {/* Upsell Section */}
+          {eligibleUpsells.length > 0 && (
+            <div className="mt-8 bg-white dark:bg-[#1a1830] rounded-2xl p-6 shadow-[0_4px_12px_rgba(28,18,9,0.05)] border border-cream-200 dark:border-amber-900/30">
+              <h3 className="font-serif text-lg font-bold text-brown-900 dark:text-amber-100 mb-4 flex items-center gap-2">
+                <Sparkles
+                  size={16}
+                  className="text-amber-600 dark:text-amber-400"
+                />
+                Frequently bought together
+              </h3>
+              <div className="space-y-4">
+                {eligibleUpsells.map((up) => {
+                  const rules = up.upsellRules || {};
+                  const isFree = Boolean(
+                    rules.freeAtCartValue && subtotal >= rules.freeAtCartValue,
+                  );
+                  const priceToDisplay = isFree ? 0 : up.price;
+
+                  return (
+                    <div
+                      key={up.id}
+                      className={`flex gap-4 sm:gap-6 p-4 sm:p-6 rounded-2xl border shadow-sm transition-all duration-300 ${
+                        isFree
+                          ? "border-green-300 dark:border-green-800 bg-green-50/50 dark:bg-green-900/10 shadow-[0_0_15px_rgba(74,222,128,0.15)]"
+                          : "border-cream-200 dark:border-amber-900/30 bg-cream-50 dark:bg-[#151326]"
+                      }`}
+                    >
+                      <Link href={`/products/${up.id}`}>
+                        <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-xl overflow-hidden bg-cream-100 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 shrink-0 shadow-sm">
+                          <img
+                            src={up.images[0]}
+                            alt={up.name}
+                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
+                      </Link>
+
+                      <div className="flex-1 min-w-0 flex flex-col">
+                        {isFree && (
+                          <div className="text-[11px] font-bold uppercase tracking-widest text-green-600 dark:text-green-400 mb-1.5 flex items-center gap-1.5">
+                            <Sparkles size={12} />
+                            Free Gift Unlocked
+                          </div>
+                        )}
+                        <Link href={`/products/${up.id}`}>
+                          <h4 className="font-serif text-lg font-bold text-brown-900 dark:text-amber-100 leading-tight hover:text-coral-600 dark:hover:text-amber-400 transition-colors">
+                            {up.name}
+                          </h4>
+                        </Link>
+
+                        {up.upsellMessage && (
+                          <p className="text-xs sm:text-sm text-brown-600 dark:text-amber-100/70 mt-1">
+                            {up.upsellMessage}
+                          </p>
+                        )}
+                        <div className="mt-1.5 font-semibold text-coral-600 dark:text-amber-400 text-sm flex items-center gap-2">
+                          {isFree ? "FREE" : formatPrice(priceToDisplay)}
+                          {isFree && up.price > 0 && (
+                            <span className="line-through text-xs font-medium text-brown-400 dark:text-amber-100/40">
+                              {formatPrice(up.price)}
+                            </span>
+                          )}
+                        </div>
+
+                        {rules.needsTextInput && (
+                          <input
+                            type="text"
+                            placeholder={
+                              rules.textInputLabel || "Enter message..."
+                            }
+                            value={upsellInputs[up.id] || ""}
+                            onChange={(e) =>
+                              setUpsellInputs({
+                                ...upsellInputs,
+                                [up.id]: e.target.value,
+                              })
+                            }
+                            className="mt-3 w-full px-3 py-2 text-sm border border-brown-300 dark:border-amber-900/40 rounded-xl bg-white dark:bg-[#1a1830] text-brown-900 dark:text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-400"
+                          />
+                        )}
+
+                        <div className="mt-4 sm:mt-auto pt-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const productToAdd = isFree
+                                ? { ...up, price: 0 }
+                                : up;
+                              const customizations =
+                                rules.needsTextInput && upsellInputs[up.id]
+                                  ? {
+                                      [rules.textInputLabel || "Message"]:
+                                        upsellInputs[up.id],
+                                    }
+                                  : {};
+                              addToCart(productToAdd as any, 1, customizations);
+                              setUpsellInputs({ ...upsellInputs, [up.id]: "" });
+                            }}
+                            className={`text-sm font-semibold px-5 py-2.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 hover:-translate-y-0.5 w-full sm:w-auto shadow-lg ${
+                              isFree
+                                ? "bg-green-600 hover:bg-green-700 text-white shadow-green-200 dark:shadow-green-900/20"
+                                : "bg-coral-600 dark:bg-amber-600 text-white hover:bg-coral-700 dark:hover:bg-amber-500 shadow-coral-200 dark:shadow-amber-900/30"
+                            }`}
+                          >
+                            {isFree ? (
+                              <>
+                                <Gift size={16} /> Claim Free Gift
+                              </>
+                            ) : (
+                              <>
+                                <ShoppingCart size={16} /> Add to Cart
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Saved for later */}
           {savedForLaterItems.length > 0 && (
@@ -281,9 +391,9 @@ export default function CartPage() {
                 Saved for Later ({savedForLaterItems.length})
               </h2>
               <div className="bg-white dark:bg-[#1a1830] rounded-2xl p-6 shadow-[0_4px_12px_rgba(28,18,9,0.05)] dark:shadow-none border border-cream-200 dark:border-amber-900/30">
-                {savedForLaterItems.map((item) => (
+                {savedForLaterItems.map((item, index) => (
                   <CartItemComponent
-                    key={item.product.id}
+                    key={`${item.product.id}-${index}`}
                     item={item}
                     isSaved
                   />

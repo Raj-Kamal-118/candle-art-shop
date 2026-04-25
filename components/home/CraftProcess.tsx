@@ -95,7 +95,6 @@ export default function CraftProcess() {
               fontWeight: 900,
               color: "var(--home-text)",
               margin: "0 0 14px",
-              letterSpacing: "-.025em",
               lineHeight: 1,
             }}
           >
@@ -108,7 +107,7 @@ export default function CraftProcess() {
                   fontStyle: "normal",
                   color: "var(--home-coral)",
                   fontWeight: 700,
-                  fontSize: "1.05em",
+                  fontSize: "1.08em",
                 }}
               >
                 actually gets made

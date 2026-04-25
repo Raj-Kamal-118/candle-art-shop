@@ -89,7 +89,6 @@ export default function MaterialsStrip() {
               fontWeight: 900,
               color: "var(--home-text)",
               margin: "0 0 14px",
-              letterSpacing: "-.025em",
               lineHeight: 1,
             }}
           >
@@ -102,7 +101,7 @@ export default function MaterialsStrip() {
                   fontStyle: "normal",
                   color: "var(--home-coral)",
                   fontWeight: 700,
-                  fontSize: "1.05em",
+                  fontSize: "1.08em",
                 }}
               >
                 ingredients list

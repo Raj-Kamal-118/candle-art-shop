@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { Product, Category } from "@/lib/types";
 import ProductGrid from "@/components/products/ProductGrid";
 import ProductFilters from "@/components/products/ProductFilters";
+import SecondaryHeader from "@/components/layout/SecondaryHeader";
 
 function ProductsContent() {
   const searchParams = useSearchParams();
@@ -49,79 +50,17 @@ function ProductsContent() {
 
   return (
     <main className="min-h-screen bg-[var(--home-bg-alt)] dark:bg-[#1a1612] pb-20">
-      {/* Editorial Header */}
-      <section className="relative overflow-hidden text-center p-12 border-b border-cream-200 dark:border-amber-900/20 bg-[var(--home-bg)] dark:bg-[#100e0a]">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6">
-          {searchQuery ? (
-            <>
-              <p className="text-[11px] font-semibold text-amber-700 dark:text-amber-500 uppercase tracking-[0.24em] mb-5">
-                ✦ Search Results ✦
-              </p>
-              <h1 className="font-serif text-4xl sm:text-5xl font-bold text-forest-900 dark:text-amber-50 leading-tight mb-6">
-                For &ldquo;{searchQuery}&rdquo;
-              </h1>
-            </>
-          ) : (
-            <>
-              <p className="text-[11px] font-semibold text-amber-700 dark:text-amber-500 uppercase tracking-[0.24em] mb-5">
-                ✦ Our Collection ✦
-              </p>
-              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-bold text-forest-900 dark:text-amber-50 leading-tight mb-8">
-                All{" "}
-                <span style={{ position: "relative", display: "inline-block" }}>
-                  <span
-                    className="dark:candle-text-glow"
-                    style={{
-                      fontFamily: "var(--font-script)",
-                      fontStyle: "normal",
-                      color: "var(--home-coral)",
-                      fontWeight: 700,
-                      fontSize: "1.08em",
-                    }}
-                  >
-                    products
-                  </span>
-                  <svg
-                    aria-hidden="true"
-                    style={{
-                      position: "absolute",
-                      left: 0,
-                      bottom: -4,
-                      width: "100%",
-                      height: 12,
-                      overflow: "visible",
-                    }}
-                    viewBox="0 0 200 12"
-                    preserveAspectRatio="none"
-                  >
-                    <path
-                      d="M0,6 C30,0 60,12 100,6 C140,0 170,12 200,6"
-                      fill="none"
-                      stroke="var(--home-coral)"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </span>
-              </h1>
-              <p
-                style={{
-                  fontFamily: "var(--font-serif)",
-                  fontStyle: "italic",
-                  fontSize: 18,
-                  color: "var(--home-muted)",
-                  lineHeight: 1.65,
-                  maxWidth: 520,
-                }}
-                className="mx-auto"
-              >
-                Explore our complete range of handcrafted candles, clay art, and
-                creative crafts.
-              </p>
-            </>
-          )}
-        </div>
-      </section>
+      <SecondaryHeader
+        eyebrow={searchQuery ? "✦ Search Results ✦" : "✦ Our Collection ✦"}
+        titlePrefix={searchQuery ? "For" : "All"}
+        titleHighlighted={searchQuery ? '"' + searchQuery + '"' : "products"}
+        description={
+          searchQuery
+            ? `Here's what we found for your search.`
+            : "Explore our complete range of handcrafted candles, clay art, and creative crafts."
+        }
+        backgroundImage="/images/misc/checkout.png"
+      />
 
       {/* Products Content */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-12">

@@ -51,7 +51,7 @@ export default function GiftSetsPage() {
       </div>
 
       {/* Editorial hero */}
-      <section className="relative overflow-hidden text-center pt-32 pb-28 lg:pt-40 lg:pb-36 border-b border-cream-200 dark:border-amber-900/20 flex items-center justify-center">
+      <section className="relative overflow-hidden text-center p-12 border-b border-cream-200 dark:border-amber-900/20 flex items-center justify-center">
         <img
           src="images/misc/gift.png"
           alt="Gift Sets"

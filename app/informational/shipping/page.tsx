@@ -1,5 +1,5 @@
 import { Package, Zap, Check, Flame, Home } from "lucide-react";
-import InfoShell from "@/components/informational/InfoShell";
+import SecondaryHeader from "@/components/layout/SecondaryHeader";
 
 const options = [
   {
@@ -50,104 +50,105 @@ const zones: Array<[string, string, string]> = [
 
 export default function ShippingPage() {
   return (
-    <InfoShell
-      eyebrow="Shipping & Delivery"
-      title={
-        <>
-          On its way, <span className="text-coral-600 italic">carefully.</span>
-        </>
-      }
-      subtitle="Every order leaves our studio wrapped in tissue, tucked into recycled kraft, with a hand-written thank-you note. Here's how it reaches you."
-    >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
-        {options.map(({ Icon, name, time, price, desc }) => (
-          <div
-            key={name}
-            className="bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-900/30 rounded-2xl p-6"
-          >
-            <div className="w-10 h-10 rounded-full bg-coral-100 text-coral-700 flex items-center justify-center mb-4">
-              <Icon size={18} />
+    <main className="min-h-screen bg-[var(--home-bg-alt)] dark:bg-[#1a1612] pb-20">
+      <SecondaryHeader
+        eyebrow="✦ Shipping & Delivery ✦"
+        titlePrefix="On its way,"
+        titleHighlighted="carefully"
+        titleSuffix="."
+        description="Every order leaves our studio wrapped in tissue, tucked into recycled kraft, with a hand-written thank-you note. Here's how it reaches you."
+      />
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+          {options.map(({ Icon, name, time, price, desc }) => (
+            <div
+              key={name}
+              className="bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-900/30 rounded-2xl p-6"
+            >
+              <div className="w-10 h-10 rounded-full bg-coral-100 text-coral-700 flex items-center justify-center mb-4">
+                <Icon size={18} />
+              </div>
+              <h3 className="font-serif text-[22px] font-bold text-brown-900 dark:text-amber-100 mb-1.5">
+                {name}
+              </h3>
+              <div className="text-[13px] text-amber-700 dark:text-amber-400 font-semibold mb-3">
+                {time}
+              </div>
+              <div className="text-sm font-semibold text-brown-900 dark:text-amber-100 mb-2">
+                {price}
+              </div>
+              <p className="text-[13px] text-brown-600 dark:text-amber-100/60 leading-[1.5]">
+                {desc}
+              </p>
             </div>
-            <h3 className="font-serif text-[22px] font-bold text-brown-900 dark:text-amber-100 mb-1.5">
-              {name}
-            </h3>
-            <div className="text-[13px] text-amber-700 dark:text-amber-400 font-semibold mb-3">
-              {time}
-            </div>
-            <div className="text-sm font-semibold text-brown-900 dark:text-amber-100 mb-2">
-              {price}
-            </div>
-            <p className="text-[13px] text-brown-600 dark:text-amber-100/60 leading-[1.5]">
-              {desc}
-            </p>
+          ))}
+        </div>
+
+        <div className="bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-900/30 rounded-2xl p-8 mb-10">
+          <div className="text-[11px] font-semibold tracking-[0.2em] uppercase text-amber-700 dark:text-amber-400 mb-5">
+            What happens after you order
           </div>
-        ))}
-      </div>
-
-      <div className="bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-900/30 rounded-2xl p-8 mb-10">
-        <div className="text-[11px] font-semibold tracking-[0.2em] uppercase text-amber-700 dark:text-amber-400 mb-5">
-          What happens after you order
-        </div>
-        {journey.map(({ Icon, label, desc }, i) => {
-          const last = i === journey.length - 1;
-          return (
-            <div
-              key={label}
-              className={`flex gap-4 items-start relative ${last ? "" : "pb-5"}`}
-            >
-              {!last && (
-                <div className="absolute left-[15px] top-8 bottom-1 w-0.5 bg-cream-200 dark:bg-amber-900/30" />
-              )}
-              <div className="w-8 h-8 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 flex items-center justify-center flex-none">
-                <Icon size={14} />
-              </div>
-              <div className="flex-1 pt-1.5">
-                <div className="text-[15px] font-semibold text-brown-900 dark:text-amber-100">
-                  {label}
-                </div>
-                <div className="text-[13px] text-brown-600 dark:text-amber-100/60 mt-0.5 leading-[1.5]">
-                  {desc}
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-900/30 rounded-2xl overflow-hidden">
-        <div className="px-6 py-[18px] border-b border-cream-200 dark:border-amber-900/30 text-[11px] font-semibold tracking-[0.2em] uppercase text-amber-700 dark:text-amber-400">
-          Delivery zones
-        </div>
-        {zones.map((row, i) => {
-          const isComing = row[2].startsWith("Coming");
-          return (
-            <div
-              key={row[0]}
-              className={`grid grid-cols-[1.5fr_1fr_1.5fr] px-6 py-4 text-sm items-center ${
-                i === 0
-                  ? ""
-                  : "border-t border-cream-100 dark:border-amber-900/20"
-              }`}
-            >
-              <div className="font-medium text-brown-900 dark:text-amber-100">
-                {row[0]}
-              </div>
-              <div className="text-brown-600 dark:text-amber-100/60">
-                {row[1]}
-              </div>
+          {journey.map(({ Icon, label, desc }, i) => {
+            const last = i === journey.length - 1;
+            return (
               <div
-                className={
-                  isComing
-                    ? "text-brown-400 dark:text-amber-100/40"
-                    : "text-brown-700 dark:text-amber-100/80 font-medium"
-                }
+                key={label}
+                className={`flex gap-4 items-start relative ${last ? "" : "pb-5"}`}
               >
-                {row[2]}
+                {!last && (
+                  <div className="absolute left-[15px] top-8 bottom-1 w-0.5 bg-cream-200 dark:bg-amber-900/30" />
+                )}
+                <div className="w-8 h-8 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 flex items-center justify-center flex-none">
+                  <Icon size={14} />
+                </div>
+                <div className="flex-1 pt-1.5">
+                  <div className="text-[15px] font-semibold text-brown-900 dark:text-amber-100">
+                    {label}
+                  </div>
+                  <div className="text-[13px] text-brown-600 dark:text-amber-100/60 mt-0.5 leading-[1.5]">
+                    {desc}
+                  </div>
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
+
+        <div className="bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-900/30 rounded-2xl overflow-hidden">
+          <div className="px-6 py-[18px] border-b border-cream-200 dark:border-amber-900/30 text-[11px] font-semibold tracking-[0.2em] uppercase text-amber-700 dark:text-amber-400">
+            Delivery zones
+          </div>
+          {zones.map((row, i) => {
+            const isComing = row[2].startsWith("Coming");
+            return (
+              <div
+                key={row[0]}
+                className={`grid grid-cols-[1.5fr_1fr_1.5fr] px-6 py-4 text-sm items-center ${
+                  i === 0
+                    ? ""
+                    : "border-t border-cream-100 dark:border-amber-900/20"
+                }`}
+              >
+                <div className="font-medium text-brown-900 dark:text-amber-100">
+                  {row[0]}
+                </div>
+                <div className="text-brown-600 dark:text-amber-100/60">
+                  {row[1]}
+                </div>
+                <div
+                  className={
+                    isComing
+                      ? "text-brown-400 dark:text-amber-100/40"
+                      : "text-brown-700 dark:text-amber-100/80 font-medium"
+                  }
+                >
+                  {row[2]}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
-    </InfoShell>
+    </main>
   );
 }

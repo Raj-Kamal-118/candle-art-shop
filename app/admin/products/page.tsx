@@ -122,8 +122,13 @@ function SortableProductRow({
               {product.name}
             </p>
             <p className="text-xs text-gray-400">
-              {product.featured ? "Featured · " : ""}
-              {product.customizable ? "Customizable" : ""}
+              {[
+                product.featured && "Featured",
+                product.customizable && "Customizable",
+                product.isUpsell && "Upsell",
+              ]
+                .filter(Boolean)
+                .join(" · ")}
             </p>
           </div>
         </div>
@@ -345,6 +350,17 @@ export default function AdminProductsPage() {
     stockCount: "10",
     featured: false,
     customizable: false,
+    visibleOnStorefront: true,
+    isUpsell: false,
+    upsellMessage: "",
+    upsellRules: {
+      always: false,
+      minCartValue: 0,
+      categoryId: "",
+      freeAtCartValue: 0,
+      needsTextInput: false,
+      textInputLabel: "Gift message",
+    },
   });
 
   const [customOptions, setCustomOptions] = useState<CustomizationOption[]>([]);
@@ -405,6 +421,17 @@ export default function AdminProductsPage() {
       stockCount: "10",
       featured: false,
       customizable: false,
+      visibleOnStorefront: true,
+      isUpsell: false,
+      upsellMessage: "",
+      upsellRules: {
+        always: false,
+        minCartValue: 0,
+        categoryId: "",
+        freeAtCartValue: 0,
+        needsTextInput: false,
+        textInputLabel: "Gift message",
+      },
     });
     setCustomOptions([]);
     setVariantPricing({});
@@ -430,6 +457,17 @@ export default function AdminProductsPage() {
       stockCount: product.stockCount.toString(),
       featured: product.featured,
       customizable: product.customizable,
+      visibleOnStorefront: product.visibleOnStorefront ?? true,
+      isUpsell: product.isUpsell ?? false,
+      upsellMessage: product.upsellMessage || "",
+      upsellRules: product.upsellRules || {
+        always: false,
+        minCartValue: 0,
+        categoryId: "",
+        freeAtCartValue: 0,
+        needsTextInput: false,
+        textInputLabel: "Gift message",
+      },
     });
     const opts = product.customizationOptions || [];
     setCustomOptions(opts);
@@ -466,6 +504,10 @@ export default function AdminProductsPage() {
       stockCount: parseInt(form.stockCount),
       featured: form.featured,
       customizable: form.customizable,
+      visibleOnStorefront: form.visibleOnStorefront,
+      isUpsell: form.isUpsell,
+      upsellMessage: form.upsellMessage,
+      upsellRules: form.upsellRules,
       customizationOptions: customOptions,
       variantPricing,
       additionalSections,
@@ -1044,7 +1086,8 @@ export default function AdminProductsPage() {
                   Product characteristics
                 </div>
                 <div className="text-xs text-brown-500">
-                  Short specs shown under description (e.g. Burn time · Wick · Wax)
+                  Short specs shown under description (e.g. Burn time · Wick ·
+                  Wax)
                 </div>
               </div>
               <button
@@ -1224,6 +1267,202 @@ export default function AdminProductsPage() {
             )}
           </div>
 
+          {/* ── Visibility & Upsells ─────────────────────────────────────────── */}
+          <div className="border border-cream-200 rounded-xl overflow-hidden">
+            <div className="px-4 py-3 bg-cream-50 flex items-center justify-between">
+              <div>
+                <div className="text-sm font-semibold text-brown-900">
+                  Visibility & Upsell Settings
+                </div>
+                <div className="text-xs text-brown-500">
+                  Configure if this product is an upsell at checkout or hidden
+                  from main store.
+                </div>
+              </div>
+            </div>
+            <div className="p-4 space-y-4 bg-white">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={form.visibleOnStorefront}
+                  onChange={(e) =>
+                    setForm({ ...form, visibleOnStorefront: e.target.checked })
+                  }
+                  className="accent-amber-600 w-4 h-4"
+                />
+                <span className="text-sm text-gray-700">
+                  Visible on Storefront (uncheck to hide from normal catalog)
+                </span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={form.isUpsell}
+                  onChange={(e) =>
+                    setForm({ ...form, isUpsell: e.target.checked })
+                  }
+                  className="accent-amber-600 w-4 h-4"
+                />
+                <span className="text-sm font-medium text-gray-700">
+                  Enable as an Upsell at Checkout
+                </span>
+              </label>
+
+              {form.isUpsell && (
+                <div className="pl-6 border-l-2 border-amber-100 space-y-3 mt-2">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-500 mb-1">
+                      Upsell Promotional Message
+                    </label>
+                    <input
+                      placeholder="e.g. Add a beautiful handwritten greeting card!"
+                      value={form.upsellMessage}
+                      onChange={(e) =>
+                        setForm({ ...form, upsellMessage: e.target.value })
+                      }
+                      className={inputCls}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <label className="flex items-center gap-2 cursor-pointer mt-5">
+                      <input
+                        type="checkbox"
+                        checked={form.upsellRules.always}
+                        onChange={(e) =>
+                          setForm({
+                            ...form,
+                            upsellRules: {
+                              ...form.upsellRules,
+                              always: e.target.checked,
+                            },
+                          })
+                        }
+                        className="accent-amber-600 w-4 h-4"
+                      />
+                      <span className="text-xs text-gray-700">
+                        Always show this upsell
+                      </span>
+                    </label>
+
+                    <div>
+                      <label className="block text-xs font-medium text-gray-500 mb-1">
+                        Min Cart Value to Show (₹)
+                      </label>
+                      <input
+                        type="number"
+                        value={form.upsellRules.minCartValue || 0}
+                        onChange={(e) =>
+                          setForm({
+                            ...form,
+                            upsellRules: {
+                              ...form.upsellRules,
+                              minCartValue: Number(e.target.value),
+                            },
+                          })
+                        }
+                        className={inputCls}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-medium text-gray-500 mb-1">
+                        Required Category in Cart
+                      </label>
+                      <select
+                        value={form.upsellRules.categoryId || ""}
+                        onChange={(e) =>
+                          setForm({
+                            ...form,
+                            upsellRules: {
+                              ...form.upsellRules,
+                              categoryId: e.target.value,
+                            },
+                          })
+                        }
+                        className={inputCls}
+                      >
+                        <option value="">Any Category</option>
+                        {categories.map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {c.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-medium text-gray-500 mb-1">
+                        Offer FREE if Cart {">"} (₹)
+                      </label>
+                      <input
+                        type="number"
+                        value={form.upsellRules.freeAtCartValue || 0}
+                        onChange={(e) =>
+                          setForm({
+                            ...form,
+                            upsellRules: {
+                              ...form.upsellRules,
+                              freeAtCartValue: Number(e.target.value),
+                            },
+                          })
+                        }
+                        className={inputCls}
+                      />
+                      <p className="text-[10px] text-gray-400 mt-1">
+                        Leave 0 for no free offer
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 pt-2 border-t border-gray-100">
+                    <label className="flex items-center gap-2 cursor-pointer mt-5">
+                      <input
+                        type="checkbox"
+                        checked={form.upsellRules.needsTextInput}
+                        onChange={(e) =>
+                          setForm({
+                            ...form,
+                            upsellRules: {
+                              ...form.upsellRules,
+                              needsTextInput: e.target.checked,
+                            },
+                          })
+                        }
+                        className="accent-amber-600 w-4 h-4"
+                      />
+                      <span className="text-xs text-gray-700">
+                        Require Custom Text Input
+                      </span>
+                    </label>
+
+                    {form.upsellRules.needsTextInput && (
+                      <div>
+                        <label className="block text-xs font-medium text-gray-500 mb-1">
+                          Text Input Label
+                        </label>
+                        <input
+                          placeholder="e.g. Enter your message here..."
+                          value={form.upsellRules.textInputLabel}
+                          onChange={(e) =>
+                            setForm({
+                              ...form,
+                              upsellRules: {
+                                ...form.upsellRules,
+                                textInputLabel: e.target.value,
+                              },
+                            })
+                          }
+                          className={inputCls}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* ── Additional rich-text sections ─────────────────────────── */}
           <div className="border border-cream-200 rounded-xl overflow-hidden">
             <div className="px-4 py-3 bg-cream-50 flex items-center justify-between">
@@ -1314,9 +1553,7 @@ export default function AdminProductsPage() {
                           onChange={(e) =>
                             setAdditionalSections((prev) =>
                               prev.map((x, idx) =>
-                                idx === i
-                                  ? { ...x, image: e.target.value }
-                                  : x,
+                                idx === i ? { ...x, image: e.target.value } : x,
                               ),
                             )
                           }
@@ -1324,7 +1561,9 @@ export default function AdminProductsPage() {
                         />
                         <button
                           type="button"
-                          onClick={() => sectionFileInputs.current[s.id]?.click()}
+                          onClick={() =>
+                            sectionFileInputs.current[s.id]?.click()
+                          }
                           className="flex items-center gap-1.5 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50"
                         >
                           <Upload size={14} /> Upload

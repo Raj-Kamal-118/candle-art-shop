@@ -23,6 +23,7 @@ export default function AdminDiscountsPage() {
     maxUses: "100",
     expiresAt: "",
     active: true,
+    oneUsePerCustomer: false,
   });
 
   useEffect(() => {
@@ -46,6 +47,7 @@ export default function AdminDiscountsPage() {
       maxUses: "100",
       expiresAt: nextYear.toISOString().split("T")[0],
       active: true,
+      oneUsePerCustomer: false,
     });
     setModalOpen(true);
   };
@@ -60,6 +62,7 @@ export default function AdminDiscountsPage() {
       maxUses: disc.maxUses.toString(),
       expiresAt: disc.expiresAt.split("T")[0],
       active: disc.active,
+      oneUsePerCustomer: (disc as any).oneUsePerCustomer ?? false,
     });
     setModalOpen(true);
   };
@@ -74,6 +77,7 @@ export default function AdminDiscountsPage() {
       maxUses: parseInt(form.maxUses),
       expiresAt: new Date(form.expiresAt).toISOString(),
       active: form.active,
+      oneUsePerCustomer: form.oneUsePerCustomer,
     };
 
     if (editDiscount) {
@@ -84,7 +88,7 @@ export default function AdminDiscountsPage() {
       });
       const updated = await res.json();
       setDiscounts((prev) =>
-        prev.map((d) => (d.id === editDiscount.id ? updated : d))
+        prev.map((d) => (d.id === editDiscount.id ? updated : d)),
       );
     } else {
       const res = await fetch("/api/discounts", {
@@ -111,8 +115,7 @@ export default function AdminDiscountsPage() {
     setTimeout(() => setCopiedId(null), 1500);
   };
 
-  const isExpired = (expiresAt: string) =>
-    new Date(expiresAt) < new Date();
+  const isExpired = (expiresAt: string) => new Date(expiresAt) < new Date();
 
   return (
     <div className="space-y-6">
@@ -147,6 +150,9 @@ export default function AdminDiscountsPage() {
                   </th>
                   <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">
                     Usage
+                  </th>
+                  <th className="text-center px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    1 / Cust
                   </th>
                   <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">
                     Expires
@@ -186,11 +192,13 @@ export default function AdminDiscountsPage() {
                       <span className="font-semibold text-gray-900">
                         {disc.type === "percentage"
                           ? `${disc.value}% off`
-                          : `$${disc.value} off`}
+                          : `₹${disc.value} off`}
                       </span>
                     </td>
                     <td className="px-4 py-4 text-gray-600">
-                      {disc.minOrderAmount === 0 ? "None" : `$${disc.minOrderAmount}`}
+                      {disc.minOrderAmount === 0
+                        ? "None"
+                        : `₹${disc.minOrderAmount}`}
                     </td>
                     <td className="px-4 py-4 text-gray-600">
                       <div className="flex items-center gap-1.5">
@@ -206,6 +214,13 @@ export default function AdminDiscountsPage() {
                           }}
                         />
                       </div>
+                    </td>
+                    <td className="px-4 py-4 text-center">
+                      {(disc as any).oneUsePerCustomer ? (
+                        <Check size={16} className="text-green-500 mx-auto" />
+                      ) : (
+                        <span className="text-gray-300">-</span>
+                      )}
                     </td>
                     <td className="px-4 py-4 text-xs text-gray-500">
                       {new Date(disc.expiresAt).toLocaleDateString()}
@@ -260,7 +275,9 @@ export default function AdminDiscountsPage() {
               <input
                 required
                 value={form.code}
-                onChange={(e) => setForm({ ...form, code: e.target.value.toUpperCase() })}
+                onChange={(e) =>
+                  setForm({ ...form, code: e.target.value.toUpperCase() })
+                }
                 placeholder="SUMMER20"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 font-mono uppercase"
               />
@@ -271,11 +288,16 @@ export default function AdminDiscountsPage() {
               </label>
               <select
                 value={form.type}
-                onChange={(e) => setForm({ ...form, type: e.target.value as "percentage" | "fixed" })}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    type: e.target.value as "percentage" | "fixed",
+                  })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
               >
                 <option value="percentage">Percentage (%)</option>
-                <option value="fixed">Fixed ($)</option>
+                <option value="fixed">Fixed (₹)</option>
               </select>
             </div>
             <div>
@@ -300,7 +322,9 @@ export default function AdminDiscountsPage() {
                 type="number"
                 step="0.01"
                 value={form.minOrderAmount}
-                onChange={(e) => setForm({ ...form, minOrderAmount: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, minOrderAmount: e.target.value })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
               />
             </div>
@@ -322,25 +346,55 @@ export default function AdminDiscountsPage() {
               <input
                 type="date"
                 value={form.expiresAt}
-                onChange={(e) => setForm({ ...form, expiresAt: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, expiresAt: e.target.value })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
               />
             </div>
-            <div className="col-span-2 flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="active-check"
-                checked={form.active}
-                onChange={(e) => setForm({ ...form, active: e.target.checked })}
-                className="accent-amber-600 w-4 h-4"
-              />
-              <label htmlFor="active-check" className="text-sm text-gray-700 cursor-pointer">
-                Active
-              </label>
+            <div className="col-span-2 flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="active-check"
+                  checked={form.active}
+                  onChange={(e) =>
+                    setForm({ ...form, active: e.target.checked })
+                  }
+                  className="accent-amber-600 w-4 h-4"
+                />
+                <label
+                  htmlFor="active-check"
+                  className="text-sm text-gray-700 cursor-pointer"
+                >
+                  Active
+                </label>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="one-use-check"
+                  checked={form.oneUsePerCustomer}
+                  onChange={(e) =>
+                    setForm({ ...form, oneUsePerCustomer: e.target.checked })
+                  }
+                  className="accent-amber-600 w-4 h-4"
+                />
+                <label
+                  htmlFor="one-use-check"
+                  className="text-sm text-gray-700 cursor-pointer"
+                >
+                  Limit to one use per customer
+                </label>
+              </div>
             </div>
           </div>
           <div className="flex gap-3 justify-end pt-2">
-            <Button variant="outline" onClick={() => setModalOpen(false)} type="button">
+            <Button
+              variant="outline"
+              onClick={() => setModalOpen(false)}
+              type="button"
+            >
               Cancel
             </Button>
             <Button type="submit">

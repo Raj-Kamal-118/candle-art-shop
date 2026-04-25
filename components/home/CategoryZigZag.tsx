@@ -66,18 +66,17 @@ export default function CategoryZigZag({
           <h2
             style={{
               fontFamily: "var(--font-serif)",
-              fontSize: "clamp(44px, 7vw, 72px)",
+              fontSize: "clamp(44px, 7vw, 60px)",
               fontWeight: 900,
               color: "var(--home-text)",
               margin: "0 0 16px",
-              letterSpacing: "-.035em",
               lineHeight: 1.0,
             }}
           >
             Everything we{" "}
             <span style={{ position: "relative", display: "inline-block" }}>
               <span
-                className="dark:candle-text-glow"
+                className="dark:candle-text-glow leading"
                 style={{
                   fontFamily: "var(--font-script)",
                   fontStyle: "normal",
