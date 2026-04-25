@@ -8,6 +8,11 @@ const nextConfig = {
         protocol: "https",
         hostname: "picsum.photos",
       },
+      {
+        protocol: "https",
+        hostname: "pub-1f6a6fc4e92548b987db5dbea7cd456e.r2.dev",
+        pathname: "/**",
+      },
       // Cloudflare R2 public bucket URL (e.g. pub-xxxx.r2.dev)
       {
         protocol: "https",

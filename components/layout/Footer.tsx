@@ -15,15 +15,16 @@ export default function Footer() {
           alt="Footer background"
           fill
           sizes="100vw"
-          className="object-cover opacity-60"
+          quality={60}
+          className="object-cover opacity-90"
         />
       </div>
       {/* Dark overlay so text stays readable */}
       <div className="absolute inset-0 bg-forest-950/80 z-0" />
       <div className="relative z-10 max-w-[1440px] mx-auto px-4 sm:px-6 py-4 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
           {/* Brand */}
-          <div className="lg:col-span-1">
+          <div className="col-span-2 md:col-span-1">
             <ArtisanLogo variant="light" />
             <p className="text-sm text-forest-200/80 leading-relaxed mt-6 mb-8 max-w-sm">
               Handcrafted candles, clay art, and creative crafts made with
@@ -34,7 +35,7 @@ export default function Footer() {
                 href="https://instagram.com/artisanhouse.in"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-forest-200 hover:bg-coral-600 hover:border-coral-600 hover:text-white transition-all duration-300 hover:-translate-y-1"
+                className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-forest-200 hover:bg-coral-700 hover:border-coral-700 hover:text-white transition-all duration-300 hover:-translate-y-1"
                 aria-label="Instagram"
               >
                 <Instagram size={18} />
@@ -43,7 +44,7 @@ export default function Footer() {
                 href="https://wa.me/919519486785"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-forest-200 hover:bg-coral-600 hover:border-coral-600 hover:text-white transition-all duration-300 hover:-translate-y-1"
+                className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-forest-200 hover:bg-coral-700 hover:border-coral-700 hover:text-white transition-all duration-300 hover:-translate-y-1"
                 aria-label="WhatsApp"
               >
                 <MessageCircle size={18} />
@@ -52,7 +53,7 @@ export default function Footer() {
                 href="https://youtube.com/@artisanhouse_in"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-forest-200 hover:bg-coral-600 hover:border-coral-600 hover:text-white transition-all duration-300 hover:-translate-y-1"
+                className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-forest-200 hover:bg-coral-700 hover:border-coral-700 hover:text-white transition-all duration-300 hover:-translate-y-1"
                 aria-label="YouTube"
               >
                 <Youtube size={18} />
@@ -114,7 +115,7 @@ export default function Footer() {
           </div>
 
           {/* Contact */}
-          <div>
+          <div className="col-span-2 md:col-span-1">
             <h3 className="text-[11px] font-semibold text-gold-400 uppercase tracking-[0.2em] mb-6">
               Get in Touch
             </h3>
@@ -126,7 +127,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="group flex items-center gap-3 text-[15px] text-forest-200 hover:text-white transition-colors"
                 >
-                  <span className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-coral-600 group-hover:border-coral-600 transition-colors flex-shrink-0">
+                  <span className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-coral-700 group-hover:border-coral-700 transition-colors flex-shrink-0">
                     <Instagram size={14} />
                   </span>
                   @artisanhouse.in
@@ -139,7 +140,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="group flex items-center gap-3 text-[15px] text-forest-200 hover:text-white transition-colors"
                 >
-                  <span className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-coral-600 group-hover:border-coral-600 transition-colors flex-shrink-0">
+                  <span className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-coral-700 group-hover:border-coral-700 transition-colors flex-shrink-0">
                     <MessageCircle size={14} />
                   </span>
                   +91 95194 86785
@@ -150,7 +151,7 @@ export default function Footer() {
                   href="mailto:artisanhouse.in@gmail.com"
                   className="group flex items-center gap-3 text-[15px] text-forest-200 hover:text-white transition-colors"
                 >
-                  <span className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-coral-600 group-hover:border-coral-600 transition-colors flex-shrink-0">
+                  <span className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-coral-700 group-hover:border-coral-700 transition-colors flex-shrink-0">
                     <Mail size={14} />
                   </span>
                   artisanhouse.in@gmail.com

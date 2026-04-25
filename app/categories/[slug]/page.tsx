@@ -101,6 +101,7 @@ export default function CategoryPage() {
             fill
             priority
             sizes="100vw"
+            quality={80}
             className="absolute inset-0 w-full h-full object-cover"
           />
         )}

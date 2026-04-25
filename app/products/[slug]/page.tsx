@@ -190,6 +190,7 @@ export default function ProductDetailPage() {
                         ? "border-coral-500 shadow-md scale-105"
                         : "relative border-transparent opacity-60 hover:opacity-100 hover:scale-105"
                     }`}
+                    aria-label={`View image ${i + 1}`}
                   >
                     <Image
                       src={img}
@@ -370,6 +371,7 @@ export default function ProductDetailPage() {
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   className="px-3 py-2 text-brown-600 dark:text-amber-100/70 hover:bg-cream-100 dark:hover:bg-amber-900/20 transition-colors"
+                  aria-label="Decrease quantity"
                 >
                   −
                 </button>
@@ -381,6 +383,7 @@ export default function ProductDetailPage() {
                     setQuantity(Math.min(product.stockCount, quantity + 1))
                   }
                   className="px-3 py-2 text-brown-600 dark:text-amber-100/70 hover:bg-cream-100 dark:hover:bg-amber-900/20 transition-colors"
+                  aria-label="Increase quantity"
                 >
                   +
                 </button>
@@ -413,6 +416,9 @@ export default function ProductDetailPage() {
                     ? "border-coral-400 bg-coral-50 text-coral-600"
                     : "border-brown-300 dark:border-amber-900/30 text-brown-500 dark:text-amber-100/50 hover:border-coral-400 hover:text-coral-500"
                 }`}
+                aria-label={
+                  favorite ? "Remove from favorites" : "Add to favorites"
+                }
               >
                 <Heart size={20} className={favorite ? "fill-current" : ""} />
               </button>

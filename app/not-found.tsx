@@ -55,7 +55,7 @@ export default function NotFound() {
         <div className="text-center mb-16">
           <Link
             href="/"
-            className="inline-flex items-center justify-center gap-2 bg-coral-600 hover:bg-coral-700 dark:bg-amber-600 dark:hover:bg-amber-700 text-white px-8 py-3.5 rounded-xl font-semibold shadow-lg shadow-coral-200 dark:shadow-amber-900/30 hover:-translate-y-0.5 transition-all duration-200 text-sm"
+            className="inline-flex items-center justify-center gap-2 bg-coral-700 hover:bg-coral-800 dark:bg-amber-700 dark:hover:bg-amber-800 text-white px-8 py-3.5 rounded-xl font-semibold shadow-lg shadow-coral-200 dark:shadow-amber-900/30 hover:-translate-y-0.5 transition-all duration-200 text-sm"
           >
             Return to Homepage <ArrowRight size={16} />
           </Link>

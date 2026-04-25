@@ -9,6 +9,7 @@ import { Product } from "@/lib/types";
 import { useStore } from "@/lib/store";
 import { formatPrice } from "@/lib/utils";
 import Badge from "@/components/ui/Badge";
+import Image from "next/image";
 
 interface ProductCardProps {
   product: Product;
@@ -59,12 +60,13 @@ export default function ProductCard({ product }: ProductCardProps) {
       <div className="group relative bg-white dark:bg-[#1a1830] rounded-2xl overflow-hidden shadow-[0_4px_12px_rgba(28,18,9,0.05)] border border-cream-200 dark:border-amber-900/30 hover:shadow-[0_12px_32px_rgba(28,18,9,0.08)] dark:hover:border-amber-700/50 transition-all duration-300 cursor-pointer">
         {/* Image container */}
         <div className="relative aspect-square overflow-hidden bg-cream-100 dark:bg-amber-900/20">
-          <img
+          <Image
             src={product.images[0]}
             alt={product.name}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-110"
           />
-
           {/* Badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-1.5">
             {discount && (
@@ -87,6 +89,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 ? "bg-red-500 text-white scale-110"
                 : "bg-white dark:bg-[#0f0e1c] text-brown-500 dark:text-amber-100/70 hover:text-red-500 dark:hover:text-red-400 opacity-0 group-hover:opacity-100"
             }`}
+            aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
           >
             <Heart size={15} className={favorite ? "fill-current" : ""} />
           </button>

@@ -69,16 +69,16 @@ export default function Header() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className={`relative text-sm font-medium transition-colors hover:text-coral-600 dark:hover:text-amber-400 py-2 ${
+                    className={`relative text-sm font-medium transition-colors hover:text-coral-700 dark:hover:text-amber-400 py-2 ${
                       pathname === link.href ||
                       pathname.startsWith(link.href + "/")
-                        ? "text-coral-600 dark:text-amber-400 border-b-2 border-coral-600 dark:border-amber-500"
-                        : "text-forest-700 dark:text-amber-100/70 border-b-2 border-transparent"
+                        ? "text-coral-700 dark:text-amber-400 border-b-2 border-coral-700 dark:border-amber-500"
+                        : "text-forest-800 dark:text-amber-100/90 border-b-2 border-transparent"
                     }`}
                   >
                     {link.label}
                     {"badge" in link && link.badge && (
-                      <span className="absolute -top-1 -right-6 text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-coral-600 text-white leading-none shadow-sm">
+                      <span className="absolute -top-1 -right-6 text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-coral-700 text-white leading-none shadow-sm">
                         {link.badge}
                       </span>
                     )}
@@ -100,7 +100,7 @@ export default function Header() {
             {/* Search, Account, Favorites — desktop only; mobile uses the drawer */}
             <button
               onClick={() => setSearchOpen(!searchOpen)}
-              className="hidden lg:inline-flex p-2 text-forest-600 dark:text-amber-100/70 hover:text-coral-600 dark:hover:text-amber-400 transition-colors rounded-full hover:bg-coral-50 dark:hover:bg-amber-900/30"
+              className="hidden lg:inline-flex p-2 text-forest-800 dark:text-amber-100/90 hover:text-coral-700 dark:hover:text-amber-400 transition-colors rounded-full hover:bg-coral-50 dark:hover:bg-amber-900/30"
               aria-label="Search"
             >
               <Search size={20} />
@@ -108,7 +108,7 @@ export default function Header() {
 
             <Link
               href="/account"
-              className="hidden lg:inline-flex p-2 text-forest-600 dark:text-amber-100/70 hover:text-coral-600 dark:hover:text-amber-400 transition-colors rounded-full hover:bg-coral-50 dark:hover:bg-amber-900/30"
+              className="hidden lg:inline-flex p-2 text-forest-800 dark:text-amber-100/90 hover:text-coral-700 dark:hover:text-amber-400 transition-colors rounded-full hover:bg-coral-50 dark:hover:bg-amber-900/30"
               aria-label="My Account"
             >
               <User size={20} />
@@ -116,12 +116,12 @@ export default function Header() {
 
             <Link
               href="/favorites"
-              className="hidden lg:inline-flex relative p-2 text-forest-600 dark:text-amber-100/70 hover:text-coral-600 dark:hover:text-amber-400 transition-colors rounded-full hover:bg-coral-50 dark:hover:bg-amber-900/30"
+              className="hidden lg:inline-flex relative p-2 text-forest-800 dark:text-amber-100/90 hover:text-coral-700 dark:hover:text-amber-400 transition-colors rounded-full hover:bg-coral-50 dark:hover:bg-amber-900/30"
               aria-label="Favorites"
             >
               <Heart size={20} />
               {favCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 bg-coral-600 border-2 border-white dark:border-[#0a0a16] text-white text-[10px] rounded-full flex items-center justify-center font-bold shadow-sm">
+                <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 bg-coral-700 border-2 border-white dark:border-[#0a0a16] text-white text-[10px] rounded-full flex items-center justify-center font-bold shadow-sm">
                   {favCount}
                 </span>
               )}
@@ -130,12 +130,12 @@ export default function Header() {
             {/* Cart — always visible */}
             <Link
               href="/cart"
-              className="relative p-2 text-forest-600 dark:text-amber-100/70 hover:text-coral-600 dark:hover:text-amber-400 transition-colors rounded-full hover:bg-coral-50 dark:hover:bg-amber-900/30"
+              className="relative p-2 text-forest-800 dark:text-amber-100/90 hover:text-coral-700 dark:hover:text-amber-400 transition-colors rounded-full hover:bg-coral-50 dark:hover:bg-amber-900/30"
               aria-label="Cart"
             >
               <ShoppingCart size={20} />
               {cartCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 bg-coral-600 border-2 border-white dark:border-[#0a0a16] text-white text-[10px] rounded-full flex items-center justify-center font-bold shadow-sm">
+                <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 bg-coral-700 border-2 border-white dark:border-[#0a0a16] text-white text-[10px] rounded-full flex items-center justify-center font-bold shadow-sm">
                   {cartCount > 9 ? "9+" : cartCount}
                 </span>
               )}
@@ -143,7 +143,7 @@ export default function Header() {
 
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="lg:hidden p-2 text-forest-600 dark:text-amber-100/70 hover:text-coral-600 dark:hover:text-amber-400 transition-colors rounded-full hover:bg-coral-50 dark:hover:bg-amber-900/30"
+              className="lg:hidden p-2 text-forest-800 dark:text-amber-100/90 hover:text-coral-700 dark:hover:text-amber-400 transition-colors rounded-full hover:bg-coral-50 dark:hover:bg-amber-900/30"
               aria-label="Menu"
             >
               {menuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -183,7 +183,7 @@ export default function Header() {
                     <button
                       type="button"
                       onClick={() => setSearchQuery("")}
-                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-forest-400 hover:text-coral-600 dark:hover:text-amber-400 transition-colors"
+                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-forest-400 hover:text-coral-700 dark:hover:text-amber-400 transition-colors"
                     >
                       <X size={16} />
                     </button>
@@ -214,8 +214,8 @@ export default function Header() {
                       className={`block px-3 py-3 rounded-xl text-sm font-medium transition-colors ${
                         pathname === link.href ||
                         pathname.startsWith(link.href + "/")
-                          ? "bg-coral-50 dark:bg-amber-900/30 text-coral-600 dark:text-amber-300"
-                          : "text-forest-700 dark:text-amber-100/70 hover:bg-forest-50 dark:hover:bg-amber-900/20"
+                          ? "bg-coral-50 dark:bg-amber-900/30 text-coral-700 dark:text-amber-300"
+                          : "text-forest-800 dark:text-amber-100/90 hover:bg-forest-50 dark:hover:bg-amber-900/20"
                       }`}
                     >
                       {link.label}
@@ -230,7 +230,7 @@ export default function Header() {
                     setMenuOpen(false);
                     setSearchOpen(true);
                   }}
-                  className="flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-forest-700 dark:text-amber-100/70 hover:bg-forest-50 dark:hover:bg-amber-900/20"
+                  className="flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-forest-800 dark:text-amber-100/90 hover:bg-forest-50 dark:hover:bg-amber-900/20"
                 >
                   <Search size={18} />
                   <span className="text-xs font-medium">Search</span>
@@ -238,7 +238,7 @@ export default function Header() {
                 <Link
                   href="/account"
                   onClick={() => setMenuOpen(false)}
-                  className="flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-forest-700 dark:text-amber-100/70 hover:bg-forest-50 dark:hover:bg-amber-900/20"
+                  className="flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-forest-800 dark:text-amber-100/90 hover:bg-forest-50 dark:hover:bg-amber-900/20"
                 >
                   <User size={18} />
                   <span className="text-xs font-medium">Account</span>
@@ -246,12 +246,12 @@ export default function Header() {
                 <Link
                   href="/favorites"
                   onClick={() => setMenuOpen(false)}
-                  className="relative flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-forest-700 dark:text-amber-100/70 hover:bg-forest-50 dark:hover:bg-amber-900/20"
+                  className="relative flex flex-col items-center gap-1 px-2 py-3 rounded-lg text-forest-800 dark:text-amber-100/90 hover:bg-forest-50 dark:hover:bg-amber-900/20"
                 >
                   <Heart size={18} />
                   <span className="text-xs font-medium">Favorites</span>
                   {favCount > 0 && (
-                    <span className="absolute top-1 right-3 min-w-[20px] h-5 px-1 bg-coral-600 text-white text-[10px] border-2 border-white dark:border-[#0f0e1c] rounded-full flex items-center justify-center font-bold">
+                    <span className="absolute top-1 right-3 min-w-[20px] h-5 px-1 bg-coral-700 text-white text-[10px] border-2 border-white dark:border-[#0f0e1c] rounded-full flex items-center justify-center font-bold">
                       {favCount}
                     </span>
                   )}
