@@ -20,9 +20,11 @@ const nextConfig = {
       // If you use a custom domain for R2, add it here:
       // { protocol: "https", hostname: "images.yourdomain.com" },
     ],
+    minimumCacheTTL: 31536000,
   },
   experimental: {
     optimizePackageImports: ["lucide-react", "framer-motion"],
+    optimizeCss: true,
   },
 };
 

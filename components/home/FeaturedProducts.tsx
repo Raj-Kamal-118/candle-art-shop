@@ -402,7 +402,7 @@ function FeaturedPhotoStack({
                     src={img}
                     alt={`${product.name} - view ${idx + 1}`}
                     fill
-                    sizes="(max-width: 768px) 80vw, 400px"
+                    sizes="(max-width: 768px) 50vw, 350px"
                     className="object-cover"
                   />
                 </div>

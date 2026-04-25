@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Sparkles, ArrowRight } from "lucide-react";
 import { GiftSet } from "@/lib/types";
 import GiftSetCard from "@/components/gift-sets/GiftSetCard";
@@ -52,12 +53,17 @@ export default function GiftSetsPage() {
 
       {/* Editorial hero */}
       <section className="relative overflow-hidden text-center p-12 border-b border-cream-200 dark:border-amber-900/20 flex items-center justify-center">
-        <img
-          src="images/misc/gift.png"
-          alt="Gift Sets"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-black/20 dark:bg-black/60" />
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/images/misc/gift.png"
+            alt="Gift Sets"
+            fill
+            sizes="100vw"
+            priority
+            className="object-cover"
+          />
+        </div>
+        <div className="absolute inset-0 z-0 bg-black/20 dark:bg-black/60" />
 
         <div className="relative z-10 max-w-4xl mx-auto px-6">
           <p className="text-[11px] font-semibold text-amber-400 uppercase tracking-[0.24em] mb-5 drop-shadow-sm">
