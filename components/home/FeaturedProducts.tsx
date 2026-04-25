@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Product } from "@/lib/types";
 
@@ -228,9 +229,11 @@ export default function FeaturedProducts({
                 >
                   <div className="w-20 h-20 rounded-xl overflow-hidden bg-cream-50 dark:bg-black/20 flex-shrink-0 relative shadow-sm">
                     {img ? (
-                      <img
+                      <Image
                         src={img}
                         alt={p.name}
+                        fill
+                        sizes="80px"
                         className={`w-full h-full object-cover transition-transform duration-200 ${
                           isActive ? "scale-110" : "group-hover:scale-110"
                         }`}
@@ -394,11 +397,15 @@ function FeaturedPhotoStack({
             {/* Polaroid Photo Wrapper */}
             <div className="w-full h-full p-2.5 pb-12 md:pb-14 bg-white dark:bg-[#1a1830] rounded-xl border border-gray-100 dark:border-amber-900/30 flex flex-col">
               {img ? (
-                <img
-                  src={img}
-                  alt={`${product.name} - view ${idx + 1}`}
-                  className="w-full h-full object-cover rounded-lg"
-                />
+                <div className="relative w-full h-full rounded-lg overflow-hidden">
+                  <Image
+                    src={img}
+                    alt={`${product.name} - view ${idx + 1}`}
+                    fill
+                    sizes="(max-width: 768px) 80vw, 400px"
+                    className="object-cover"
+                  />
+                </div>
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-4xl bg-cream-50 dark:bg-black/20 rounded-lg">
                   🕯️

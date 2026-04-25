@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 interface SecondaryHeaderProps {
   eyebrow: string;
@@ -19,11 +20,15 @@ export default function SecondaryHeader({
 }: SecondaryHeaderProps) {
   return (
     <section className="relative overflow-hidden text-center p-8 border-b border-cream-200 dark:border-amber-900/20 flex items-center justify-center">
-      <img
-        src={backgroundImage}
-        alt="Header Background"
-        className="absolute inset-0 w-full h-full object-cover"
-      />
+      <div className="absolute inset-0 z-0">
+        <Image
+          src={backgroundImage}
+          alt="Header Background"
+          fill
+          sizes="100vw"
+          className="object-cover"
+        />
+      </div>
       <div className="absolute inset-0 bg-black/25 dark:bg-black/40" />
       <div className="relative z-10 max-w-[1440px] mx-auto px-4 sm:px-6">
         <p className="text-[11px] font-semibold text-amber-400 uppercase tracking-[0.24em] drop-shadow-sm">

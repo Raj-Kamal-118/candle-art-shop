@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -53,11 +54,20 @@ export default function HeroSection({ settings }: HeroSectionProps) {
   });
   const imageSlots = [...normalizedImages, null, null, null, null].slice(0, 4);
 
-  const HeroCardInner = ({ slot }: { slot: any }) => (
+  const HeroCardInner = ({
+    slot,
+    isPriority = false,
+  }: {
+    slot: any;
+    isPriority?: boolean;
+  }) => (
     <>
-      <img
+      <Image
         src={slot.url}
         alt={slot.name || "Hero image"}
+        fill
+        sizes="(max-width: 1024px) 50vw, 25vw"
+        priority={isPriority}
         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
       />
       {slot.name && (
@@ -267,7 +277,7 @@ export default function HeroSection({ settings }: HeroSectionProps) {
                     />
                     {renderCardContainer(
                       imageSlots[0],
-                      <HeroCardInner slot={imageSlots[0]} />,
+                      <HeroCardInner slot={imageSlots[0]} isPriority={true} />,
                     )}
                   </div>
                 )}
@@ -289,7 +299,7 @@ export default function HeroSection({ settings }: HeroSectionProps) {
                     />
                     {renderCardContainer(
                       imageSlots[1],
-                      <HeroCardInner slot={imageSlots[1]} />,
+                      <HeroCardInner slot={imageSlots[1]} isPriority={true} />,
                     )}
                   </div>
                 )}

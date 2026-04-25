@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import {
   ShoppingCart,
   ArrowRight,
@@ -34,10 +35,11 @@ function GiftSetCartItem({ item }: { item: import("@/lib/types").CartItem }) {
         {/* Gift box icon / cover image */}
         <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-cream-50 dark:bg-[#0f0e1c] flex items-center justify-center flex-shrink-0 border border-cream-200 dark:border-amber-900/30 overflow-hidden shadow-sm">
           {item.product.images?.[0] ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={item.product.images[0]}
               alt={item.product.name}
+              fill
+              sizes="(max-width: 640px) 64px, 80px"
               className="w-full h-full object-cover"
             />
           ) : (
@@ -121,12 +123,15 @@ function GiftSetCartItem({ item }: { item: import("@/lib/types").CartItem }) {
                   className="flex items-center gap-3 px-3 py-2.5 border-b border-cream-100 dark:border-amber-900/20 last:border-b-0 bg-cream-50 dark:bg-amber-900/10"
                 >
                   {pick.image ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={pick.image}
-                      alt={pick.name}
-                      className="w-10 h-10 rounded-lg object-cover flex-shrink-0 border border-black/5 dark:border-white/5"
-                    />
+                    <div className="relative w-10 h-10 rounded-lg flex-shrink-0 border border-black/5 dark:border-white/5 overflow-hidden">
+                      <Image
+                        src={pick.image}
+                        alt={pick.name}
+                        fill
+                        sizes="40px"
+                        className="object-cover"
+                      />
+                    </div>
                   ) : (
                     <div className="w-10 h-10 rounded-lg bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center text-base flex-shrink-0 border border-black/5 dark:border-white/5">
                       🎁
@@ -289,10 +294,12 @@ export default function CartPage() {
                       }`}
                     >
                       <Link href={`/products/${up.slug}`}>
-                        <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-xl overflow-hidden bg-cream-100 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 shrink-0 shadow-sm">
-                          <img
+                        <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-xl overflow-hidden bg-cream-100 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 shrink-0 shadow-sm">
+                          <Image
                             src={up.images[0]}
                             alt={up.name}
+                            fill
+                            sizes="(max-width: 640px) 96px, 128px"
                             className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                           />
                         </div>

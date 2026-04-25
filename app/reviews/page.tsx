@@ -1,5 +1,6 @@
 import { getApprovedReviews } from "@/lib/reviews";
 import { Star } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import SecondaryHeader from "@/components/layout/SecondaryHeader";
 
@@ -103,10 +104,12 @@ export default async function ReviewsPage() {
               </p>
 
               {review.image_url && (
-                <div className="mb-5 w-full aspect-[4/3] rounded-xl overflow-hidden bg-cream-50 dark:bg-amber-900/10">
-                  <img
+                <div className="relative mb-5 w-full aspect-[4/3] rounded-xl overflow-hidden bg-cream-50 dark:bg-amber-900/10">
+                  <Image
                     src={review.image_url}
                     alt={`Review photo by ${review.customer_name}`}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>

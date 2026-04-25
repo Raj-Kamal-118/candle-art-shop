@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import {
@@ -166,11 +167,14 @@ export default function ProductDetailPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4 }}
-              className="aspect-square rounded-3xl overflow-hidden bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-900/30 shadow-[0_16px_40px_rgba(28,18,9,0.08)] dark:shadow-amber-900/20"
+              className="relative aspect-square rounded-3xl overflow-hidden bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-900/30 shadow-[0_16px_40px_rgba(28,18,9,0.08)] dark:shadow-amber-900/20"
             >
-              <img
+              <Image
                 src={product.images[selectedImage]}
                 alt={product.name}
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                priority
                 className="w-full h-full object-cover"
               />
             </motion.div>
@@ -184,12 +188,14 @@ export default function ProductDetailPage() {
                     className={`w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-200 bg-white dark:bg-[#1a1830] ${
                       selectedImage === i
                         ? "border-coral-500 shadow-md scale-105"
-                        : "border-transparent opacity-60 hover:opacity-100 hover:scale-105"
+                        : "relative border-transparent opacity-60 hover:opacity-100 hover:scale-105"
                     }`}
                   >
-                    <img
+                    <Image
                       src={img}
                       alt=""
+                      fill
+                      sizes="80px"
                       className="w-full h-full object-cover"
                     />
                   </button>
@@ -566,11 +572,15 @@ function ProductTabs({
       >
         {hasImage && (
           <div className="rounded-3xl overflow-hidden aspect-[4/3] bg-cream-100 dark:bg-amber-900/10 shadow-sm">
-            <img
-              src={section.image}
-              alt={section.heading}
-              className="w-full h-full object-cover"
-            />
+            <div className="relative w-full h-full">
+              <Image
+                src={section.image || ""}
+                alt={section.heading}
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover"
+              />
+            </div>
           </div>
         )}
         <div

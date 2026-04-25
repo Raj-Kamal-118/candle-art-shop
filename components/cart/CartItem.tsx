@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Trash2, Bookmark, Minus, Plus } from "lucide-react";
 import { CartItem as CartItemType } from "@/lib/types";
 import { useStore } from "@/lib/store";
@@ -26,10 +27,12 @@ export default function CartItemComponent({
   return (
     <div className="flex gap-4 sm:gap-6 py-6 border-b border-cream-200 dark:border-amber-900/20 last:border-b-0">
       <Link href={`/products/${item.product.slug}`}>
-        <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-xl overflow-hidden bg-cream-50 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 shrink-0 shadow-sm">
-          <img
+        <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-xl overflow-hidden bg-cream-50 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 shrink-0 shadow-sm">
+          <Image
             src={item.product.images[0]}
             alt={item.product.name}
+            fill
+            sizes="(max-width: 640px) 96px, 128px"
             className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
           />
         </div>

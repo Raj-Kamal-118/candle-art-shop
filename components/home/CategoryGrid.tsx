@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Category } from "@/lib/types";
@@ -45,9 +46,11 @@ export default function CategoryGrid({ categories }: CategoryGridProps) {
                 href={`/categories/${category.slug}`}
                 className="group relative block aspect-[3/4] rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300"
               >
-                <img
+                <Image
                   src={category.image}
                   alt={category.name}
+                  fill
+                  sizes="(max-width: 1024px) 50vw, 25vw"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
                 {/* Gradient overlay */}

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Category, Product } from "@/lib/types";
 
@@ -364,17 +365,15 @@ function PhotoStack({
               aria-hidden="true"
             />
             {src ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={src}
-                alt={`${alt} photo ${i + 1}`}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  borderRadius: 20,
-                }}
-              />
+              <div className="relative w-full h-full rounded-[20px] overflow-hidden">
+                <Image
+                  src={src}
+                  alt={`${alt} photo ${i + 1}`}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 650px"
+                  className="object-cover"
+                />
+              </div>
             ) : (
               <div
                 style={{
