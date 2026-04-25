@@ -288,7 +288,7 @@ export default function CartPage() {
                           : "border-cream-200 dark:border-amber-900/30 bg-cream-50 dark:bg-[#151326]"
                       }`}
                     >
-                      <Link href={`/products/${up.id}`}>
+                      <Link href={`/products/${up.slug}`}>
                         <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-xl overflow-hidden bg-cream-100 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 shrink-0 shadow-sm">
                           <img
                             src={up.images[0]}
@@ -305,7 +305,7 @@ export default function CartPage() {
                             Free Gift Unlocked
                           </div>
                         )}
-                        <Link href={`/products/${up.id}`}>
+                        <Link href={`/products/${up.slug}`}>
                           <h4 className="font-serif text-lg font-bold text-brown-900 dark:text-amber-100 leading-tight hover:text-coral-600 dark:hover:text-amber-400 transition-colors">
                             {up.name}
                           </h4>

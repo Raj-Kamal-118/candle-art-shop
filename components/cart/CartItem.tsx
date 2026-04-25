@@ -25,7 +25,7 @@ export default function CartItemComponent({
 
   return (
     <div className="flex gap-4 sm:gap-6 py-6 border-b border-cream-200 dark:border-amber-900/20 last:border-b-0">
-      <Link href={`/products/${item.product.id}`}>
+      <Link href={`/products/${item.product.slug}`}>
         <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-xl overflow-hidden bg-cream-50 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 shrink-0 shadow-sm">
           <img
             src={item.product.images[0]}
@@ -38,7 +38,7 @@ export default function CartItemComponent({
       <div className="flex-1 min-w-0 flex flex-col">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
           <div className="flex-1 min-w-0">
-            <Link href={`/products/${item.product.id}`}>
+            <Link href={`/products/${item.product.slug}`}>
               <h3 className="font-serif text-lg font-bold text-brown-900 dark:text-amber-50 hover:text-coral-600 dark:hover:text-amber-400 transition-colors leading-tight line-clamp-2">
                 {item.product.name}
               </h3>

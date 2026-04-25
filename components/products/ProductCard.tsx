@@ -28,7 +28,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     if (!product.inStock) return; // Prevent adding out-of-stock items
 
     if (product.customizable) {
-      router.push(`/products/${product.id}`);
+      router.push(`/products/${product.slug}`);
       return;
     }
 
@@ -55,7 +55,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     : null;
 
   return (
-    <Link href={`/products/${product.id}`}>
+    <Link href={`/products/${product.slug}`}>
       <div className="group relative bg-white dark:bg-[#1a1830] rounded-2xl overflow-hidden shadow-[0_4px_12px_rgba(28,18,9,0.05)] border border-cream-200 dark:border-amber-900/30 hover:shadow-[0_12px_32px_rgba(28,18,9,0.08)] dark:hover:border-amber-700/50 transition-all duration-300 cursor-pointer">
         {/* Image container */}
         <div className="relative aspect-square overflow-hidden bg-cream-100 dark:bg-amber-900/20">

@@ -45,7 +45,7 @@ const ICONS: Record<string, any> = {
 };
 
 export default function ProductDetailPage() {
-  const { id } = useParams() as { id: string };
+  const { slug } = useParams() as { slug: string };
   const router = useRouter();
   const { addToCart, addToFavorites, removeFromFavorites, isFavorite } =
     useStore();
@@ -61,7 +61,7 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`/api/products/${id}`)
+    fetch(`/api/products/slug/${slug}`)
       .then((r) => r.json())
       .then((data) => {
         setProduct(data);
@@ -72,7 +72,7 @@ export default function ProductDetailPage() {
         }
       })
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [slug]);
 
   const handleAddToCart = () => {
     if (!product) return;
