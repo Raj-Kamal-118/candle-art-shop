@@ -1,23 +1,25 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Instagram, Youtube, Mail, Phone, MessageCircle } from "lucide-react";
 import ArtisanLogo from "@/components/ui/ArtisanLogo";
 
 export default function Footer() {
   return (
-    <footer
-      className="text-forest-100 relative"
-      style={{
-        backgroundImage:
-          "url('https://pub-1f6a6fc4e92548b987db5dbea7cd456e.r2.dev/candle-art-shop-images/Asset/Gemini_Generated_Image_wjh0jbwjh0jbwjh0.png')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-      }}
-    >
+    <footer className="text-forest-100 relative overflow-hidden">
+      {/* Optimized Background Image */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="/images/misc/footer.png"
+          alt="Footer background"
+          fill
+          sizes="100vw"
+          className="object-cover opacity-60"
+        />
+      </div>
       {/* Dark overlay so text stays readable */}
-      <div className="absolute inset-0 bg-forest-950/80" />
+      <div className="absolute inset-0 bg-forest-950/80 z-0" />
       <div className="relative z-10 max-w-[1440px] mx-auto px-4 sm:px-6 py-4 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand */}
