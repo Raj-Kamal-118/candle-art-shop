@@ -1,16 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useStore } from "@/lib/store";
 import { User } from "@/lib/types";
 import { Loader2 } from "lucide-react";
 
-export default function AuthCallbackPage() {
+function AuthCallbackContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { setCurrentUser } = useStore();
   const [error, setError] = useState("");
+  const nextPath = searchParams.get("next") ?? "/";
 
   useEffect(() => {
     const handleAuth = async () => {
@@ -41,7 +43,7 @@ export default function AuthCallbackPage() {
           });
 
           setCurrentUser(userObj);
-          router.replace("/");
+          router.replace(nextPath);
         } else {
           // Edge case: listen for the auth state change if the session isn't immediately ready
           const { data: authListener } = supabase.auth.onAuthStateChange(
@@ -64,7 +66,7 @@ export default function AuthCallbackPage() {
                 });
 
                 setCurrentUser(userObj);
-                router.replace("/");
+                router.replace(nextPath);
               }
             },
           );
@@ -76,7 +78,7 @@ export default function AuthCallbackPage() {
     };
 
     handleAuth();
-  }, [router, setCurrentUser]);
+  }, [router, setCurrentUser, nextPath]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[var(--home-bg-alt)] dark:bg-[#1a1612] px-4">
@@ -99,5 +101,27 @@ export default function AuthCallbackPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function AuthCallbackPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex flex-col items-center justify-center bg-[var(--home-bg-alt)] dark:bg-[#1a1612] px-4">
+          <div className="text-center space-y-4">
+            <Loader2
+              size={40}
+              className="animate-spin text-coral-600 mx-auto"
+            />
+            <p className="text-brown-600 dark:text-amber-100/70 font-medium text-lg font-serif">
+              Loading...
+            </p>
+          </div>
+        </div>
+      }
+    >
+      <AuthCallbackContent />
+    </Suspense>
   );
 }

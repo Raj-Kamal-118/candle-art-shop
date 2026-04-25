@@ -97,10 +97,13 @@ export default function AuthModal({
   const handleGoogleLogin = async () => {
     setLoading(true);
     setError("");
+    const returnPath = encodeURIComponent(
+      window.location.pathname + window.location.search,
+    );
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${window.location.origin}/auth/callback?next=${returnPath}`,
       },
     });
     if (error) setError(error.message);
