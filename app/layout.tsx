@@ -90,7 +90,7 @@ export default function RootLayout({
       className={`${lora.variable} ${dancing.variable}`}
     >
       <head></head>
-      <body>
+      <body className="bg-cream-50 text-forest-700 dark:bg-[#0a0a16] dark:text-amber-100/70 antialiased">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}

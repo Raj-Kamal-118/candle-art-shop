@@ -27,7 +27,7 @@ export default function ArtisanLogo({
           Artisan House
         </span>
         <span
-          className={`block text-[9px] font-medium tracking-[0.15em] uppercase ${variant === "light" ? "text-amber-400" : "text-gold-600 dark:text-amber-400"}`}
+          className={`block text-[9px] font-medium tracking-[0.15em] uppercase ${variant === "light" ? "text-amber-400" : "text-amber-700 dark:text-amber-400"}`}
         >
           Candles · Clays · Crafts
         </span>
