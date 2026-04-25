@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 // @ts-ignore - Next.js handles CSS bundling automatically
 import "./globals.css";
-import { Lora, Dancing_Script } from "next/font/google";
+import { Lora, Dancing_Script, Caveat } from "next/font/google";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
@@ -20,6 +20,12 @@ const dancing = Dancing_Script({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-script",
+  display: "swap",
+});
+
+const caveat = Caveat({
+  subsets: ["latin"],
+  variable: "--font-hand",
   display: "swap",
 });
 
@@ -87,7 +93,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${lora.variable} ${dancing.variable}`}
+      className={`${lora.variable} ${dancing.variable} ${caveat.variable}`}
     >
       <head></head>
       <body className="bg-cream-50 text-forest-800 dark:bg-[#0a0a16] dark:text-amber-100/90 antialiased">

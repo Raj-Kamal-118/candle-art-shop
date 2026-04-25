@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS hero_settings (
   background_type       TEXT NOT NULL DEFAULT 'gradient' CHECK (background_type IN ('gradient', 'color', 'image', 'video')),
   background_value      TEXT,
   show_images           BOOLEAN NOT NULL DEFAULT TRUE,
-  images                JSONB NOT NULL DEFAULT '[{"url":"https://picsum.photos/seed/hero1/400/550","name":"Hand-poured Candles","link":"/categories/scented-candles"},{"url":"https://picsum.photos/seed/hero3/400/400","name":"Clay Art","link":"/categories/custom-artwork"},{"url":"https://picsum.photos/seed/hero2/400/400","name":"Gift Sets","link":"/gift-sets"},{"url":"https://picsum.photos/seed/hero4/400/550","name":"Home Decor","link":"/products"}]'::jsonb,
+  images                JSONB NOT NULL DEFAULT '[{"url":"https://picsum.photos/seed/hero1/400/550","name":"Hand-poured Candles","link":"/categories/scented-candles","offerType":"Special Offer","offerText":"Free shipping on orders over ₹999"},{"url":"https://picsum.photos/seed/hero3/400/400","name":"Clay Art","link":"/categories/custom-artwork"},{"url":"https://picsum.photos/seed/hero2/400/400","name":"Gift Sets","link":"/gift-sets"},{"url":"https://picsum.photos/seed/hero4/400/550","name":"Home Decor","link":"/products"}]'::jsonb,
   show_stats            BOOLEAN NOT NULL DEFAULT TRUE,
   stats                 JSONB NOT NULL DEFAULT '[{"value":"500+","label":"Happy Customers"},{"value":"100%","label":"Natural Ingredients"},{"value":"11","label":"Signature Products"}]',
   floating_badge_text   TEXT DEFAULT 'Free shipping on Orders over ₹999',
@@ -33,7 +33,7 @@ BEGIN
   ) THEN
     ALTER TABLE hero_settings ALTER COLUMN images DROP DEFAULT;
     ALTER TABLE hero_settings ALTER COLUMN images TYPE JSONB USING to_jsonb(images);
-    ALTER TABLE hero_settings ALTER COLUMN images SET DEFAULT '[{"url":"https://picsum.photos/seed/hero1/400/550","name":"Hand-poured Candles","link":"/categories/scented-candles"},{"url":"https://picsum.photos/seed/hero3/400/400","name":"Clay Art","link":"/categories/custom-artwork"},{"url":"https://picsum.photos/seed/hero2/400/400","name":"Gift Sets","link":"/gift-sets"},{"url":"https://picsum.photos/seed/hero4/400/550","name":"Home Decor","link":"/products"}]'::jsonb;
+    ALTER TABLE hero_settings ALTER COLUMN images SET DEFAULT '[{"url":"https://picsum.photos/seed/hero1/400/550","name":"Hand-poured Candles","link":"/categories/scented-candles","offerType":"Special Offer","offerText":"Free shipping on orders over ₹999"},{"url":"https://picsum.photos/seed/hero3/400/400","name":"Clay Art","link":"/categories/custom-artwork"},{"url":"https://picsum.photos/seed/hero2/400/400","name":"Gift Sets","link":"/gift-sets"},{"url":"https://picsum.photos/seed/hero4/400/550","name":"Home Decor","link":"/products"}]'::jsonb;
   END IF;
 END $$;
 
@@ -46,6 +46,7 @@ ALTER TABLE categories ADD COLUMN IF NOT EXISTS banner_image       TEXT;
 ALTER TABLE categories ADD COLUMN IF NOT EXISTS banner_bg_color    TEXT DEFAULT '#f5f0eb';
 ALTER TABLE categories ADD COLUMN IF NOT EXISTS banner_buttons     JSONB DEFAULT '[]';
 ALTER TABLE categories ADD COLUMN IF NOT EXISTS show_in_homepage   BOOLEAN NOT NULL DEFAULT TRUE;
+ALTER TABLE categories ADD COLUMN IF NOT EXISTS magazine_items     JSONB DEFAULT '[]';
 
 -- ── Feature 3: Product Variant Pricing ────────────────────────────────────────
 -- variant_pricing is a JSON map: { "Option1Val|Option2Val": price_in_paise }

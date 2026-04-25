@@ -1,5 +1,5 @@
 import { CartItem } from "@/lib/types";
-import { formatPrice, getShippingCost } from "@/lib/utils";
+import { formatPrice } from "@/lib/utils";
 import { Tag } from "lucide-react";
 
 interface OrderSummaryProps {
@@ -7,6 +7,7 @@ interface OrderSummaryProps {
   discount?: number;
   discountCode?: string;
   codFee?: number;
+  shipping: number;
 }
 
 export default function OrderSummary({
@@ -14,12 +15,12 @@ export default function OrderSummary({
   discount = 0,
   discountCode,
   codFee = 0,
+  shipping,
 }: OrderSummaryProps) {
   const subtotal = items.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
     0,
   );
-  const shipping = getShippingCost(subtotal - discount);
   const total = subtotal - discount + shipping + codFee;
 
   return (

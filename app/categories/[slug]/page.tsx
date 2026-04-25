@@ -28,7 +28,7 @@ export default function CategoryPage() {
   const customCard =
     slug === "scented-candles" || slug === "fridge-magnets" ? (
       <Link
-        href={slug === "scented-candles" ? "/custom-candle" : "/custom-magnet"}
+        href={slug === "scented-candles" ? "/custom/candle" : "/custom/magnet"}
         className="group relative bg-white dark:bg-[#1a1830] rounded-2xl overflow-hidden shadow-[0_4px_12px_rgba(28,18,9,0.05)] border border-amber-200 dark:border-amber-700/50 hover:shadow-[0_12px_32px_rgba(28,18,9,0.08)] transition-all duration-300 cursor-pointer flex flex-col"
       >
         <div className="relative aspect-square flex flex-col items-center justify-center p-6 text-center overflow-hidden bg-amber-50/50 dark:bg-amber-900/10">
@@ -62,7 +62,7 @@ export default function CategoryPage() {
 
   const giftSetCard = (
     <Link
-      href="/gift-sets/build"
+      href="/custom/gift-set"
       className="group relative bg-white dark:bg-[#1a1830] rounded-2xl overflow-hidden shadow-[0_4px_12px_rgba(28,18,9,0.05)] border border-cream-200 dark:border-amber-900/30 hover:shadow-[0_12px_32px_rgba(28,18,9,0.08)] transition-all duration-300 cursor-pointer flex flex-col"
     >
       <div className="relative aspect-square flex flex-col items-center justify-center p-6 text-center overflow-hidden bg-forest-50/50 dark:bg-forest-900/10">

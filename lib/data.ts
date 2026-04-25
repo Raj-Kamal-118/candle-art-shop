@@ -65,6 +65,7 @@ function mapCategory(row: Record<string, unknown>): Category {
       (row.banner_buttons as Category["bannerButtons"]) || [],
     showInHomepage:
       row.show_in_homepage === undefined ? true : (row.show_in_homepage as boolean),
+    magazineItems: (row.magazine_items as Category["magazineItems"]) || [],
   };
 }
 
@@ -348,6 +349,7 @@ export async function createCategory(category: Category): Promise<Category> {
       banner_bg_color: category.bannerBgColor ?? "#f5f0eb",
       banner_buttons: category.bannerButtons ?? [],
       show_in_homepage: category.showInHomepage ?? true,
+      magazine_items: category.magazineItems ?? [],
       created_at: category.createdAt,
     })
     .select()
@@ -382,6 +384,8 @@ export async function updateCategory(
     dbUpdates.show_in_homepage = updates.showInHomepage;
   if (updates.sortOrder !== undefined)
     dbUpdates.sort_order = updates.sortOrder;
+  if (updates.magazineItems !== undefined)
+    dbUpdates.magazine_items = updates.magazineItems;
 
   const { data, error } = await supabase
     .from("categories")

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,15 +9,6 @@ import { Product } from "@/lib/types";
 function formatPrice(price: number): string {
   return `₹${price.toLocaleString("en-IN")}`;
 }
-
-const PIN_COLORS = [
-  "#ef4444", // Red
-  "#3b82f6", // Blue
-  "#eab308", // Yellow
-  "#10b981", // Green
-  "#a855f7", // Purple
-  "#f97316", // Orange
-];
 
 export default function FeaturedProducts({
   products,
@@ -196,20 +187,7 @@ export default function FeaturedProducts({
             <div className="flex justify-end mb-2">
               <Link
                 href="/products"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 6,
-                  border: "1.5px solid var(--home-amber)",
-                  color: "var(--home-amber)",
-                  borderRadius: 999,
-                  padding: "8px 20px",
-                  fontSize: 13,
-                  fontWeight: 600,
-                  textDecoration: "none",
-                  letterSpacing: ".02em",
-                }}
-                className="hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors"
+                className="inline-flex items-center justify-center gap-2 bg-white dark:bg-[#1a1830] dark:border dark:border-amber-700/30 text-forest-800 dark:text-amber-200 px-8 py-3.5 rounded-xl font-semibold hover:bg-cream-100 dark:hover:bg-amber-900/20 transition-all duration-200 shadow-md hover:shadow-lg border border-cream-200 text-sm"
               >
                 View all products →
               </Link>
@@ -283,12 +261,23 @@ function FeaturedPhotoStack({
   activeIndex: number;
 }) {
   const [topIdx, setTopIdx] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
   const images = product.images?.length > 0 ? product.images : [""];
+
+  useEffect(() => {
+    if (images.length <= 1 || isHovered) return;
+    const timer = setInterval(() => {
+      setTopIdx((prev) => (prev + 1) % images.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [images.length, isHovered]);
 
   return (
     <div
-      className="relative w-full max-w-md aspect-[4/3] md:aspect-[3/2] mb-10 flex items-center justify-center group cursor-pointer"
+      className="relative w-full max-w-2xl aspect-[4/3] md:aspect-[3/2] mb-10 flex items-center justify-center group cursor-pointer"
       onClick={() => setTopIdx((prev) => (prev + 1) % images.length)}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       {images.map((img, idx) => {
         const offset = (idx - topIdx + images.length) % images.length;
@@ -297,10 +286,9 @@ function FeaturedPhotoStack({
         const isTop = offset === 0;
         const zIndex = images.length - offset;
 
-        const pinColor = PIN_COLORS[(activeIndex + idx) % PIN_COLORS.length];
-        const rotate = offset === 0 ? -1.5 : offset === 1 ? 4.5 : -5;
-        const xOffset = offset === 0 ? 0 : offset === 1 ? 24 : -24;
-        const yOffset = offset === 0 ? 0 : offset === 1 ? -8 : 12;
+        const rotate = offset === 0 ? -1.5 : offset === 1 ? 6 : -10;
+        const xOffset = offset === 0 ? 0 : offset === 1 ? 32 : -45;
+        const yOffset = offset === 0 ? 0 : offset === 1 ? -12 : 24;
 
         return (
           <motion.div
@@ -314,88 +302,67 @@ function FeaturedPhotoStack({
               scale: isTop ? 1 : 0.95 - offset * 0.02,
               opacity: offset > 2 ? 0 : 1,
             }}
-            className="absolute w-[80%] aspect-[3/4] md:aspect-square rounded-xl shadow-[0_16px_40px_rgba(28,18,9,.12)] dark:shadow-amber-900/20"
+            transition={{
+              type: "spring",
+              stiffness: 60,
+              damping: 12,
+            }}
+            whileHover={
+              isTop
+                ? {
+                    scale: 1.03,
+                    rotate: rotate - 1.5,
+                    boxShadow: "0 30px 60px -15px rgba(28,18,9,0.3)",
+                  }
+                : {}
+            }
+            className="absolute w-[90%] max-w-[680px] aspect-[4/3] rounded-xl shadow-[0_16px_40px_rgba(28,18,9,.12)] dark:shadow-amber-900/20"
           >
-            {/* Thumb Pin (Classic Push Pin) */}
+            {/* Realistic Paperclip */}
             <div
               style={{
                 position: "absolute",
-                top: 8,
-                left: "50%",
-                transform: "translateX(-50%)",
-                width: 24,
-                height: 24,
+                top: -20,
+                left: offset === 0 ? "15%" : offset === 1 ? "80%" : "20%",
+                transform: `rotate(${rotate * 0.8}deg)`,
                 zIndex: 10,
               }}
             >
-              {/* Shadow cast by the pin */}
-              <div
-                style={{
-                  position: "absolute",
-                  top: 14,
-                  left: 12,
-                  width: 12,
-                  height: 12,
-                  backgroundColor: "rgba(0,0,0,0.25)",
-                  borderRadius: "50%",
-                  transform: "translate(4px, 4px)",
-                  filter: "blur(2px)",
-                  zIndex: 1,
-                }}
-              />
-
-              {/* Pin Base Rim */}
-              <div
-                style={{
-                  position: "absolute",
-                  top: 2,
-                  left: 2,
-                  width: 20,
-                  height: 20,
-                  borderRadius: "50%",
-                  backgroundColor: pinColor,
-                  backgroundImage:
-                    "linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(0,0,0,0.2) 100%)",
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
-                  zIndex: 2,
-                }}
-              />
-
-              {/* Pin Handle / Stem */}
-              <div
-                style={{
-                  position: "absolute",
-                  top: 5,
-                  left: 5,
-                  width: 14,
-                  height: 14,
-                  borderRadius: "50%",
-                  backgroundColor: pinColor,
-                  backgroundImage:
-                    "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 40%, rgba(0,0,0,0.4) 100%)",
-                  boxShadow:
-                    "0 3px 5px rgba(0,0,0,0.5), inset 0 1px 2px rgba(255,255,255,0.6)",
-                  zIndex: 3,
-                }}
+              <svg
+                width="32"
+                height="64"
+                viewBox="0 0 32 64"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                style={{ filter: "drop-shadow(1px 3px 2px rgba(28,18,9,0.2))" }}
               >
-                {/* Specular Highlight */}
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 2,
-                    left: 2,
-                    width: 3,
-                    height: 3,
-                    backgroundColor: "#fff",
-                    borderRadius: "50%",
-                    filter: "blur(0.5px)",
-                  }}
+                <path
+                  d="M14 42 V 16 A 6 6 0 0 1 26 16 V 48 A 11 11 0 0 1 4 48 V 16"
+                  stroke="url(#clipMetallic)"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  transform="translate(1, 2)"
                 />
-              </div>
+                <defs>
+                  <linearGradient
+                    id="clipMetallic"
+                    x1="4"
+                    y1="10"
+                    x2="26"
+                    y2="59"
+                    gradientUnits="userSpaceOnUse"
+                  >
+                    <stop stopColor="#4ade80" />
+                    <stop offset="0.3" stopColor="#16a34a" />
+                    <stop offset="0.7" stopColor="#15803d" />
+                    <stop offset="1" stopColor="#14532d" />
+                  </linearGradient>
+                </defs>
+              </svg>
             </div>
 
             {/* Polaroid Photo Wrapper */}
-            <div className="w-full h-full p-2.5 pb-12 md:pb-14 bg-white dark:bg-[#1a1830] rounded-xl border border-gray-100 dark:border-amber-900/30 flex flex-col">
+            <div className="w-full h-full p-2.5 pb-10 md:pb-12 bg-white dark:bg-[#1a1830] rounded-xl border border-gray-100 dark:border-amber-900/30 flex flex-col">
               {img ? (
                 <div className="relative w-full h-full rounded-lg overflow-hidden bg-cream-50 dark:bg-black/20">
                   <Image

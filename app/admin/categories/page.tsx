@@ -10,6 +10,7 @@ import {
   ChevronDown,
   ChevronUp,
   GripVertical,
+  Copy,
 } from "lucide-react";
 import {
   DndContext,
@@ -28,7 +29,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Category, BannerButton } from "@/lib/types";
+import { Category, BannerButton, MagazineItem } from "@/lib/types";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import MultiImageUploader from "@/components/admin/MultiImageUploader";
@@ -131,6 +132,130 @@ function SortableCategoryRow({
   );
 }
 
+// ─── Sortable Magazine Item ───────────────────────────────────────────────────
+
+function SortableMagazineItem({
+  item,
+  index,
+  uploadingMagItem,
+  handleMagazineImageUpload,
+  updateMagazineItem,
+  removeMagazineItem,
+}: {
+  item: MagazineItem & { id: string };
+  index: number;
+  uploadingMagItem: number | null;
+  handleMagazineImageUpload: (
+    index: number,
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => void;
+  updateMagazineItem: (i: number, updates: Partial<MagazineItem>) => void;
+  removeMagazineItem: (i: number) => void;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: item.id });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 10 : undefined,
+  };
+  const inputCls =
+    "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400";
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="border border-gray-200 rounded-xl p-3 space-y-3 bg-white relative"
+    >
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            {...attributes}
+            {...listeners}
+            className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 touch-none"
+          >
+            <GripVertical size={16} />
+          </button>
+          <span className="text-xs font-semibold text-gray-600">
+            Page {index + 1}
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={() => removeMagazineItem(index)}
+          className="text-red-500 hover:text-red-700"
+        >
+          <Trash2 size={14} />
+        </button>
+      </div>
+      <div className="flex gap-3">
+        <div className="w-16 h-20 bg-gray-100 rounded-lg overflow-hidden shrink-0 border border-gray-200 relative flex items-center justify-center">
+          {item.url ? (
+            <img
+              src={item.url}
+              alt={`Page ${index + 1}`}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <span className="text-[10px] text-gray-400">No Img</span>
+          )}
+          {uploadingMagItem === index && (
+            <div className="absolute inset-0 bg-white/70 flex items-center justify-center text-[10px]">
+              ...
+            </div>
+          )}
+        </div>
+        <div className="flex-1 space-y-2">
+          <div className="flex gap-2">
+            <input
+              className={`${inputCls} text-xs flex-1 py-1.5`}
+              placeholder="Image URL"
+              value={item.url}
+              onChange={(e) =>
+                updateMagazineItem(index, { url: e.target.value })
+              }
+            />
+            <label className="flex items-center justify-center px-2 py-1.5 bg-gray-50 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 shrink-0">
+              <Upload size={14} className="text-gray-600" />
+              <input
+                type="file"
+                className="hidden"
+                accept="image/*"
+                onChange={(e) => handleMagazineImageUpload(index, e)}
+              />
+            </label>
+          </div>
+          <input
+            className={`${inputCls} text-xs py-1.5`}
+            placeholder="Product Name (Optional)"
+            value={item.name || ""}
+            onChange={(e) =>
+              updateMagazineItem(index, { name: e.target.value })
+            }
+          />
+          <input
+            className={`${inputCls} text-xs py-1.5`}
+            placeholder="Link (e.g. /products/candle)"
+            value={item.link || ""}
+            onChange={(e) =>
+              updateMagazineItem(index, { link: e.target.value })
+            }
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function AdminCategoriesPage() {
@@ -141,7 +266,9 @@ export default function AdminCategoriesPage() {
   const [editCategory, setEditCategory] = useState<Category | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [showBanner, setShowBanner] = useState(false);
+  const [showMagazine, setShowMagazine] = useState(false);
   const [uploading, setUploading] = useState<"image" | "banner" | null>(null);
+  const [uploadingMagItem, setUploadingMagItem] = useState<number | null>(null);
   const imageRef = useRef<HTMLInputElement>(null);
   const bannerRef = useRef<HTMLInputElement>(null);
 
@@ -155,6 +282,7 @@ export default function AdminCategoriesPage() {
     bannerImage: "",
     bannerBgColor: "#f5f0eb",
     bannerButtons: [] as BannerButton[],
+    magazineItems: [] as (MagazineItem & { id: string })[],
   });
 
   const sensors = useSensors(
@@ -209,12 +337,14 @@ export default function AdminCategoriesPage() {
     bannerImage: "",
     bannerBgColor: "#f5f0eb",
     bannerButtons: [] as BannerButton[],
+    magazineItems: [] as (MagazineItem & { id: string })[],
   });
 
   const openAdd = () => {
     setEditCategory(null);
     setForm(resetForm());
     setShowBanner(false);
+    setShowMagazine(false);
     setModalOpen(true);
   };
 
@@ -230,10 +360,15 @@ export default function AdminCategoriesPage() {
       bannerImage: cat.bannerImage || "",
       bannerBgColor: cat.bannerBgColor || "#f5f0eb",
       bannerButtons: cat.bannerButtons || [],
+      magazineItems: (cat.magazineItems || []).map((i) => ({
+        ...i,
+        id: Math.random().toString(36).slice(2),
+      })),
     });
     setShowBanner(
       !!(cat.bannerTitle || cat.bannerDescription || cat.bannerImage),
     );
+    setShowMagazine(!!(cat.magazineItems && cat.magazineItems.length > 0));
     setModalOpen(true);
   };
 
@@ -244,6 +379,7 @@ export default function AdminCategoriesPage() {
       bannerTitle: form.bannerTitle || null,
       bannerDescription: form.bannerDescription || null,
       bannerImage: form.bannerImage || null,
+      magazineItems: form.magazineItems.map(({ id, ...rest }) => rest),
     };
 
     if (editCategory) {
@@ -273,6 +409,72 @@ export default function AdminCategoriesPage() {
     await fetch(`/api/categories/${deleteId}`, { method: "DELETE" });
     setCategories((prev) => prev.filter((c) => c.id !== deleteId));
     setDeleteId(null);
+  };
+
+  const handleMagazineImageUpload = async (
+    index: number,
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingMagItem(index);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const { url, error } = await res.json();
+      if (error) {
+        alert(error);
+        return;
+      }
+      updateMagazineItem(index, { url });
+    } finally {
+      setUploadingMagItem(null);
+      e.target.value = "";
+    }
+  };
+
+  const addMagazineItem = () => {
+    setForm((f) => ({
+      ...f,
+      magazineItems: [
+        ...f.magazineItems,
+        {
+          id: Math.random().toString(36).slice(2),
+          url: "",
+          name: "",
+          link: "",
+        },
+      ],
+    }));
+  };
+
+  const updateMagazineItem = (i: number, updates: Partial<MagazineItem>) => {
+    setForm((f) => ({
+      ...f,
+      magazineItems: f.magazineItems.map((item, idx) =>
+        idx === i ? { ...item, ...updates } : item,
+      ),
+    }));
+  };
+
+  const removeMagazineItem = (i: number) => {
+    setForm((f) => ({
+      ...f,
+      magazineItems: f.magazineItems.filter((_, idx) => idx !== i),
+    }));
+  };
+
+  const handleMagazineDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = form.magazineItems.findIndex((c) => c.id === active.id);
+    const newIndex = form.magazineItems.findIndex((c) => c.id === over.id);
+    setForm((f) => ({
+      ...f,
+      magazineItems: arrayMove(f.magazineItems, oldIndex, newIndex),
+    }));
   };
 
   const uploadImage = async (file: File, type: "image" | "banner") => {
@@ -561,6 +763,40 @@ export default function AdminCategoriesPage() {
                       return results.filter(Boolean) as string[];
                     }}
                   />
+                  {form.bannerImage && (
+                    <div className="mt-3 space-y-2">
+                      <label className="text-xs font-medium text-gray-500 block">
+                        Uploaded Image URLs
+                      </label>
+                      {form.bannerImage
+                        .split(",")
+                        .filter(Boolean)
+                        .map((url, i) => (
+                          <div key={i} className="flex items-center gap-2">
+                            <input
+                              readOnly
+                              value={url.trim()}
+                              className={`${inputCls} text-xs py-1.5 flex-1 bg-gray-50`}
+                            />
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                navigator.clipboard.writeText(url.trim());
+                                const btn = e.currentTarget;
+                                const originalHtml = btn.innerHTML;
+                                btn.innerHTML = "Copied!";
+                                setTimeout(() => {
+                                  btn.innerHTML = originalHtml;
+                                }, 2000);
+                              }}
+                              className="px-3 py-1.5 flex items-center gap-1.5 bg-white hover:bg-gray-50 border border-gray-300 rounded-lg text-xs font-medium text-gray-700 transition-colors shrink-0"
+                            >
+                              <Copy size={14} /> Copy
+                            </button>
+                          </div>
+                        ))}
+                    </div>
+                  )}
                 </div>
 
                 <div>
@@ -662,6 +898,64 @@ export default function AdminCategoriesPage() {
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+          </div>
+
+          {/* Magazine section */}
+          <div className="border border-amber-200 rounded-xl overflow-hidden mt-4">
+            <button
+              type="button"
+              onClick={() => setShowMagazine(!showMagazine)}
+              className="w-full flex items-center justify-between px-4 py-3 bg-amber-50 text-sm font-medium text-amber-800 hover:bg-amber-100 transition-colors"
+            >
+              Magazine Album Pages
+              {showMagazine ? (
+                <ChevronUp size={16} />
+              ) : (
+                <ChevronDown size={16} />
+              )}
+            </button>
+
+            {showMagazine && (
+              <div className="p-4 space-y-4 bg-white">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs text-gray-500">
+                    Add pages to the interactive flipbook album on the homepage.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={addMagazineItem}
+                    className="text-xs text-amber-700 flex items-center gap-1 hover:text-amber-800"
+                  >
+                    <Plus size={12} /> Add Page
+                  </button>
+                </div>
+
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleMagazineDragEnd}
+                >
+                  <SortableContext
+                    items={form.magazineItems.map((i) => i.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    <div className="space-y-4">
+                      {form.magazineItems.map((item, i) => (
+                        <SortableMagazineItem
+                          key={item.id}
+                          item={item}
+                          index={i}
+                          uploadingMagItem={uploadingMagItem}
+                          handleMagazineImageUpload={handleMagazineImageUpload}
+                          updateMagazineItem={updateMagazineItem}
+                          removeMagazineItem={removeMagazineItem}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
+                </DndContext>
               </div>
             )}
           </div>

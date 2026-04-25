@@ -10,11 +10,13 @@ import { formatPrice } from "@/lib/utils";
 interface CartItemProps {
   item: CartItemType;
   isSaved?: boolean;
+  onRemoved?: (item: CartItemType) => void;
 }
 
 export default function CartItemComponent({
   item,
   isSaved = false,
+  onRemoved,
 }: CartItemProps) {
   const {
     removeFromCart,
@@ -115,38 +117,53 @@ export default function CartItemComponent({
                     item.giftSet,
                   )
                 }
-                className="flex items-center gap-1.5 text-xs font-medium text-brown-500 dark:text-amber-100/60 hover:text-coral-600 dark:hover:text-amber-400 transition-colors"
+                className="group flex items-center gap-1.5 text-sm font-medium text-brown-500 hover:text-coral-600 dark:text-amber-100/60 dark:hover:text-amber-400 transition-all"
               >
-                <Bookmark size={13} />
-                Save for Later
+                <Bookmark
+                  size={18}
+                  className="transition-transform group-hover:scale-110"
+                />
+                <span className="hidden sm:inline">Save for later</span>
               </button>
             ) : (
               <button
                 onClick={() =>
                   moveToCart(item.product.id, item.customizations, item.giftSet)
                 }
-                className="flex items-center gap-1.5 text-xs font-medium text-coral-600 dark:text-amber-400 hover:text-coral-700 dark:hover:text-amber-300 transition-colors"
+                className="group flex items-center gap-1.5 text-sm font-medium text-coral-600 dark:text-amber-400 hover:text-coral-700 dark:hover:text-amber-300 transition-all"
               >
+                <Bookmark
+                  size={18}
+                  className="transition-transform group-hover:scale-110"
+                />
                 Move to Cart
               </button>
             )}
             <button
-              onClick={() =>
-                isSaved
-                  ? removeSavedItem(
-                      item.product.id,
-                      item.customizations,
-                      item.giftSet,
-                    )
-                  : removeFromCart(
-                      item.product.id,
-                      item.customizations,
-                      item.giftSet,
-                    )
-              }
-              className="p-2 text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-colors rounded-full hover:bg-red-50 dark:hover:bg-red-900/20"
+              onClick={() => {
+                if (isSaved) {
+                  removeSavedItem(
+                    item.product.id,
+                    item.customizations,
+                    item.giftSet,
+                  );
+                } else {
+                  removeFromCart(
+                    item.product.id,
+                    item.customizations,
+                    item.giftSet,
+                  );
+                  onRemoved?.(item);
+                }
+              }}
+              className="group flex items-center justify-center p-2 text-brown-400 hover:text-red-600 dark:text-amber-100/40 dark:hover:text-red-400 transition-all hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full"
+              aria-label="Remove item"
+              title="Remove from cart"
             >
-              <Trash2 size={14} />
+              <Trash2
+                size={22}
+                className="transition-transform duration-200 group-hover:scale-110 group-hover:-rotate-12"
+              />
             </button>
           </div>
         </div>

@@ -76,6 +76,7 @@ export default function Footer() {
                 { href: "/categories/fridge-magnets", label: "Fridge Magnets" },
                 { href: "/categories/key-chain", label: "Key chains" },
                 { href: "/gift-sets", label: "Gift Sets" },
+                { href: "/custom", label: "Bespoke Creations" },
               ].map((link) => (
                 <li key={link.href}>
                   <Link

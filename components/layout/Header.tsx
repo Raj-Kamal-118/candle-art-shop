@@ -46,6 +46,7 @@ export default function Header() {
     { href: "/categories/fridge-magnets", label: "Magnets" },
     { href: "/categories/key-chain", label: "Key Chains" },
     { href: "/gift-sets", label: "Gift Sets", badge: "New" },
+    { href: "/custom", label: "Bespoke", badge: "New" },
   ];
 
   return (

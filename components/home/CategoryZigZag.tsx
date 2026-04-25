@@ -1,33 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
-import { Category, Product } from "@/lib/types";
+import { ArrowRight, ArrowLeft } from "lucide-react";
+import { Category, Product, MagazineItem } from "@/lib/types";
+
+// Dynamically import react-pageflip to avoid SSR 'window is not defined' errors
+const HTMLFlipBook = dynamic(() => import("react-pageflip"), {
+  ssr: false,
+}) as any;
 
 interface CategoryZigZagProps {
   categories: Category[];
   productsByCategory: Record<string, Product[]>;
 }
-
-const TILTS = [
-  "rotate(2deg)",
-  "rotate(-2deg)",
-  "rotate(1.5deg)",
-  "rotate(-1.5deg)",
-  "rotate(2.5deg)",
-  "rotate(-2.5deg)",
-];
-
-const TAPE_ROTATIONS = [
-  "translateX(-50%) rotate(-3deg)",
-  "translateX(-50%) rotate(2deg)",
-  "translateX(-50%) rotate(-2.5deg)",
-  "translateX(-50%) rotate(3.5deg)",
-  "translateX(-50%) rotate(-1.5deg)",
-  "translateX(-50%) rotate(1deg)",
-];
 
 export default function CategoryZigZag({
   categories,
@@ -130,7 +119,6 @@ export default function CategoryZigZag({
           {visible.map((cat, idx) => {
             const catProducts = productsByCategory[cat.id] || [];
             const imageLeft = idx % 2 === 0;
-            const tilt = TILTS[idx % TILTS.length];
             const ghostNum = String(idx + 1).padStart(2, "0");
 
             return (
@@ -149,17 +137,21 @@ export default function CategoryZigZag({
                 }}
               >
                 <div
-                  className={`flex flex-col gap-10 lg:gap-16 items-center ${imageLeft ? "lg:flex-row" : "lg:flex-row-reverse"}`}
+                  className={`flex flex-col gap-10 items-center ${imageLeft ? "lg:flex-row" : "lg:flex-row-reverse"}`}
                 >
                   {/* Image Stack */}
                   <div className="w-full lg:w-3/5 flex justify-center">
                     <PhotoStack
-                      images={(cat.bannerImage || cat.image || "")
-                        .split(",")
-                        .map((s) => s.trim())
-                        .filter(Boolean)}
+                      items={
+                        cat.magazineItems?.length
+                          ? cat.magazineItems
+                          : (cat.bannerImage || cat.image || "")
+                              .split(",")
+                              .map((s) => s.trim())
+                              .filter(Boolean)
+                              .map((url) => ({ url, name: "", link: "" }))
+                      }
                       alt={cat.name}
-                      baseTiltIdx={idx}
                     />
                   </div>
 
@@ -174,9 +166,9 @@ export default function CategoryZigZag({
                       style={{
                         position: "absolute",
                         top: imageLeft ? -48 : -32,
-                        right: imageLeft ? -64 : -64,
+                        right: imageLeft ? 0 : -32,
                         fontFamily: "var(--font-serif)",
-                        fontSize: "clamp(100px, 14vw, 160px)",
+                        fontSize: "clamp(80px, 14vw, 120px)",
                         fontWeight: 900,
                         color: "var(--home-ghost)",
                         lineHeight: 1,
@@ -282,127 +274,204 @@ export default function CategoryZigZag({
   );
 }
 
-function PhotoStack({
-  images,
-  alt,
-  baseTiltIdx,
-}: {
-  images: string[];
-  alt: string;
-  baseTiltIdx: number;
-}) {
-  const [topIdx, setTopIdx] = useState(0);
-  const stack = Array.from(
-    { length: 5 },
-    (_, i) => images[i % images.length] || "",
-  );
-
-  const baseTiltStr = TILTS[baseTiltIdx % TILTS.length];
-  const baseTiltNum = parseFloat(baseTiltStr.replace(/[^\d.-]/g, ""));
+const AlbumPage = React.forwardRef<
+  HTMLDivElement,
+  { item: MagazineItem; alt: string; index: number; totalPages: number }
+>(({ item, alt, index, totalPages }, ref) => {
+  // In a 2-page spread, even indexes are left pages, odd are right pages
+  const isLeft = index % 2 === 0;
+  const isLastPage = index === totalPages - 1;
 
   return (
     <div
-      className="relative w-full cursor-pointer group"
-      style={{ maxWidth: 650, aspectRatio: "3/2" }}
-      onClick={() => setTopIdx((prev) => (prev + 1) % stack.length)}
+      ref={ref}
+      className={`w-full h-full overflow-hidden border border-cream-300 dark:border-amber-900/40 shadow-sm relative bg-[#faf6eb] dark:bg-[#2e2823] ${isLeft ? "rounded-l-md" : "rounded-r-md"}`}
+      style={{
+        backgroundImage: isLeft
+          ? "linear-gradient(to right, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0) 10%, rgba(255,255,255,0.25) 80%, rgba(0,0,0,0.25) 100%), url('https://www.transparenttextures.com/patterns/cream-paper.png')"
+          : "linear-gradient(to left, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0) 10%, rgba(255,255,255,0.25) 80%, rgba(0,0,0,0.25) 100%), url('https://www.transparenttextures.com/patterns/cream-paper.png')",
+      }}
     >
-      {stack.map((src, i) => {
-        const offset = (i - topIdx + stack.length) % stack.length;
-        const isTop = offset === 0;
-        const zIndex = stack.length - offset;
+      {/* Spine shadow for realistic open book look */}
+      <div
+        className="absolute inset-0 z-10 pointer-events-none"
+        style={{
+          boxShadow: isLeft
+            ? "inset -40px 0 50px -20px rgba(0,0,0,0.45), inset 3px 0 10px -5px rgba(255,255,255,0.6)"
+            : "inset 40px 0 50px -20px rgba(0,0,0,0.45), inset -3px 0 10px -5px rgba(255,255,255,0.6)",
+        }}
+      />
 
-        // Randomize placements a bit so the stack looks hand-piled
-        const rIdx = (baseTiltIdx + i) % 5;
-        const randomRot = [-4, 3, -2, 5, -3][rIdx];
-        const randomX = [0, 16, -12, 20, -16][rIdx];
-        const randomY = [0, -12, 16, -8, 12][rIdx];
+      {/* Album Page Content */}
+      <div className="absolute inset-0 flex flex-col">
+        {isLeft ? (
+          // LEFT PAGE: Editorial Framed Layout
+          <div className="w-full h-full flex flex-col p-6 sm:p-8 pb-14">
+            <div className="w-full flex-[1.4] relative overflow-hidden rounded-sm border border-cream-200 dark:border-amber-900/50 shadow-inner mb-6">
+              {item.url ? (
+                <>
+                  <Image
+                    src={item.url}
+                    alt={alt}
+                    fill
+                    sizes="(max-width: 650px) 100vw, 650px"
+                    className="object-cover pointer-events-none"
+                  />
+                </>
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-[#fdfbf7] dark:bg-black/40">
+                  <span style={{ fontSize: 40 }}>🕯️</span>
+                </div>
+              )}
+            </div>
+            <div className="flex-1 flex flex-col justify-center items-center text-center">
+              <span className="text-[9px] uppercase tracking-[0.3em] text-brown-500 dark:text-amber-100/50 mb-3 font-semibold">
+                Curated Piece
+              </span>
+              {item.name && (
+                <h4 className="font-serif text-2xl sm:text-3xl font-bold text-brown-900 dark:text-amber-100 line-clamp-2 mb-4 leading-tight">
+                  {item.name}
+                </h4>
+              )}
+              <div className="w-8 h-px bg-amber-600/30 dark:bg-amber-400/30 mb-5" />
+              {item.link && (
+                <Link
+                  href={item.link}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  className="inline-flex items-center justify-center gap-2 bg-coral-600 dark:bg-amber-600 text-white px-6 py-2.5 rounded-xl font-semibold text-xs hover:bg-coral-700 dark:hover:bg-amber-500 transition-all duration-200 shadow-md shadow-coral-200 dark:shadow-amber-900/30 hover:-translate-y-0.5 z-20"
+                >
+                  View details <ArrowRight size={14} />
+                </Link>
+              )}
+            </div>
+          </div>
+        ) : (
+          // RIGHT PAGE: Full Bleed Editorial
+          <div className="w-full h-full p-4 pb-14">
+            <div className="relative w-full h-full overflow-hidden rounded-sm shadow-inner border border-cream-200 dark:border-amber-900/50">
+              {item.url ? (
+                <>
+                  <Image
+                    src={item.url}
+                    alt={alt}
+                    fill
+                    sizes="(max-width: 650px) 100vw, 650px"
+                    className="object-cover pointer-events-none"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none z-10" />
+                </>
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-[#fdfbf7] dark:bg-black/40">
+                  <span style={{ fontSize: 60 }}>🕯️</span>
+                </div>
+              )}
+              <div className="absolute bottom-8 left-6 right-6 z-20 flex flex-col items-start">
+                <span className="text-[9px] uppercase tracking-[0.3em] text-amber-200/90 mb-2 font-semibold">
+                  Editorial Pick
+                </span>
+                {item.name && (
+                  <h4 className="font-serif text-2xl sm:text-3xl font-bold text-white line-clamp-2 mb-5 leading-tight drop-shadow-md">
+                    {item.name}
+                  </h4>
+                )}
+                {item.link && (
+                  <Link
+                    href={item.link}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    className="inline-flex items-center justify-center gap-2 bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-700/30 text-forest-800 dark:text-amber-200 px-6 py-2.5 rounded-xl font-semibold text-xs hover:bg-cream-100 dark:hover:bg-amber-900/20 transition-all duration-200 shadow-lg hover:-translate-y-0.5 z-20"
+                  >
+                    Shop this piece <ArrowRight size={14} />
+                  </Link>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
 
-        return (
-          <motion.div
-            key={i}
-            initial={false}
-            animate={{
-              zIndex,
-              scale: isTop ? 1 : 0.95 - offset * 0.02,
-              x: isTop ? 0 : randomX + offset * 4,
-              y: isTop ? 0 : randomY + offset * 4,
-              rotate: isTop ? baseTiltNum : randomRot,
-              opacity: offset > 2 ? 0 : 1, // Only render the top 3 cards visually
-            }}
-            whileHover={{
-              scale: isTop ? 1.02 : 0.95 - offset * 0.02,
-              rotate: isTop ? baseTiltNum : randomRot + (i % 2 === 0 ? 2 : -2),
-              x: isTop ? 0 : randomX + (i % 2 === 0 ? 8 : -8),
-            }}
-            transition={{ duration: 0.4, ease: "backOut" }}
-            style={{
-              position: "absolute",
-              inset: 0,
-              borderRadius: 20,
-              boxShadow: isTop
-                ? "0 24px 60px rgba(28,18,9,.18)"
-                : "0 8px 24px rgba(28,18,9,.1)",
-              background: "var(--home-accent)",
-              transformOrigin: "center",
-            }}
-          >
-            {/* Tape on each individual photo */}
-            <div
-              style={{
-                position: "absolute",
-                top: -12,
-                left: "50%",
-                transform:
-                  TAPE_ROTATIONS[(baseTiltIdx + i) % TAPE_ROTATIONS.length],
-                background: "rgba(253, 230, 138, 0.5)",
-                backdropFilter: "blur(4px)",
-                width: 180,
-                height: 32,
-                zIndex: 10,
-                clipPath:
-                  "polygon(0% 0%, 100% 0%, 95% 12.5%, 100% 25%, 95% 37.5%, 100% 50%, 95% 62.5%, 100% 75%, 95% 87.5%, 100% 100%, 0% 100%, 5% 87.5%, 0% 75%, 5% 62.5%, 0% 50%, 5% 37.5%, 0% 25%, 5% 12.5%)",
-              }}
-              aria-hidden="true"
+      {/* Page number & Navigation Hints */}
+      <div
+        className={`absolute bottom-3 ${
+          isLeft ? "left-5 flex-row" : "right-5 flex-row-reverse"
+        } flex items-center gap-2 font-serif font-bold text-brown-400 dark:text-amber-100/50`}
+      >
+        <span
+          className={index === 0 || isLastPage ? "text-[13px]" : "text-[11px]"}
+        >
+          {index + 1}
+        </span>
+        <span
+          className={`opacity-60 uppercase tracking-widest flex items-center gap-1 font-sans ${index === 0 || isLastPage ? "text-[11px]" : "text-[9px]"}`}
+        >
+          {index === 0 ? (
+            "— 1st Page"
+          ) : index === totalPages - 1 ? (
+            "Last Page —"
+          ) : isLeft ? (
+            <>
+              <ArrowLeft size={10} /> Prev
+            </>
+          ) : (
+            <>
+              Next <ArrowRight size={10} />
+            </>
+          )}
+        </span>
+      </div>
+    </div>
+  );
+});
+
+AlbumPage.displayName = "AlbumPage";
+
+function PhotoStack({ items, alt }: { items: MagazineItem[]; alt: string }) {
+  // Ensure we have an even number of pages for the flipbook, minimum 6
+  const baseLength = Math.max(6, items.length);
+  const totalPages = baseLength % 2 === 0 ? baseLength : baseLength + 1;
+
+  const stack = Array.from(
+    { length: totalPages },
+    (_, i) => items[i % items.length] || { url: "", name: "", link: "" },
+  );
+
+  return (
+    <div className="relative w-full flex justify-center group cursor-grab active:cursor-grabbing">
+      <div className="w-full max-w-[800px]">
+        <HTMLFlipBook
+          width={400}
+          height={480}
+          size="stretch"
+          minWidth={300}
+          maxWidth={400}
+          minHeight={300}
+          maxHeight={480}
+          maxShadowOpacity={0.4}
+          showCover={false}
+          mobileScrollSupport={true}
+          className="album-flipbook drop-shadow-2xl"
+        >
+          {stack.map((item, i) => (
+            <AlbumPage
+              key={i}
+              item={item}
+              alt={`${alt} ${i + 1}`}
+              index={i}
+              totalPages={totalPages}
             />
-            {src ? (
-              <div className="relative w-full h-full rounded-[20px] overflow-hidden bg-cream-50 dark:bg-black/20">
-                <Image
-                  src={src}
-                  alt={`${alt} photo ${i + 1}`}
-                  fill
-                  sizes="(max-width: 650px) 100vw, 650px"
-                  priority={baseTiltIdx === 0 && i === 0}
-                  className="object-cover"
-                />
-              </div>
-            ) : (
-              <div
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <span style={{ fontSize: 80 }}>🕯️</span>
-              </div>
-            )}
-          </motion.div>
-        );
-      })}
+          ))}
+        </HTMLFlipBook>
+      </div>
 
       {/* Hint Badge */}
       <div
-        className="absolute bottom-4 right-4 z-50 backdrop-blur-md text-xs font-semibold px-3 py-1.5 rounded-full shadow-md"
+        className="absolute -bottom-10 left-1/2 -translate-x-1/2 z-50 backdrop-blur-md text-xs font-semibold px-4 py-2 rounded-full shadow-md transition-all group-hover:scale-105 group-hover:bg-amber-50 dark:group-hover:bg-amber-900/40 pointer-events-none"
         style={{
-          pointerEvents: "none",
           background: "var(--home-bg)",
           color: "var(--home-amber)",
           border: "1px solid var(--home-border)",
         }}
       >
-        Click to browse
+        Drag to turn page
       </div>
     </div>
   );

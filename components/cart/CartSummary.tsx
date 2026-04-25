@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Tag, Truck } from "lucide-react";
+import { Tag, Truck, MapPin } from "lucide-react";
 import { formatPrice, getShippingCost } from "@/lib/utils";
 
 interface CartSummaryProps {
@@ -59,15 +59,25 @@ export default function CartSummary({
         </div>
 
         {subtotal < 999 && (
-          <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-3 py-2">
+          <p className="text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-3 py-2">
             Add {formatPrice(999 - subtotal)} more for free shipping!
           </p>
         )}
 
         {subtotal < 1500 && (
-          <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-3 py-2">
+          <p className="text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-3 py-2">
             Add {formatPrice(1500 - subtotal)} more for a free Greeting Card!
           </p>
+        )}
+
+        {shipping > 0 && (
+          <div className="flex items-start gap-2 text-sm text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800/30 rounded-lg px-3 py-2.5">
+            <MapPin size={16} className="shrink-0 mt-0.5 animate-pulse" />
+            <p>
+              <strong>Local to Varanasi?</strong> Free & same-day delivery
+              applies automatically at checkout!
+            </p>
+          </div>
         )}
 
         <div className="border-t border-cream-200 dark:border-amber-900/30 pt-3 flex justify-between font-bold text-base">

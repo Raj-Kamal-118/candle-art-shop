@@ -12,6 +12,7 @@ import {
   Heart,
 } from "lucide-react";
 import { HeroSettings, HeroButtonIcon } from "@/lib/types";
+import StickyNote from "@/components/ui/StickyNote";
 
 const ICON_MAP: Record<HeroButtonIcon, React.ReactNode> = {
   "arrow-right": <ArrowRight size={18} />,
@@ -25,6 +26,56 @@ const ICON_MAP: Record<HeroButtonIcon, React.ReactNode> = {
 
 const TAPE_CLIP_PATH =
   "polygon(0% 0%, 100% 0%, 95% 12.5%, 100% 25%, 95% 37.5%, 100% 50%, 95% 62.5%, 100% 75%, 95% 87.5%, 100% 100%, 0% 100%, 5% 87.5%, 0% 75%, 5% 62.5%, 0% 50%, 5% 37.5%, 0% 25%, 5% 12.5%)";
+
+const POLAROID_LAYOUTS = [
+  {
+    className: "-top-[42px] -left-[10px] w-[360px] z-10",
+    rotate: "-rotate-2",
+    tapeRotate: -8,
+    small: false,
+  },
+  {
+    className: "-top-[26px] right-[6px] w-[280px] z-10",
+    rotate: "rotate-3",
+    tapeRotate: 6,
+    small: true,
+  },
+  {
+    className: "-bottom-[50px] left-[38px] w-[270px] z-10",
+    rotate: "-rotate-6",
+    tapeRotate: -12,
+    small: true,
+  },
+  {
+    className: "-bottom-[34px] -right-[10px] w-[310px] z-10",
+    rotate: "rotate-2",
+    tapeRotate: 4,
+    small: false,
+  },
+];
+
+const STICKY_LAYOUTS = [
+  {
+    className: "top-[300px] -left-[26px] w-[170px] rotate-12",
+    color: "#fef3c7",
+    pin: "#ef4444",
+  },
+  {
+    className: "top-[100px] -right-[42px] w-[160px] -rotate-12",
+    color: "#e0f2fe",
+    pin: "#3b82f6",
+  },
+  {
+    className: "-bottom-[20px] left-0 w-[160px] rotate-3",
+    color: "#dcfce7",
+    pin: "#10b981",
+  },
+  {
+    className: "bottom-[190px] -right-[26px] w-[160px] -rotate-3",
+    color: "#f3e8ff",
+    pin: "#a855f7",
+  },
+];
 
 interface HeroSectionProps {
   settings: HeroSettings;
@@ -48,7 +99,7 @@ export default function HeroSection({ settings }: HeroSectionProps) {
   } = settings;
 
   // Ensure we always have 4 image slots (pad with null)
-  const normalizedImages = images.map((img) => {
+  const normalizedImages = images.map((img: any) => {
     if (typeof img === "string") return { url: img };
     return img;
   });
@@ -57,27 +108,36 @@ export default function HeroSection({ settings }: HeroSectionProps) {
   const HeroCardInner = ({
     slot,
     isPriority = false,
+    small = false,
   }: {
     slot: any;
     isPriority?: boolean;
+    small?: boolean;
   }) => (
-    <>
-      <Image
-        src={slot.url}
-        alt={slot.name || "Hero image"}
-        fill
-        sizes="(max-width: 1024px) 50vw, 25vw"
-        priority={isPriority}
-        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-      />
+    <div className="flex flex-col h-full w-full pointer-events-none">
+      <div
+        className="relative w-full rounded-xl overflow-hidden bg-cream-100 dark:bg-amber-900/20 shadow-inner"
+        style={{ aspectRatio: small ? "1/1" : "4/4.4" }}
+      >
+        <Image
+          src={slot.url}
+          alt={slot.name || "Hero image"}
+          fill
+          sizes="(max-width: 1024px) 50vw, 25vw"
+          priority={isPriority}
+          className="w-full h-full object-cover pointer-events-auto group-hover:scale-105 transition-transform duration-700"
+        />
+      </div>
       {slot.name && (
-        <div className="absolute bottom-3 left-0 right-0 flex justify-center px-3 z-10 pointer-events-none">
-          <span className="bg-white/90 dark:bg-black/60 backdrop-blur-md text-forest-900 dark:text-amber-100 px-4 py-1.5 rounded-full text-xs font-bold shadow-lg border border-white/20 truncate max-w-full transition-transform group-hover:-translate-y-0.5">
+        <div className="mt-3 text-center shrink-0 px-1">
+          <span
+            className={`font-script font-medium text-brown-800 dark:text-amber-200 tracking-wide drop-shadow-sm leading-tight ${small ? "text-[22px]" : "text-[26px]"}`}
+          >
             {slot.name}
           </span>
         </div>
       )}
-    </>
+    </div>
   );
 
   const renderCardContainer = (slot: any, children: React.ReactNode) => {
@@ -112,7 +172,7 @@ export default function HeroSection({ settings }: HeroSectionProps) {
 
   return (
     <section
-      className={`relative min-h-screen flex items-center overflow-hidden ${
+      className={`relative min-h-[860px] flex items-center overflow-hidden ${
         isCustomBg
           ? ""
           : "bg-gradient-to-br from-cream-100 via-cream-50 to-coral-50 dark:from-[#0a0a16] dark:via-[#0f0e1c] dark:to-[#12101e]"
@@ -255,185 +315,68 @@ export default function HeroSection({ settings }: HeroSectionProps) {
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="relative hidden lg:block"
+            className="relative hidden lg:block h-[700px] w-full"
           >
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-4">
-                {imageSlots[0] && imageSlots[0].url && (
-                  <div className="relative group aspect-[3/4] rounded-xl shadow-[0_16px_40px_rgba(28,18,9,0.15)] dark:shadow-amber-900/20 bg-white dark:bg-[#1a1830] p-2.5 pb-12 border border-cream-200 dark:border-amber-900/30 transform -rotate-3 hover:rotate-0 transition-transform duration-500 dark:candle-glow">
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: -10,
-                        left: "50%",
-                        transform: "translateX(-50%) rotate(-4deg)",
-                        width: 100,
-                        height: 28,
-                        background: "rgba(253, 230, 138, 0.4)",
-                        backdropFilter: "blur(4px)",
-                        zIndex: 10,
-                        clipPath: TAPE_CLIP_PATH,
-                      }}
-                    />
-                    {renderCardContainer(
-                      imageSlots[0],
-                      <HeroCardInner slot={imageSlots[0]} isPriority={true} />,
-                    )}
-                  </div>
-                )}
-                {imageSlots[1] && imageSlots[1].url && (
-                  <div className="relative group aspect-square rounded-xl shadow-xl dark:shadow-amber-900/20 bg-white dark:bg-[#1a1830] p-2.5 pb-10 border border-cream-200 dark:border-amber-900/30 transform rotate-2 hover:rotate-0 transition-transform duration-500">
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: -10,
-                        left: "50%",
-                        transform: "translateX(-50%) rotate(3deg)",
-                        width: 90,
-                        height: 28,
-                        background: "rgba(253, 230, 138, 0.4)",
-                        backdropFilter: "blur(4px)",
-                        zIndex: 10,
-                        clipPath: TAPE_CLIP_PATH,
-                      }}
-                    />
-                    {renderCardContainer(
-                      imageSlots[1],
-                      <HeroCardInner slot={imageSlots[1]} isPriority={true} />,
-                    )}
-                  </div>
-                )}
-              </div>
-              <div className="space-y-4 pt-10">
-                {imageSlots[2] && imageSlots[2].url && (
-                  <div className="relative group aspect-square rounded-xl shadow-xl dark:shadow-amber-900/20 bg-white dark:bg-[#1a1830] p-2.5 pb-10 border border-cream-200 dark:border-amber-900/30 transform -rotate-2 hover:rotate-0 transition-transform duration-500">
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: -10,
-                        left: "50%",
-                        transform: "translateX(-50%) rotate(-3deg)",
-                        width: 90,
-                        height: 28,
-                        background: "rgba(253, 230, 138, 0.4)",
-                        backdropFilter: "blur(4px)",
-                        zIndex: 10,
-                        clipPath: TAPE_CLIP_PATH,
-                      }}
-                    />
-                    {renderCardContainer(
-                      imageSlots[2],
-                      <HeroCardInner slot={imageSlots[2]} />,
-                    )}
-                  </div>
-                )}
-                {imageSlots[3] && imageSlots[3].url && (
-                  <div className="relative group aspect-[3/4] rounded-xl shadow-[0_16px_40px_rgba(28,18,9,0.15)] dark:shadow-amber-900/20 bg-white dark:bg-[#1a1830] p-2.5 pb-12 border border-cream-200 dark:border-amber-900/30 transform rotate-3 hover:rotate-0 transition-transform duration-500 dark:candle-glow">
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: -10,
-                        left: "50%",
-                        transform: "translateX(-50%) rotate(4deg)",
-                        width: 100,
-                        height: 28,
-                        background: "rgba(253, 230, 138, 0.4)",
-                        backdropFilter: "blur(4px)",
-                        zIndex: 10,
-                        clipPath: TAPE_CLIP_PATH,
-                      }}
-                    />
-                    {renderCardContainer(
-                      imageSlots[3],
-                      <HeroCardInner slot={imageSlots[3]} />,
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
+            {imageSlots.map((slot: any, idx) => {
+              if (!slot || !slot.url) return null;
+              const layout = POLAROID_LAYOUTS[idx];
+              const sticky = STICKY_LAYOUTS[idx];
 
-            {/* Floating badge */}
-            {floatingBadgeText && (
-              <div className="absolute -left-8 top-1/3 bg-white dark:bg-[#1a1830] dark:border dark:border-amber-700/30 rounded-xl shadow-xl pt-6 pb-4 px-5 border border-cream-200 transform -rotate-6 z-20">
-                {/* Push Pin */}
-                <div
-                  style={{
-                    position: "absolute",
-                    top: -6,
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    width: 20,
-                    height: 20,
-                    zIndex: 10,
-                    filter: "drop-shadow(0 3px 4px rgba(0,0,0,0.3))",
-                  }}
-                >
+              return (
+                <div key={idx}>
                   <div
+                    className={`group absolute bg-white dark:bg-[#1a1830] rounded-2xl shadow-[0_18px_40px_-16px_rgba(45,31,20,0.4),0_4px_8px_-2px_rgba(45,31,20,0.15)] dark:shadow-amber-900/20 transform ${layout.rotate} transition-transform duration-500 dark:candle-glow ${layout.className}`}
                     style={{
-                      position: "absolute",
-                      top: 12,
-                      left: 10,
-                      width: 10,
-                      height: 10,
-                      backgroundColor: "rgba(0,0,0,0.4)",
-                      borderRadius: "50%",
-                      transform: "translate(2px, 2px)",
-                      filter: "blur(2px)",
-                      zIndex: 1,
-                    }}
-                  />
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: 2,
-                      left: 2,
-                      width: 16,
-                      height: 16,
-                      borderRadius: "50%",
-                      backgroundColor: "#e85d4a",
-                      backgroundImage:
-                        "linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(0,0,0,0.2) 100%)",
-                      boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
-                      zIndex: 2,
-                    }}
-                  />
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: 4,
-                      left: 4,
-                      width: 12,
-                      height: 12,
-                      borderRadius: "50%",
-                      backgroundColor: "#e85d4a",
-                      backgroundImage:
-                        "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 40%, rgba(0,0,0,0.4) 100%)",
-                      boxShadow:
-                        "0 3px 5px rgba(0,0,0,0.5), inset 0 1px 2px rgba(255,255,255,0.6)",
-                      zIndex: 3,
+                      padding: layout.small
+                        ? "10px 10px 14px"
+                        : "14px 14px 18px",
                     }}
                   >
                     <div
                       style={{
                         position: "absolute",
-                        top: 2,
-                        left: 2,
-                        width: 3,
-                        height: 3,
-                        backgroundColor: "#fff",
-                        borderRadius: "50%",
-                        filter: "blur(0.5px)",
+                        top: -12,
+                        left: "50%",
+                        transform: `translateX(-50%) rotate(${layout.tapeRotate}deg)`,
+                        width: layout.small ? 90 : 110,
+                        height: 28,
+                        background: "rgba(253, 230, 138, 0.6)",
+                        backdropFilter: "blur(4px)",
+                        zIndex: 10,
+                        clipPath: TAPE_CLIP_PATH,
                       }}
                     />
+                    {renderCardContainer(
+                      slot,
+                      <HeroCardInner
+                        slot={slot}
+                        isPriority={idx === 0}
+                        small={layout.small}
+                      />,
+                    )}
                   </div>
+                  {slot.offerText && (
+                    <StickyNote
+                      type={slot.offerType || "Special Offer"}
+                      text={slot.offerText}
+                      pinColor={sticky.pin}
+                      bgColor={sticky.color}
+                      positionClass={sticky.className}
+                    />
+                  )}
                 </div>
-                <p className="text-xs text-forest-500 dark:text-amber-100/50 mb-1">
-                  Special offer
-                </p>
-                <p className="text-sm font-bold text-forest-900 dark:text-amber-200">
-                  {floatingBadgeText}
-                </p>
-              </div>
+              );
+            })}
+
+            {/* Floating Site Wide Badge */}
+            {floatingBadgeText && (
+              <StickyNote
+                type="Special Offer"
+                text={floatingBadgeText}
+                pinColor="#f97316"
+                bgColor="#fee2e2"
+                positionClass="absolute top-[430px] left-[300px] w-[150px] -rotate-3 z-30"
+              />
             )}
           </motion.div>
         )}

@@ -6,6 +6,12 @@ export interface BannerButton {
   variant: "primary" | "secondary";
 }
 
+export interface MagazineItem {
+  url: string;
+  name?: string;
+  link?: string;
+}
+
 export interface Category {
   id: string;
   name: string;
@@ -22,6 +28,7 @@ export interface Category {
   bannerBgColor?: string;
   bannerButtons?: BannerButton[];
   showInHomepage?: boolean;
+  magazineItems?: MagazineItem[];
 }
 
 // ── Products ──────────────────────────────────────────────────────────────────
@@ -246,6 +253,8 @@ export interface HeroImage {
   url: string;
   name?: string;
   link?: string;
+  offerType?: string;
+  offerText?: string;
 }
 
 export interface HeroSettings {

@@ -76,7 +76,13 @@ function CheckoutContent() {
   const discountAmount = appliedDiscount
     ? calculateDiscount(subtotal, appliedDiscount.type, appliedDiscount.value)
     : 0;
-  const shipping = getShippingCost(subtotal - discountAmount);
+  const isVaranasi = Boolean(
+    shippingAddress?.postalCode?.startsWith("221") ||
+    shippingAddress?.city?.toLowerCase() === "varanasi" ||
+    shippingAddress?.city?.toLowerCase() === "varanashi",
+  );
+  const baseShipping = getShippingCost(subtotal - discountAmount);
+  const shipping = isVaranasi ? 0 : baseShipping;
   const codFee = paymentMethod === "cod" ? 50 : 0;
   const total = subtotal - discountAmount + shipping + codFee;
 
@@ -355,6 +361,7 @@ function CheckoutContent() {
                       <AddressForm
                         onSubmit={handleAddressSubmit}
                         submitLabel="Continue to Payment"
+                        defaultValues={shippingAddress || undefined}
                       />
                     </div>
                   )}
@@ -427,11 +434,52 @@ function CheckoutContent() {
 
             {/* Order summary */}
             <div className="space-y-6">
+              {step === "payment" && isVaranasi ? (
+                <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/30 rounded-3xl p-5 shadow-sm flex items-start gap-3">
+                  <Sparkles
+                    size={20}
+                    className="text-green-600 dark:text-green-400 shrink-0 mt-0.5 animate-pulse"
+                  />
+                  <p className="text-sm text-green-900 dark:text-green-100 leading-relaxed">
+                    <strong className="font-semibold block mb-1">
+                      Free Varanasi Studio Delivery Applied!
+                    </strong>
+                    Since your delivery address is in Varanasi (where our studio
+                    is located), your shipping is <strong>free</strong>. If your
+                    items are premade, we will pack and deliver them on the same
+                    day. If your items are made-to-order, you will receive
+                    delivery on the same day they are ready.
+                    <br />
+                    <span className="text-xs opacity-80 mt-1 block">
+                      *Your final payment total below reflects this free
+                      shipping.
+                    </span>
+                  </p>
+                </div>
+              ) : step === "address" ? (
+                <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/30 rounded-3xl p-5 shadow-sm flex items-start gap-3">
+                  <MapPin
+                    size={20}
+                    className="text-amber-600 dark:text-amber-400 shrink-0 mt-0.5"
+                  />
+                  <p className="text-sm text-amber-900 dark:text-amber-100 leading-relaxed">
+                    <strong className="font-semibold block mb-1">
+                      Local to Varanasi?
+                    </strong>
+                    If you are ordering from Varanasi, we offer{" "}
+                    <strong>Free & Same-Day Delivery</strong>! Premade items are
+                    delivered the same day, and custom items are delivered the
+                    day they are ready.
+                  </p>
+                </div>
+              ) : null}
+
               <OrderSummary
                 items={cartItems}
                 discount={discountAmount}
                 discountCode={discountCode}
                 codFee={codFee}
+                shipping={shipping}
               />
 
               {/* Discount code */}

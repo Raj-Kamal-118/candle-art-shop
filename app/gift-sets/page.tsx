@@ -123,7 +123,7 @@ export default function GiftSetsPage() {
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
             <Link
-              href="/gift-sets/build"
+              href="/custom/gift-set"
               className="inline-flex items-center justify-center gap-2 bg-coral-600 dark:bg-amber-600 text-white px-8 py-3.5 rounded-xl font-semibold hover:bg-coral-700 dark:hover:bg-amber-500 transition-all duration-200 shadow-lg shadow-coral-100 dark:shadow-amber-900/30 hover:-translate-y-0.5 text-sm"
             >
               Build your own set <Sparkles size={16} />
@@ -155,7 +155,7 @@ export default function GiftSetsPage() {
 
           {/* "Build your own" inline card */}
           <Link
-            href="/gift-sets/build"
+            href="/custom/gift-set"
             className="group relative bg-white dark:bg-[#1a1830] rounded-2xl overflow-hidden shadow-[0_4px_12px_rgba(28,18,9,0.05)] border border-amber-200 dark:border-amber-700/50 hover:shadow-[0_12px_32px_rgba(28,18,9,0.08)] transition-all duration-300 cursor-pointer flex flex-col"
           >
             <div className="relative flex-1 flex flex-col items-center justify-center p-8 text-center overflow-hidden bg-amber-50/50 dark:bg-amber-900/10 min-h-[300px]">
@@ -194,7 +194,7 @@ export default function GiftSetsPage() {
               No sets for that occasion yet.
             </p>
             <Link
-              href="/gift-sets/build"
+              href="/custom/gift-set"
               className="inline-flex items-center gap-2 text-amber-700 font-medium"
             >
               Build a custom set instead <ArrowRight size={14} />

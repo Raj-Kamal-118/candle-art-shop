@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 const CARDS = [
   {
     title: "Custom Candles",
-    href: "/custom-candle",
+    href: "/custom/candle",
     desc: "Pick your wax, wick, vessel, and scent. A candle that carries your exact name.",
     badge: "Starting from ₹300",
     cta: "Design your personal candle",
@@ -16,7 +16,7 @@ const CARDS = [
   },
   {
     title: "Custom Magnets",
-    href: "/custom-magnet",
+    href: "/custom/magnet",
     desc: "Send us a photo, sketch, or idea. We hand-paint it onto ceramic.",
     badge: "Starting from ₹200",
     cta: "Submit idea for a Magnet",
@@ -26,7 +26,7 @@ const CARDS = [
   },
   {
     title: "Gift Sets",
-    href: "/gift-sets/build",
+    href: "/custom/gift-set",
     desc: "Build a box of anything for anyone. Ribbon, note card, wrapped by hand.",
     badge: "Starting from ₹1,200",
     cta: "Build a Gift set",

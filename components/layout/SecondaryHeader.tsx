@@ -25,6 +25,7 @@ export default function SecondaryHeader({
           src={backgroundImage}
           alt="Header Background"
           fill
+          priority
           sizes="100vw"
           className="object-cover"
         />

@@ -277,16 +277,21 @@ export default function AccountPage() {
                             <div className="flex-1 min-w-0">
                               {item.giftSet && (
                                 <p className="text-xs font-medium uppercase tracking-widest text-amber-700 mb-0.5">
-                                  {item.giftSet.kind === "custom" ? "Custom Gift Set" : "Gift Set"}
+                                  {item.giftSet.kind === "custom"
+                                    ? "Custom Gift Set"
+                                    : "Gift Set"}
                                 </p>
                               )}
                               <p className="text-sm font-medium text-brown-900 line-clamp-1">
                                 {item.productName}
                               </p>
                               {item.giftSet?.card.recipient && (
-                                <p className="text-xs text-brown-400 mt-0.5 italic">For {item.giftSet.card.recipient}</p>
+                                <p className="text-xs text-brown-400 mt-0.5 italic">
+                                  For {item.giftSet.card.recipient}
+                                </p>
                               )}
-                              {!item.giftSet && item.customizations &&
+                              {!item.giftSet &&
+                                item.customizations &&
                                 Object.keys(item.customizations).length > 0 && (
                                   <p className="text-xs text-brown-400 mt-0.5">
                                     {Object.entries(item.customizations)
@@ -303,24 +308,50 @@ export default function AccountPage() {
                             </p>
                           </div>
                           {/* Gift set contents */}
-                          {item.giftSet?.picks && item.giftSet.picks.length > 0 && (
-                            <div className="mt-2 rounded-xl border border-cream-200 overflow-hidden" style={{ marginLeft: 68 }}>
-                              {item.giftSet.picks.map((pick, pi) => (
-                                <div key={pi} className="flex items-center gap-2 px-3 py-1.5 border-b border-cream-100 last:border-b-0 bg-cream-50">
-                                  {pick.image ? (
-                                    // eslint-disable-next-line @next/next/no-img-element
-                                    <img src={pick.image} alt={pick.name} className="w-7 h-7 rounded object-cover flex-shrink-0" />
-                                  ) : (
-                                    <div className="w-7 h-7 rounded bg-amber-50 flex items-center justify-center text-sm flex-shrink-0">🕯️</div>
-                                  )}
-                                  <span className="text-xs text-brown-700 flex-1 truncate">
-                                    {pick.name}{pick.qty > 1 && <span className="text-brown-400"> × {pick.qty}</span>}
+                          {item.giftSet?.picks &&
+                            item.giftSet.picks.length > 0 && (
+                              <div
+                                className="mt-3 rounded-2xl border border-cream-200 dark:border-amber-900/30 overflow-hidden bg-cream-50/50 dark:bg-[#0f0e1c]"
+                                style={{ marginLeft: 68 }}
+                              >
+                                <div className="px-4 py-2.5 border-b border-cream-200 dark:border-amber-900/30 bg-cream-100 dark:bg-[#1a1830]">
+                                  <span className="text-[10px] font-bold uppercase tracking-widest text-brown-600 dark:text-amber-100/70">
+                                    Inside the Box
                                   </span>
-                                  <span className="text-xs text-brown-500 flex-shrink-0">{formatPrice(pick.price * pick.qty)}</span>
                                 </div>
-                              ))}
-                            </div>
-                          )}
+                                <div className="p-2.5 space-y-1.5">
+                                  {item.giftSet.picks.map((pick, pi) => (
+                                    <div
+                                      key={pi}
+                                      className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white dark:bg-[#1a1830] border border-cream-100 dark:border-amber-900/20 shadow-sm"
+                                    >
+                                      {pick.image ? (
+                                        <img
+                                          src={pick.image}
+                                          alt={pick.name}
+                                          className="w-10 h-10 rounded-lg object-cover flex-shrink-0 border border-black/5 dark:border-white/5"
+                                        />
+                                      ) : (
+                                        <div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center text-lg flex-shrink-0">
+                                          🕯️
+                                        </div>
+                                      )}
+                                      <span className="text-sm font-semibold text-brown-900 dark:text-amber-100 flex-1 truncate">
+                                        {pick.name}
+                                        {pick.qty > 1 && (
+                                          <span className="font-medium text-brown-500 dark:text-amber-100/60 ml-1.5">
+                                            × {pick.qty}
+                                          </span>
+                                        )}
+                                      </span>
+                                      <span className="text-sm font-bold text-brown-900 dark:text-amber-100 flex-shrink-0">
+                                        {formatPrice(pick.price * pick.qty)}
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
                         </div>
                       ))}
                     </div>

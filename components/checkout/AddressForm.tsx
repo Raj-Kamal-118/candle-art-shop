@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -45,9 +45,14 @@ export default function AddressForm({
   });
 
   const postalCode = watch("postalCode");
+  const [isValidatingPin, setIsValidatingPin] = useState(false);
+  const lastCheckedPin = useRef<string>("");
 
   useEffect(() => {
     if (postalCode && /^[1-9][0-9]{5}$/.test(postalCode)) {
+      if (postalCode === lastCheckedPin.current) return;
+
+      setIsValidatingPin(true);
       fetch(`https://api.postalpincode.in/pincode/${postalCode}`)
         .then((res) => res.json())
         .then((data) => {
@@ -58,9 +63,11 @@ export default function AddressForm({
             });
             setValue("state", postOffice.State, { shouldValidate: true });
             setValue("country", "India", { shouldValidate: true });
+            lastCheckedPin.current = postalCode;
           }
         })
-        .catch(console.error);
+        .catch(console.error)
+        .finally(() => setIsValidatingPin(false));
     }
   }, [postalCode, setValue]);
 
@@ -104,13 +111,20 @@ export default function AddressForm({
             {...register("address2")}
           />
         </div>
-        <Input
-          label="PIN Code"
-          placeholder="400001"
-          maxLength={6}
-          error={errors.postalCode?.message}
-          {...register("postalCode")}
-        />
+        <div className="relative">
+          <Input
+            label="PIN Code"
+            placeholder="400001"
+            maxLength={6}
+            error={errors.postalCode?.message}
+            {...register("postalCode")}
+          />
+          {isValidatingPin && (
+            <span className="absolute right-3 top-9 text-xs font-medium text-amber-600 dark:text-amber-400 animate-pulse">
+              Checking...
+            </span>
+          )}
+        </div>
         <Input
           label="City"
           placeholder="Mumbai"

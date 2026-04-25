@@ -23,83 +23,65 @@ export default function ItemPick({
   return (
     <div
       onClick={onAdd}
-      className="relative rounded-2xl cursor-pointer transition-all duration-200"
-      style={{
-        background: "#fff",
-        border: has ? "2px solid #d97706" : "1px solid #e8dfc8",
-        padding: 12,
-        boxShadow: has
-          ? "0 8px 20px -8px rgba(217,119,6,.3)"
-          : "0 1px 3px rgba(45,31,20,.06)",
-      }}
+      className={`relative flex flex-col h-full p-3 rounded-2xl cursor-pointer transition-all duration-300 border-2 ${
+        has
+          ? "border-amber-500 bg-amber-50 dark:border-amber-500 dark:bg-amber-900/20 shadow-md shadow-amber-500/10"
+          : "border-cream-200 bg-white hover:border-amber-300 dark:border-amber-900/30 dark:bg-[#1a1830] dark:hover:border-amber-700 hover:shadow-sm"
+      }`}
     >
-      <div
-        className="relative w-full aspect-square rounded-xl overflow-hidden mb-2"
-        style={{ background: "#f9f5ee" }}
-      >
-        {image ? (
-          <Image
-            src={image}
-            alt={product.name}
-            fill
-            sizes="(max-width: 768px) 50vw, 33vw"
-            className="object-cover"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-3xl">
-            🎁
-          </div>
-        )}
-        {has && (
-          <div
-            className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white"
-            style={{
-              background: "#d97706",
-              boxShadow: "0 4px 10px -2px rgba(45,31,20,.3)",
-            }}
-          >
-            {count}
-          </div>
-        )}
-      </div>
-
-      <div
-        className="text-sm font-semibold leading-tight mb-0.5 line-clamp-2"
-        style={{ color: "#1c1209" }}
-      >
-        {product.name}
-      </div>
-      <div className="flex items-center justify-between gap-1 mt-1">
-        <div className="text-xs truncate" style={{ color: "#7c5c3a" }}>
-          {product.tags?.[0] ?? product.description?.slice(0, 24) ?? ""}
-        </div>
-        <div
-          className="text-sm font-bold flex-shrink-0"
-          style={{ color: "#1c1209" }}
-        >
-          {formatPrice(product.price)}
-        </div>
-      </div>
-
       {has && (
         <button
           onClick={(e) => {
             e.stopPropagation();
             onRemove();
           }}
-          className="absolute top-1.5 left-1.5 w-6 h-6 rounded-full flex items-center justify-center text-sm text-white"
-          style={{
-            background: "rgba(45,31,20,.65)",
-            backdropFilter: "blur(4px)",
-            border: 0,
-            lineHeight: 1,
-            cursor: "pointer",
-          }}
+          className="absolute top-2 left-2 w-6 h-6 rounded-full flex items-center justify-center text-sm text-white bg-black/40 hover:bg-black/60 backdrop-blur-sm transition-colors z-10"
           aria-label="Remove one"
         >
           –
         </button>
       )}
+
+      <div className="relative w-full aspect-square rounded-xl overflow-hidden mb-3 bg-cream-50 dark:bg-[#0f0e1c]">
+        {image ? (
+          <Image
+            src={image}
+            alt={product.name}
+            fill
+            sizes="(max-width: 768px) 50vw, 33vw"
+            className="object-cover transition-transform duration-500 hover:scale-105"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-4xl">
+            🎁
+          </div>
+        )}
+        {has && (
+          <div className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white bg-amber-600 shadow-md">
+            {count}
+          </div>
+        )}
+      </div>
+
+      <div className="text-sm font-semibold leading-tight mb-1.5 line-clamp-2 text-brown-900 dark:text-amber-100">
+        {product.name}
+      </div>
+
+      {product.description && (
+        <div
+          className="text-xs text-brown-600 dark:text-amber-100/60 line-clamp-3 mb-3 [&>p]:mb-0 [&>p]:inline"
+          dangerouslySetInnerHTML={{ __html: product.description }}
+        />
+      )}
+
+      <div className="flex items-center justify-between gap-1 mt-auto pt-1">
+        <div className="text-[10px] truncate text-brown-500 dark:text-amber-100/50 uppercase tracking-widest font-semibold">
+          {product.tags?.[0] ?? ""}
+        </div>
+        <div className="text-sm font-bold flex-shrink-0 text-brown-900 dark:text-amber-100">
+          {formatPrice(product.price)}
+        </div>
+      </div>
     </div>
   );
 }

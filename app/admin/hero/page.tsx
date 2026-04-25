@@ -705,6 +705,27 @@ export default function AdminHeroPage() {
                       onChange={(e) => updateImage(i, { link: e.target.value })}
                       placeholder="Link (e.g. /categories/scented-candles)"
                     />
+                    <div className="pt-3 border-t border-gray-100 mt-3 space-y-2">
+                      <label className="text-xs text-gray-500 font-medium block">
+                        Offer Badge (Optional)
+                      </label>
+                      <input
+                        className={`${inputCls} text-xs`}
+                        value={img.offerType || ""}
+                        onChange={(e) =>
+                          updateImage(i, { offerType: e.target.value })
+                        }
+                        placeholder="Type (e.g. Special Offer)"
+                      />
+                      <input
+                        className={`${inputCls} text-xs`}
+                        value={img.offerText || ""}
+                        onChange={(e) =>
+                          updateImage(i, { offerText: e.target.value })
+                        }
+                        placeholder="Text (e.g. Free shipping on orders...)"
+                      />
+                    </div>
                   </div>
                 );
               })}
