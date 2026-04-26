@@ -116,10 +116,6 @@ export default function AdminLoginPage() {
               {loading ? "Signing in..." : "Sign In"}
             </button>
           </form>
-
-          <p className="mt-4 text-xs text-center text-gray-400">
-            Default: admin / change-me-to-something-secure
-          </p>
         </div>
       </div>
     </div>
