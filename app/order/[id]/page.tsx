@@ -492,11 +492,6 @@ export default function OrderSuccessPage() {
             <p className="text-sm text-brown-500 dark:text-amber-100/60 mt-1">
               Have a question about your order or need to make changes?
             </p>
-            {canCancel && (
-              <p className="text-xs text-red-600 mt-2 font-medium">
-                You have 1 hour from placement to cancel this order.
-              </p>
-            )}
           </div>
           <div className="flex flex-col gap-3 shrink-0 w-full sm:w-auto">
             <a

@@ -255,7 +255,7 @@ export default function AuthModal({
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Full Name"
                   required
-                  className="w-full pl-10 pr-4 py-3 text-sm border border-brown-300 dark:border-amber-900/50 rounded-xl bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-400 dark:text-amber-100"
+                  className="w-full pl-10 pr-4 py-3 text-base sm:text-sm border border-brown-300 dark:border-amber-900/50 rounded-xl bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-400 dark:text-amber-100"
                 />
               </div>
             </div>
@@ -269,7 +269,7 @@ export default function AuthModal({
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email Address"
               required
-              className="w-full pl-10 pr-4 py-3 text-sm border border-brown-300 dark:border-amber-900/50 rounded-xl bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-400 dark:text-amber-100"
+              className="w-full pl-10 pr-4 py-3 text-base sm:text-sm border border-brown-300 dark:border-amber-900/50 rounded-xl bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-400 dark:text-amber-100"
             />
           </div>
 
@@ -291,7 +291,7 @@ export default function AuthModal({
                   }}
                   placeholder="Password"
                   required
-                  className="w-full pl-10 pr-12 py-3 text-sm border border-brown-300 dark:border-amber-900/50 rounded-xl bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-400 dark:text-amber-100"
+                  className="w-full pl-10 pr-12 py-3 text-base sm:text-sm border border-brown-300 dark:border-amber-900/50 rounded-xl bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-400 dark:text-amber-100"
                 />
                 <button
                   type="button"

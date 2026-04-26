@@ -16,7 +16,6 @@ import {
 import SecondaryHeader from "@/components/layout/SecondaryHeader";
 import Button from "@/components/ui/Button";
 import QuoteRequestSuccess from "@/components/custom/QuoteRequestSuccess";
-import BespokeNavigation from "@/components/custom/BespokeNavigation";
 
 type MagnetStyle = "3d-clay" | "flat-painted" | null;
 
@@ -390,7 +389,7 @@ export default function CustomMagnetPage() {
                             required
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            className="w-full px-4 py-3 bg-cream-50 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 rounded-xl shadow-sm focus:bg-white dark:focus:bg-[#1a1830] focus:ring-2 focus:ring-amber-300 dark:focus:ring-amber-600 focus:border-amber-400 dark:focus:border-amber-500 focus:outline-none text-brown-900 dark:text-amber-100 transition-all placeholder:text-brown-400 dark:placeholder:text-amber-100/40"
+                            className="w-full px-4 py-3 text-base sm:text-sm bg-cream-50 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 rounded-xl shadow-sm focus:bg-white dark:focus:bg-[#1a1830] focus:ring-2 focus:ring-amber-300 dark:focus:ring-amber-600 focus:border-amber-400 dark:focus:border-amber-500 focus:outline-none text-brown-900 dark:text-amber-100 transition-all placeholder:text-brown-400 dark:placeholder:text-amber-100/40"
                           />
                         </div>
                         <div>
@@ -402,7 +401,7 @@ export default function CustomMagnetPage() {
                             required
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full px-4 py-3 bg-cream-50 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 rounded-xl shadow-sm focus:bg-white dark:focus:bg-[#1a1830] focus:ring-2 focus:ring-amber-300 dark:focus:ring-amber-600 focus:border-amber-400 dark:focus:border-amber-500 focus:outline-none text-brown-900 dark:text-amber-100 transition-all placeholder:text-brown-400 dark:placeholder:text-amber-100/40"
+                            className="w-full px-4 py-3 text-base sm:text-sm bg-cream-50 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 rounded-xl shadow-sm focus:bg-white dark:focus:bg-[#1a1830] focus:ring-2 focus:ring-amber-300 dark:focus:ring-amber-600 focus:border-amber-400 dark:focus:border-amber-500 focus:outline-none text-brown-900 dark:text-amber-100 transition-all placeholder:text-brown-400 dark:placeholder:text-amber-100/40"
                           />
                         </div>
                         <div className="sm:col-span-2">
@@ -413,7 +412,7 @@ export default function CustomMagnetPage() {
                             type="tel"
                             value={phone}
                             onChange={(e) => setPhone(e.target.value)}
-                            className="w-full px-4 py-3 bg-cream-50 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 rounded-xl shadow-sm focus:bg-white dark:focus:bg-[#1a1830] focus:ring-2 focus:ring-amber-300 dark:focus:ring-amber-600 focus:border-amber-400 dark:focus:border-amber-500 focus:outline-none text-brown-900 dark:text-amber-100 transition-all placeholder:text-brown-400 dark:placeholder:text-amber-100/40"
+                            className="w-full px-4 py-3 text-base sm:text-sm bg-cream-50 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 rounded-xl shadow-sm focus:bg-white dark:focus:bg-[#1a1830] focus:ring-2 focus:ring-amber-300 dark:focus:ring-amber-600 focus:border-amber-400 dark:focus:border-amber-500 focus:outline-none text-brown-900 dark:text-amber-100 transition-all placeholder:text-brown-400 dark:placeholder:text-amber-100/40"
                           />
                         </div>
                         <div className="sm:col-span-2">
@@ -425,7 +424,7 @@ export default function CustomMagnetPage() {
                             value={comments}
                             onChange={(e) => setComments(e.target.value)}
                             placeholder="Tell us any specific details you want our artisan team to know..."
-                            className="w-full px-4 py-3 bg-cream-50 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 rounded-xl shadow-sm focus:bg-white dark:focus:bg-[#1a1830] focus:ring-2 focus:ring-amber-300 dark:focus:ring-amber-600 focus:border-amber-400 dark:focus:border-amber-500 focus:outline-none text-brown-900 dark:text-amber-100 transition-all placeholder:text-brown-400 dark:placeholder:text-amber-100/40 resize-none"
+                            className="w-full px-4 py-3 text-base sm:text-sm bg-cream-50 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 rounded-xl shadow-sm focus:bg-white dark:focus:bg-[#1a1830] focus:ring-2 focus:ring-amber-300 dark:focus:ring-amber-600 focus:border-amber-400 dark:focus:border-amber-500 focus:outline-none text-brown-900 dark:text-amber-100 transition-all placeholder:text-brown-400 dark:placeholder:text-amber-100/40 resize-none"
                           />
                         </div>
                       </div>
@@ -601,7 +600,6 @@ export default function CustomMagnetPage() {
             </motion.div>
           )}
         </AnimatePresence>
-        <BespokeNavigation active="magnet" />
       </div>
     </main>
   );

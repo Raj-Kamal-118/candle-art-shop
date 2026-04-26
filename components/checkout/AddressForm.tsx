@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { ChevronDown } from "lucide-react";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import { Address } from "@/lib/types";
@@ -141,13 +142,18 @@ export default function AddressForm({
           <label className="block text-sm font-medium text-brown-800 mb-1.5">
             Country
           </label>
-          <select
-            {...register("country")}
-            className="w-full px-4 py-2.5 text-sm border border-brown-300 dark:border-amber-900/30 rounded-lg bg-gray-50 dark:bg-black/20 text-brown-500 dark:text-amber-100/50 focus:outline-none pointer-events-none"
-            tabIndex={-1}
-          >
-            <option value="India">India</option>
-          </select>
+          <div className="relative">
+            <select
+              {...register("country")}
+              className="w-full px-4 py-2.5 pr-10 appearance-none text-base sm:text-sm border border-brown-300 dark:border-amber-900/30 rounded-lg bg-gray-50 dark:bg-black/20 text-brown-500 dark:text-amber-100/50 focus:outline-none"
+            >
+              <option value="India">India</option>
+            </select>
+            <ChevronDown
+              size={16}
+              className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-brown-400 dark:text-amber-100/40"
+            />
+          </div>
         </div>
       </div>
 

@@ -10,6 +10,7 @@ import ItemPick from "@/components/gift-sets/ItemPick";
 import SecondaryHeader from "@/components/layout/SecondaryHeader";
 import Button from "@/components/ui/Button";
 import { useGiftBuilderStore, GS_CARDS } from "@/lib/stores/giftBuilderStore";
+import BespokeNavigation from "@/components/custom/BespokeNavigation";
 
 const MIN = 3;
 const SWEET = 5;
@@ -198,7 +199,7 @@ export default function AtelierBuilderPage() {
                       value={recipient}
                       onChange={(e) => setRecipient(e.target.value)}
                       placeholder="Recipient's name"
-                      className="w-full px-4 py-3 bg-cream-50 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 rounded-xl shadow-sm focus:bg-white dark:focus:bg-[#1a1830] focus:ring-2 focus:ring-amber-300 dark:focus:ring-amber-600 focus:border-amber-400 dark:focus:border-amber-500 focus:outline-none text-brown-900 dark:text-amber-100 transition-all placeholder:text-brown-400 dark:placeholder:text-amber-100/40"
+                      className="w-full px-4 py-3 text-base sm:text-sm bg-cream-50 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 rounded-xl shadow-sm focus:bg-white dark:focus:bg-[#1a1830] focus:ring-2 focus:ring-amber-300 dark:focus:ring-amber-600 focus:border-amber-400 dark:focus:border-amber-500 focus:outline-none text-brown-900 dark:text-amber-100 transition-all placeholder:text-brown-400 dark:placeholder:text-amber-100/40"
                     />
                   </div>
                   <div>
@@ -213,7 +214,7 @@ export default function AtelierBuilderPage() {
                       value={note}
                       onChange={(e) => setNote(e.target.value)}
                       placeholder="A few warm words…"
-                      className="w-full px-4 py-3 bg-cream-50 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 rounded-xl shadow-sm focus:bg-white dark:focus:bg-[#1a1830] focus:ring-2 focus:ring-amber-300 dark:focus:ring-amber-600 focus:border-amber-400 dark:focus:border-amber-500 focus:outline-none text-brown-900 dark:text-amber-100 transition-all placeholder:text-brown-400 dark:placeholder:text-amber-100/40 resize-none"
+                      className="w-full px-4 py-3 text-base sm:text-sm bg-cream-50 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 rounded-xl shadow-sm focus:bg-white dark:focus:bg-[#1a1830] focus:ring-2 focus:ring-amber-300 dark:focus:ring-amber-600 focus:border-amber-400 dark:focus:border-amber-500 focus:outline-none text-brown-900 dark:text-amber-100 transition-all placeholder:text-brown-400 dark:placeholder:text-amber-100/40 resize-none"
                       rows={3}
                       style={{
                         fontFamily: "var(--font-hand)",
@@ -422,6 +423,8 @@ export default function AtelierBuilderPage() {
             </div>
           </div>
         </div>
+
+        <BespokeNavigation active="gift-set" />
       </div>
     </main>
   );

@@ -20,6 +20,7 @@ import {
 import SecondaryHeader from "@/components/layout/SecondaryHeader";
 import Button from "@/components/ui/Button";
 import QuoteRequestSuccess from "@/components/custom/QuoteRequestSuccess";
+import BespokeNavigation from "@/components/custom/BespokeNavigation";
 
 const SHAPES = [
   {
@@ -575,6 +576,7 @@ export default function CustomCandlePage() {
             </div>
           </div>
         </div>
+        <BespokeNavigation active="candle" />
       </div>
     </main>
   );

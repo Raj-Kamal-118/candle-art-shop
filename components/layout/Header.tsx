@@ -178,7 +178,7 @@ export default function Header() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search candles, clay art, gift sets..."
                     autoFocus
-                    className="w-full pl-10 pr-10 py-3 bg-forest-50 dark:bg-[#1a1830] border border-forest-200 dark:border-amber-900/40 rounded-xl text-sm dark:text-amber-100 focus:outline-none focus:ring-2 focus:ring-coral-400 dark:focus:ring-amber-500 focus:border-transparent placeholder:text-forest-400 dark:placeholder:text-amber-100/30 shadow-inner"
+                    className="w-full pl-10 pr-10 py-3 bg-forest-50 dark:bg-[#1a1830] border border-forest-200 dark:border-amber-900/40 rounded-xl text-base sm:text-sm dark:text-amber-100 focus:outline-none focus:ring-2 focus:ring-coral-400 dark:focus:ring-amber-500 focus:border-transparent placeholder:text-forest-400 dark:placeholder:text-amber-100/30 shadow-inner"
                   />
                   {searchQuery && (
                     <button

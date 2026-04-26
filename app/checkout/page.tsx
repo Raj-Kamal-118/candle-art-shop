@@ -520,7 +520,7 @@ function CheckoutContent() {
                         setDiscountInput(e.target.value.toUpperCase())
                       }
                       placeholder="Enter code"
-                      className="flex-1 px-4 py-2.5 text-sm border border-brown-300 dark:border-amber-900/40 rounded-xl bg-white dark:bg-[#151326] text-brown-900 dark:text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-400 dark:focus:ring-amber-500 placeholder:text-brown-400 dark:placeholder:text-amber-100/30"
+                    className="flex-1 px-4 py-2.5 text-base sm:text-sm border border-brown-300 dark:border-amber-900/40 rounded-xl bg-white dark:bg-[#151326] text-brown-900 dark:text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-400 dark:focus:ring-amber-500 placeholder:text-brown-400 dark:placeholder:text-amber-100/30"
                       onKeyDown={(e) =>
                         e.key === "Enter" && handleApplyDiscount()
                       }

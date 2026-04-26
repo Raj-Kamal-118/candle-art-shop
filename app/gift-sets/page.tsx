@@ -34,7 +34,7 @@ export default function GiftSetsPage() {
       <div className="max-w-[1440px] mx-auto px-4 py-20">
         <div className="animate-pulse space-y-8">
           <div className="h-64 bg-cream-200 rounded-2xl" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {[...Array(6)].map((_, i) => (
               <div key={i} className="aspect-square bg-cream-200 rounded-2xl" />
             ))}
@@ -148,7 +148,7 @@ export default function GiftSetsPage() {
 
       {/* Grid: first 3 + build CTA card + rest */}
       <section id="premade" className="max-w-[1440px] mx-auto px-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {first3.map((s) => (
             <GiftSetCard key={s.id} set={s} />
           ))}
@@ -158,27 +158,24 @@ export default function GiftSetsPage() {
             href="/custom/gift-set"
             className="group relative bg-white dark:bg-[#1a1830] rounded-2xl overflow-hidden shadow-[0_4px_12px_rgba(28,18,9,0.05)] border border-amber-200 dark:border-amber-700/50 hover:shadow-[0_12px_32px_rgba(28,18,9,0.08)] transition-all duration-300 cursor-pointer flex flex-col"
           >
-            <div className="relative flex-1 flex flex-col items-center justify-center p-8 text-center overflow-hidden bg-amber-50/50 dark:bg-amber-900/10 min-h-[300px]">
+            <div className="relative aspect-square flex flex-col items-center justify-center p-6 text-center overflow-hidden bg-amber-50/50 dark:bg-amber-900/10">
               <div className="absolute inset-0 bg-gradient-to-br from-amber-100/50 to-transparent dark:from-amber-500/10 dark:to-transparent" />
               <div className="relative z-10 flex flex-col items-center">
-                <div className="w-14 h-14 bg-white dark:bg-[#0f0e1c] border border-amber-100 dark:border-amber-900/50 rounded-full flex items-center justify-center text-amber-500 shadow-sm mb-5 group-hover:scale-110 transition-transform">
+                <div className="w-14 h-14 bg-white dark:bg-[#0f0e1c] border border-amber-100 dark:border-amber-900/50 rounded-full flex items-center justify-center text-amber-500 shadow-sm mb-4 group-hover:scale-110 transition-transform">
                   <Sparkles size={24} />
                 </div>
-                <div className="text-[11px] font-semibold uppercase mb-3 tracking-[0.2em] text-amber-600 dark:text-amber-400">
-                  Pick your own
-                </div>
-                <h3 className="font-serif text-2xl sm:text-3xl font-bold text-brown-900 dark:text-amber-100 mb-3 leading-tight">
+                <h3 className="font-serif text-xl sm:text-2xl font-bold text-brown-900 dark:text-amber-100 mb-2 leading-tight">
                   Build a set, your way.
                 </h3>
-                <p className="text-sm text-brown-600 dark:text-amber-100/70 max-w-[240px] mx-auto">
-                  Any items, any size. Candles, magnets, keyrings, clay pieces —
-                  plus a card with your note.
+                <p className="text-xs sm:text-sm text-brown-600 dark:text-amber-100/70">
+                  Pick your items. We'll box them beautifully.
                 </p>
               </div>
             </div>
-            <div className="p-3 sm:p-4 flex flex-col h-auto justify-center bg-white dark:bg-[#1a1830] border-t border-amber-100 dark:border-amber-900/30">
-              <div className="w-full bg-coral-600 group-hover:bg-coral-700 dark:bg-amber-600 dark:hover:bg-amber-700 text-white text-sm font-semibold py-3 rounded-xl flex items-center justify-center transition-all duration-200 shadow-sm gap-2 group-hover:-translate-y-0.5">
-                Start building <ArrowRight size={16} />
+            <div className="p-3 sm:p-4 flex flex-col h-auto min-h-[110px] sm:min-h-[130px] justify-center bg-white dark:bg-[#1a1830] border-t border-amber-100 dark:border-amber-900/30">
+              <div className="w-full bg-coral-600 group-hover:bg-coral-700 dark:bg-amber-600 dark:hover:bg-amber-700 text-white text-xs sm:text-sm font-semibold py-2.5 sm:py-3 rounded-lg flex items-center justify-center transition-colors shadow-sm gap-2">
+                <Sparkles size={14} />
+                Start building
               </div>
             </div>
           </Link>

@@ -218,7 +218,7 @@ function ReviewForm() {
                   type="text"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
-                  className="w-full p-3 bg-cream-50 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none text-brown-800 dark:text-amber-100"
+                  className="w-full p-3 text-base sm:text-sm bg-cream-50 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none text-brown-800 dark:text-amber-100"
                   placeholder="Jane D."
                 />
               </div>
@@ -230,7 +230,7 @@ function ReviewForm() {
                   type="text"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  className="w-full p-3 bg-cream-50 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none text-brown-800 dark:text-amber-100"
+                  className="w-full p-3 text-base sm:text-sm bg-cream-50 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none text-brown-800 dark:text-amber-100"
                   placeholder="e.g. Mumbai, India"
                 />
               </div>
@@ -244,7 +244,7 @@ function ReviewForm() {
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full p-3 bg-cream-50 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none text-brown-800 dark:text-amber-100"
+                className="w-full p-3 text-base sm:text-sm bg-cream-50 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none text-brown-800 dark:text-amber-100"
                 placeholder="e.g. A new evening ritual"
               />
             </div>
@@ -258,7 +258,7 @@ function ReviewForm() {
                 rows={5}
                 value={text}
                 onChange={(e) => setText(e.target.value)}
-                className="w-full p-4 bg-cream-50 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none text-brown-800 dark:text-amber-100 resize-none"
+                className="w-full p-4 text-base sm:text-sm bg-cream-50 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none text-brown-800 dark:text-amber-100 resize-none"
                 placeholder="What did you love about your items?"
               />
             </div>
@@ -422,7 +422,7 @@ function ReviewForm() {
                             }))
                           }
                           placeholder="What did you think of this specific piece?"
-                          className="w-full h-24 px-4 py-3 bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-900/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 text-sm resize-none"
+                        className="w-full h-24 px-4 py-3 text-base sm:text-sm bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-900/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 resize-none"
                         />
                       </div>
                     )}

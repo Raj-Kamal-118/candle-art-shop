@@ -23,6 +23,7 @@ import {
   Sun,
   Moon,
   Home,
+  ChevronDown,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Product, Category } from "@/lib/types";
@@ -58,6 +59,7 @@ export default function ProductDetailPage() {
   const [customizations, setCustomizations] = useState<Record<string, string>>(
     {},
   );
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [addedToCart, setAddedToCart] = useState(false);
 
   const handleAddToCart = () => {
@@ -161,13 +163,13 @@ export default function ProductDetailPage() {
 
         <div className="grid lg:grid-cols-2 gap-12 xl:gap-16 mb-16">
           {/* Images */}
-          <div className="space-y-4">
+          <div className="space-y-4 min-w-0 w-full">
             <motion.div
               key={selectedImage}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4 }}
-              className="relative aspect-square rounded-3xl overflow-hidden bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-900/30 shadow-[0_16px_40px_rgba(28,18,9,0.08)] dark:shadow-amber-900/20"
+              className="relative w-full aspect-square rounded-3xl overflow-hidden bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-900/30 shadow-[0_16px_40px_rgba(28,18,9,0.08)] dark:shadow-amber-900/20"
             >
               {product.images?.[selectedImage] ? (
                 <Image
@@ -186,12 +188,12 @@ export default function ProductDetailPage() {
             </motion.div>
 
             {product.images && product.images.length > 1 && (
-              <div className="flex gap-3">
+              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide w-full">
                 {product.images.map((img, i) => (
                   <button
                     key={i}
                     onClick={() => setSelectedImage(i)}
-                    className={`w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-200 bg-white dark:bg-[#1a1830] ${
+                    className={`w-20 h-20 shrink-0 rounded-xl overflow-hidden border-2 transition-all duration-200 bg-white dark:bg-[#1a1830] ${
                       selectedImage === i
                         ? "border-coral-500 shadow-md scale-105"
                         : "relative border-transparent opacity-60 hover:opacity-100 hover:scale-105"
@@ -212,7 +214,7 @@ export default function ProductDetailPage() {
           </div>
 
           {/* Details */}
-          <div className="lg:py-2">
+          <div className="lg:py-2 min-w-0 w-full">
             {/* Category eyebrow + badges */}
             <div className="flex flex-wrap items-center gap-2 mb-3">
               {category && (
@@ -320,28 +322,68 @@ export default function ProductDetailPage() {
                         {opt.label}
                       </label>
                       {opt.type === "select" && opt.options ? (
-                        <select
-                          className="w-full px-3 py-2.5 border border-brown-300 dark:border-amber-900/30 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-300 bg-white dark:bg-[#1a1830] text-brown-900 dark:text-amber-100"
-                          value={customizations[opt.label] || ""}
-                          onChange={(e) =>
-                            setCustomizations((prev) => ({
-                              ...prev,
-                              [opt.label]: e.target.value,
-                            }))
-                          }
-                        >
-                          <option value="">Select {opt.label}</option>
-                          {opt.options.map((o) => (
-                            <option key={o} value={o}>
-                              {o}
-                            </option>
-                          ))}
-                        </select>
+                        <div className="relative">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setOpenDropdown(
+                                openDropdown === opt.label ? null : opt.label,
+                              )
+                            }
+                            className="w-full flex items-center justify-between px-3 py-2.5 border border-brown-300 dark:border-amber-900/30 rounded-xl text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-amber-300 bg-white dark:bg-[#1a1830] text-brown-900 dark:text-amber-100"
+                          >
+                            <span
+                              className={
+                                customizations[opt.label]
+                                  ? ""
+                                  : "text-brown-400 dark:text-amber-100/40"
+                              }
+                            >
+                              {customizations[opt.label] ||
+                                `Select ${opt.label}`}
+                            </span>
+                            <ChevronDown
+                              size={16}
+                              className={`transition-transform text-brown-400 dark:text-amber-100/40 ${openDropdown === opt.label ? "rotate-180" : ""}`}
+                            />
+                          </button>
+
+                          {openDropdown === opt.label && (
+                            <>
+                              <div
+                                className="fixed inset-0 z-40"
+                                onClick={() => setOpenDropdown(null)}
+                              />
+                              <div className="absolute z-50 w-full mt-2 py-1 bg-white dark:bg-[#1a1830] border border-brown-200 dark:border-amber-900/30 rounded-xl shadow-xl max-h-60 overflow-y-auto">
+                                {opt.options.map((o) => (
+                                  <button
+                                    key={o}
+                                    type="button"
+                                    className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
+                                      customizations[opt.label] === o
+                                        ? "bg-amber-50 dark:bg-amber-900/30 text-amber-900 dark:text-amber-100 font-medium"
+                                        : "text-brown-700 dark:text-amber-100/80 hover:bg-cream-50 dark:hover:bg-amber-900/20"
+                                    }`}
+                                    onClick={() => {
+                                      setCustomizations((prev) => ({
+                                        ...prev,
+                                        [opt.label]: o,
+                                      }));
+                                      setOpenDropdown(null);
+                                    }}
+                                  >
+                                    {o}
+                                  </button>
+                                ))}
+                              </div>
+                            </>
+                          )}
+                        </div>
                       ) : opt.type === "text" ? (
                         <input
                           type="text"
                           placeholder={`Enter your ${opt.label.toLowerCase()}`}
-                          className="w-full px-3 py-2.5 border border-brown-300 dark:border-amber-900/30 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-300 bg-white dark:bg-[#1a1830] text-brown-900 dark:text-amber-100"
+                          className="w-full px-3 py-2.5 border border-brown-300 dark:border-amber-900/30 rounded-xl text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-amber-300 bg-white dark:bg-[#1a1830] text-brown-900 dark:text-amber-100"
                           value={customizations[opt.label] || ""}
                           onChange={(e) =>
                             setCustomizations((prev) => ({
@@ -469,7 +511,7 @@ export default function ProductDetailPage() {
             )}
 
             {/* Trust badges */}
-            <div className="grid grid-cols-3 gap-4 pt-6 border-t border-cream-200 dark:border-amber-900/30">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-cream-200 dark:border-amber-900/30">
               {[
                 { icon: Truck, label: "Free shipping", sub: "Over ₹2,499" },
                 {
