@@ -16,10 +16,10 @@ export default function ThemeSwitch() {
       aria-checked={isDark}
       aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
       title={`Switch to ${isDark ? "light" : "dark"} mode`}
-      className={`relative inline-flex items-center h-8 w-[66px] rounded-full px-1 transition-colors duration-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-coral-400 focus-visible:ring-offset-2 focus-visible:ring-offset-cream-50 dark:focus-visible:ring-offset-[#0f0e1c] ${
+      className={`relative inline-flex items-center h-8 w-[66px] rounded-full px-1 transition-all duration-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-coral-400 focus-visible:ring-offset-2 focus-visible:ring-offset-cream-50 dark:focus-visible:ring-offset-[#0f0e1c] ${
         isDark
-          ? "bg-gradient-to-r from-indigo-900 via-[#1a1830] to-[#0f0e1c] shadow-inner shadow-indigo-950/60"
-          : "bg-gradient-to-r from-amber-200 via-amber-100 to-cream-100 shadow-inner shadow-amber-200/70"
+          ? "bg-gradient-to-r from-indigo-900 via-[#1a1830] to-[#0f0e1c] shadow-inner shadow-indigo-950/60 hover:drop-shadow-[0_0_8px_rgba(129,140,248,0.5)]"
+          : "bg-gradient-to-r from-amber-200 via-amber-100 to-cream-100 shadow-inner shadow-amber-200/70 hover:drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]"
       }`}
     >
       {/* Track icons */}
@@ -63,14 +63,14 @@ export default function ThemeSwitch() {
 
       {/* Sliding knob */}
       <motion.span
-        layout
+        initial={false}
+        animate={{ x: isDark ? 34 : 0 }}
         transition={{ type: "spring", stiffness: 500, damping: 30 }}
-        className={`relative z-10 ml-auto inline-flex items-center justify-center w-6 h-6 rounded-full shadow-lg ${
+        className={`absolute left-1 z-10 inline-flex items-center justify-center w-6 h-6 rounded-full shadow-lg ${
           isDark
             ? "bg-gradient-to-br from-slate-100 to-slate-300"
             : "bg-gradient-to-br from-amber-300 to-coral-400"
         }`}
-        style={{ marginLeft: isDark ? "auto" : 0 }}
       >
         <motion.span
           key={theme}

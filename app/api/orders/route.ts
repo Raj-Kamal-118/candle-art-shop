@@ -165,6 +165,13 @@ export async function POST(request: NextRequest) {
                             <div style="color: #8c6a50; margin-top: 4px;">Qty: ${item.quantity}</div>
                             ${item.customizations && Object.keys(item.customizations).length > 0 ? 
                               `<div style="color: #8c6a50; font-size: 13px; margin-top: 4px;">${Object.entries(item.customizations).map(([k,v]) => `&bull; ${k}: ${v}`).join('<br>')}</div>` : ''}
+                            ${item.giftSet?.picks && item.giftSet.picks.length > 0 ? `
+                              <div style="margin-top: 10px; padding: 12px; background-color: #faf7f0; border: 1px solid #eedcc5; border-radius: 8px;">
+                                <div style="font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.05em; color: #92400e; margin-bottom: 6px;">Inside the Box</div>
+                                ${item.giftSet.picks.map((pick: any) => `<div style="font-size: 13px; color: #4a3320; margin-bottom: 4px;">&bull; ${pick.name} ${pick.qty > 1 ? `<span style="color: #8c6a50;">&times; ${pick.qty}</span>` : ''}</div>`).join('')}
+                                ${item.giftSet.card?.recipient ? `<div style="font-size: 12px; color: #8c6a50; margin-top: 6px; font-style: italic;">Note for: ${item.giftSet.card.recipient}</div>` : ''}
+                              </div>
+                            ` : ''}
                           </td>
                           <td style="padding: 12px 0; border-bottom: 1px solid #e5dcd3; text-align: right; font-weight: 600; color: #4a3320; vertical-align: top;">
                             ₹${item.price * item.quantity}
@@ -190,6 +197,11 @@ export async function POST(request: NextRequest) {
                         <td style="padding: 8px 0; color: #8c6a50; text-align: right;">COD Fee</td>
                         <td style="padding: 8px 0; text-align: right; font-weight: 600;">₹${codFee}</td>
                       </tr>` : ''}
+                        ${codFee > 0 ? `
+                        <tr>
+                          <td style="padding: 8px 0; color: #8c6a50; text-align: right;">COD Fee</td>
+                          <td style="padding: 8px 0; text-align: right; font-weight: 600;">₹${codFee}</td>
+                        </tr>` : ''}
                       <tr>
                         <td style="padding: 16px 0 0 0; font-weight: bold; font-size: 18px; color: #4a3320; text-align: right;">Total</td>
                         <td style="padding: 16px 0 0 0; font-weight: bold; font-size: 18px; color: #D76E60; text-align: right;">₹${order.total}</td>
@@ -265,6 +277,13 @@ export async function POST(request: NextRequest) {
                               <div style="color: #8c6a50; margin-top: 4px;">Qty: ${item.quantity}</div>
                               ${item.customizations && Object.keys(item.customizations).length > 0 ? 
                                 `<div style="color: #8c6a50; font-size: 13px; margin-top: 4px;">${Object.entries(item.customizations).map(([k,v]) => `&bull; ${k}: ${v}`).join('<br>')}</div>` : ''}
+                              ${item.giftSet?.picks && item.giftSet.picks.length > 0 ? `
+                                <div style="margin-top: 10px; padding: 12px; background-color: #faf7f0; border: 1px solid #eedcc5; border-radius: 8px;">
+                                  <div style="font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.05em; color: #92400e; margin-bottom: 6px;">Inside the Box</div>
+                                  ${item.giftSet.picks.map((pick: any) => `<div style="font-size: 13px; color: #4a3320; margin-bottom: 4px;">&bull; ${pick.name} ${pick.qty > 1 ? `<span style="color: #8c6a50;">&times; ${pick.qty}</span>` : ''}</div>`).join('')}
+                                  ${item.giftSet.card?.recipient ? `<div style="font-size: 12px; color: #8c6a50; margin-top: 6px; font-style: italic;">Note for: ${item.giftSet.card.recipient}</div>` : ''}
+                                </div>
+                              ` : ''}
                             </td>
                             <td style="padding: 12px 0; border-bottom: 1px solid #e5dcd3; text-align: right; font-weight: 600; color: #4a3320; vertical-align: top;">
                               ₹${item.price * item.quantity}

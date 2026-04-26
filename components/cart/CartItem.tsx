@@ -30,13 +30,19 @@ export default function CartItemComponent({
     <div className="flex gap-4 sm:gap-6 py-6 border-b border-cream-200 dark:border-amber-900/20 last:border-b-0">
       <Link href={`/products/${item.product.slug}`}>
         <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-xl overflow-hidden bg-cream-50 dark:bg-[#0f0e1c] border border-cream-200 dark:border-amber-900/30 shrink-0 shadow-sm">
-          <Image
-            src={item.product.images[0]}
-            alt={item.product.name}
-            fill
-            sizes="(max-width: 640px) 96px, 128px"
-            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-          />
+          {item.product.images?.[0] ? (
+            <Image
+              src={item.product.images[0]}
+              alt={item.product.name}
+              fill
+              sizes="(max-width: 640px) 96px, 128px"
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-3xl">
+              🎁
+            </div>
+          )}
         </div>
       </Link>
 

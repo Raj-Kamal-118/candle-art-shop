@@ -139,6 +139,7 @@ export interface OrderItem {
   customizations?: Record<string, string>;
   /** Populated when this order item represents a gift set bundle */
   giftSet?: CartGiftSet;
+  rating?: number;
 }
 
 export interface Order {
@@ -157,6 +158,8 @@ export interface Order {
   createdAt: string;
   userId?: string;
   customerPhone?: string;
+  is_reviewed?: boolean;
+  rating?: number;
 }
 
 export interface AdminCredentials {

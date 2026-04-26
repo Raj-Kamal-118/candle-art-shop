@@ -60,13 +60,19 @@ export default function ProductCard({ product }: ProductCardProps) {
       <div className="group relative bg-white dark:bg-[#1a1830] rounded-2xl overflow-hidden shadow-[0_4px_12px_rgba(28,18,9,0.05)] border border-cream-200 dark:border-amber-900/30 hover:shadow-[0_12px_32px_rgba(28,18,9,0.08)] dark:hover:border-amber-700/50 transition-all duration-300 cursor-pointer">
         {/* Image container */}
         <div className="relative aspect-square overflow-hidden bg-cream-100 dark:bg-amber-900/20">
-          <Image
-            src={product.images[0]}
-            alt={product.name}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-110"
-          />
+          {product.images?.[0] ? (
+            <Image
+              src={product.images[0]}
+              alt={product.name}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-110"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-5xl">
+              🕯️
+            </div>
+          )}
           {/* Badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-1.5">
             {discount && (

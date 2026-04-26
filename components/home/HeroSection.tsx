@@ -175,10 +175,18 @@ export default function HeroSection({ settings }: HeroSectionProps) {
       className={`relative min-h-[860px] flex items-center overflow-hidden ${
         isCustomBg
           ? ""
-          : "bg-gradient-to-br from-cream-100 via-cream-50 to-coral-50 dark:from-[#0a0a16] dark:via-[#0f0e1c] dark:to-[#12101e]"
+          : "bg-cream-50 dark:bg-[#0a0a16] transition-colors duration-700"
       }`}
       style={sectionStyle}
     >
+      {/* Base Gradients for smooth fading (CSS cannot transition linear-gradients natively) */}
+      {!isCustomBg && (
+        <>
+          <div className="absolute inset-0 bg-gradient-to-br from-cream-100 via-cream-50 to-coral-50 dark:opacity-0 transition-opacity duration-700 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a16] via-[#0f0e1c] to-[#12101e] opacity-0 dark:opacity-100 transition-opacity duration-700 pointer-events-none" />
+        </>
+      )}
+
       {/* Video background */}
       {backgroundType === "video" && backgroundValue && (
         <video
@@ -206,7 +214,7 @@ export default function HeroSection({ settings }: HeroSectionProps) {
         </div>
       )}
 
-      <div className="relative max-w-[1440px] mx-auto px-4 sm:px-6 py-12 grid lg:grid-cols-2 gap-16 items-center">
+      <div className="relative z-10 max-w-[1440px] mx-auto px-4 sm:px-6 py-12 grid lg:grid-cols-2 gap-16 items-center">
         {/* Content */}
         <div>
           <motion.div

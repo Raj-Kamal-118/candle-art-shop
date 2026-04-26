@@ -169,17 +169,23 @@ export default function ProductDetailPage() {
               transition={{ duration: 0.4 }}
               className="relative aspect-square rounded-3xl overflow-hidden bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-900/30 shadow-[0_16px_40px_rgba(28,18,9,0.08)] dark:shadow-amber-900/20"
             >
-              <Image
-                src={product.images[selectedImage]}
-                alt={product.name}
-                fill
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                priority
-                className="w-full h-full object-cover"
-              />
+              {product.images?.[selectedImage] ? (
+                <Image
+                  src={product.images[selectedImage]}
+                  alt={product.name}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  priority
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-[80px]">
+                  🕯️
+                </div>
+              )}
             </motion.div>
 
-            {product.images.length > 1 && (
+            {product.images && product.images.length > 1 && (
               <div className="flex gap-3">
                 {product.images.map((img, i) => (
                   <button
