@@ -1,104 +1,53 @@
 import { MetadataRoute } from "next";
-
-export const dynamic = "force-dynamic";
+import { getProducts, getCategories } from "@/lib/data";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // Fallback to production URL if env var is missing
-  const rawBaseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.artisanhouse.in";
-  const baseUrl = rawBaseUrl.replace(/\/$/, ""); // strips accidental trailing slashes
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.artisanhouse.in";
 
-  // 1. Core Static Pages
+  // Fetch dynamic data
+  const [products, categories] = await Promise.all([
+    getProducts(),
+    getCategories(),
+  ]);
+
+  // Define your static routes
   const staticRoutes = [
     "",
     "/products",
+    "/gift-sets",
+    "/custom",
     "/custom/candle",
     "/custom/magnet",
-    "/reviews",
+    "/custom/gift-set",
     "/informational/about",
     "/informational/faq",
     "/informational/shipping",
     "/informational/returns",
     "/informational/contact",
-    "/informational/privacy",
-    "/informational/terms",
-  ];
-
-  const now = new Date();
-
-  const staticPages = staticRoutes.map((route) => ({
+  ].map((route) => ({
     url: `${baseUrl}${route}`,
-    lastModified: now,
+    lastModified: new Date(),
     changeFrequency: "weekly" as const,
-    priority: route === "" ? 1.0 : 0.8,
+    priority: route === "" ? 1 : 0.8,
   }));
 
-  // 2. Hardcoded Categories
-  const categories = [
-    "scented-candles",
-    "fridge-magnets",
-    "key-chain",
-    "greeting-cards",
-  ];
-
-  const categoryPages = categories.map((slug) => ({
-    url: `${baseUrl}/categories/${slug}`,
-    lastModified: now,
+  // Dynamic Category routes
+  const categoryRoutes = categories.map((category) => ({
+    url: `${baseUrl}/categories/${category.slug}`,
+    lastModified: new Date(),
     changeFrequency: "weekly" as const,
-    priority: 0.7,
+    priority: 0.8,
   }));
 
-  // 3. Hardcoded Products (using slug instead of id)
-  const products = [
-    "pillar-candle",
-    "the-aurora-glass-candle-autumn-collection",
-    "charcoal-ruffle-pot-candle",
-    "the-aura-pure-scented-tealight-candles-pack-of-20",
-    "the-royal-orchid-artisan-collection",
-    "the-brew-tiful-cup",
-    "the-star-beam-cloud",
-    "the-bumble-blossom",
-    "the-hoot-heart-owl",
-    "the-sunny-rainbow",
-    "the-little-potted-cactus",
-    "the-swirl-shell-snail",
-    "the-happy-toadstool",
-    "the-sleepy-foxy",
-    "the-sprinkle-sweetie",
-    "the-happy-octopus",
-    "the-dots-spots-mushroom",
-    "find-your-fragrance-mini-set",
-    "handwritten-card",
-  ];
+  // Dynamic Product routes
+  const productRoutes = products
+    .filter((product) => product.visibleOnStorefront !== false)
+    .map((product) => ({
+      url: `${baseUrl}/products/${product.slug}`,
+      lastModified: new Date(product.updatedAt || product.createdAt || new Date()),
+      changeFrequency: "daily" as const,
+      priority: 0.9,
+    }));
 
-  const productPages = products.map((slug) => ({
-    url: `${baseUrl}/products/${slug}`,
-    lastModified: now,
-    changeFrequency: "weekly" as const,
-    priority: 0.6,
-  }));
-
-  // 4. Hardcoded Gift Sets
-  const giftSets = [
-    "the-quiet-evening",
-    "housewarming",
-    "reader",
-    "diwali-glow",
-    "desk-companion",
-    "luxe",
-  ];
-
-  const giftSetPages = giftSets.map((slug) => ({
-    url: `${baseUrl}/gift-sets/${slug}`,
-    lastModified: now,
-    changeFrequency: "weekly" as const,
-    priority: 0.7,
-  }));
-
-  // Combine and return all routes
-  return [
-    ...staticPages,
-    ...categoryPages,
-    ...productPages,
-    ...giftSetPages,
-  ];
+  return [...staticRoutes, ...categoryRoutes, ...productRoutes];
 }

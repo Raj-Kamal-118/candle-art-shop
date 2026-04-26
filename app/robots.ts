@@ -1,22 +1,13 @@
 import { MetadataRoute } from "next";
 
-export const dynamic = "force-dynamic";
-
-export default async function robots(): Promise<MetadataRoute.Robots> {
-  // Fallback to production URL if env var is missing
+export default function robots(): MetadataRoute.Robots {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.artisanhouse.in";
 
   return {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: [
-        "/admin/",
-        "/account/",
-        "/checkout/",
-        "/cart/",
-        "/api/",
-      ],
+      disallow: ["/admin/", "/api/"],
     },
     sitemap: `${baseUrl}/sitemap.xml`,
   };

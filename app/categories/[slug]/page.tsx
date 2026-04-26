@@ -89,8 +89,25 @@ export default function CategoryPage() {
     </Link>
   );
 
+  // Generate ItemList schema for category SEO
+  const itemListSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    url: `https://www.artisanhouse.in/categories/${slug}`,
+    numberOfItems: products.length,
+    itemListElement: products.map((p, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      url: `https://www.artisanhouse.in/products/${p.slug}`,
+    })),
+  };
+
   return (
     <div className="min-h-screen bg-[var(--home-bg-alt)] dark:bg-[#1a1612]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
+      />
       {/* Hero */}
       <section className="relative p-8 border-b border-cream-200 dark:border-amber-900/20 overflow-hidden flex items-center justify-center">
         {/* Background Image */}

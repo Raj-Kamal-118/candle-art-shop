@@ -33,12 +33,25 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL || "https://www.artisanhouse.in",
   ),
+  applicationName: "Artisan House",
   title: {
     default: "Artisan House — Candles | Clays | Crafts",
     template: "%s | Artisan House",
   },
   description:
     "Discover handcrafted candles, clay art, and creative crafts at Artisan House. Each piece is made with love and intention. Shop at artisanhouse.in",
+  keywords: [
+    "handcrafted candles",
+    "scented candles",
+    "soy wax candles",
+    "clay art",
+    "fridge magnets",
+    "custom gifts",
+    "gift sets",
+    "artisan crafts",
+    "home decor",
+    "Varanasi",
+  ],
   openGraph: {
     type: "website",
     locale: "en_IN",
@@ -90,6 +103,22 @@ export default function RootLayout({
     sameAs: ["https://www.instagram.com/artisanhouse.in"],
   };
 
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Artisan House",
+    url: "https://www.artisanhouse.in/",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate:
+          "https://www.artisanhouse.in/products?search={search_term_string}",
+      },
+      "query-input": "required name=search_term_string",
+    },
+  };
+
   return (
     <html
       lang="en"
@@ -100,7 +129,9 @@ export default function RootLayout({
       <body className="bg-cream-50 text-forest-800 dark:bg-[#0a0a16] dark:text-amber-100/90 antialiased">
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify([orgSchema, websiteSchema]),
+          }}
         />
         <ThemeProvider>
           <Header />

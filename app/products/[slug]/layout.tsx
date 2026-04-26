@@ -30,7 +30,27 @@ export async function generateMetadata({
     return {
       title: product.name, // " | Artisan House" is appended automatically by your root layout
       description: cleanDescription,
+      keywords: product.tags || [],
       openGraph: {
+        title: product.name,
+        description: cleanDescription,
+        url: `${getBaseUrl()}/products/${product.slug}`,
+        siteName: "Artisan House",
+        images:
+          product.images && product.images.length > 0
+            ? [
+                {
+                  url: product.images[0],
+                  width: 1200,
+                  height: 630,
+                  alt: product.name,
+                },
+              ]
+            : [],
+        type: "website",
+      },
+      twitter: {
+        card: "summary_large_image",
         title: product.name,
         description: cleanDescription,
         images:
@@ -83,6 +103,7 @@ export default async function ProductLayout({
         image: product.images,
         description: cleanDescription,
         sku: product.id,
+        mpn: product.id,
         brand: {
           "@type": "Brand",
           name: "Artisan House",
@@ -96,6 +117,27 @@ export default async function ProductLayout({
             ? "https://schema.org/InStock"
             : "https://schema.org/OutOfStock",
           itemCondition: "https://schema.org/NewCondition",
+          hasMerchantReturnPolicy: {
+            "@type": "MerchantReturnPolicy",
+            applicableCountry: "IN",
+            returnPolicyCategory:
+              "https://schema.org/MerchantReturnFiniteReturnWindow",
+            merchantReturnDays: 2,
+            returnMethod: "https://schema.org/ReturnByMail",
+            returnFees: "https://schema.org/FreeReturn",
+          },
+          shippingDetails: {
+            "@type": "OfferShippingDetails",
+            shippingRate: {
+              "@type": "MonetaryAmount",
+              value: "0",
+              currency: "INR",
+            },
+            shippingDestination: {
+              "@type": "DefinedRegion",
+              addressCountry: "IN",
+            },
+          },
         },
       };
     }
