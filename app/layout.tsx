@@ -78,7 +78,8 @@ export default function RootLayout({
     "@type": "Organization",
     name: "Artisan House",
     url: "https://www.artisanhouse.in",
-    logo: "https://www.artisanhouse.in/icon.png",
+    logo: "https://pub-1f6a6fc4e92548b987db5dbea7cd456e.r2.dev/candle-art-shop-images/Asset/assets-03%20(2).png",
+    image: ["https://www.artisanhouse.in/og-image.png"],
     contactPoint: {
       "@type": "ContactPoint",
       telephone: "+91-95194-86785",

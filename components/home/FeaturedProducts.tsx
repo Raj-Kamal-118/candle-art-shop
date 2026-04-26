@@ -253,6 +253,14 @@ export default function FeaturedProducts({
   );
 }
 
+const CLIP_COLORS = [
+  ["#fca5a5", "#dc2626", "#b91c1c", "#7f1d1d"], // Red
+  ["#4ade80", "#16a34a", "#15803d", "#14532d"], // Green
+  ["#fef08a", "#eab308", "#a16207", "#713f12"], // Yellow
+  ["#93c5fd", "#3b82f6", "#1d4ed8", "#1e3a8a"], // Blue
+  ["#f3f4f6", "#9ca3af", "#4b5563", "#1f2937"], // White/Silver
+];
+
 function FeaturedPhotoStack({
   product,
   activeIndex,
@@ -289,6 +297,7 @@ function FeaturedPhotoStack({
         const rotate = offset === 0 ? -1.5 : offset === 1 ? 6 : -10;
         const xOffset = offset === 0 ? 0 : offset === 1 ? 32 : -45;
         const yOffset = offset === 0 ? 0 : offset === 1 ? -12 : 24;
+        const clipColors = CLIP_COLORS[idx % CLIP_COLORS.length];
 
         return (
           <motion.div
@@ -323,8 +332,8 @@ function FeaturedPhotoStack({
               style={{
                 position: "absolute",
                 top: -20,
-                left: offset === 0 ? "15%" : offset === 1 ? "80%" : "20%",
-                transform: `rotate(${rotate * 0.8}deg)`,
+                left: offset === 0 ? "15%" : offset === 1 ? "75%" : "6%",
+                transform: `rotate(${offset === 0 ? -12 : offset === 1 ? 15 : -20}deg)`,
                 zIndex: 10,
               }}
             >
@@ -334,28 +343,44 @@ function FeaturedPhotoStack({
                 viewBox="0 0 32 64"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                style={{ filter: "drop-shadow(1px 3px 2px rgba(28,18,9,0.2))" }}
+                className="overflow-visible"
               >
                 <path
                   d="M14 42 V 16 A 6 6 0 0 1 26 16 V 48 A 11 11 0 0 1 4 48 V 16"
-                  stroke="url(#clipMetallic)"
+                  stroke={`url(#clipMetallic-${idx})`}
                   strokeWidth="3.5"
                   strokeLinecap="round"
                   transform="translate(1, 2)"
+                  filter={`url(#clipShadow-${idx})`}
                 />
                 <defs>
+                  <filter
+                    id={`clipShadow-${idx}`}
+                    x="-50%"
+                    y="-50%"
+                    width="200%"
+                    height="200%"
+                  >
+                    <feDropShadow
+                      dx="1.5"
+                      dy="2.5"
+                      stdDeviation="1.5"
+                      floodColor="#1c1209"
+                      floodOpacity="0.4"
+                    />
+                  </filter>
                   <linearGradient
-                    id="clipMetallic"
+                    id={`clipMetallic-${idx}`}
                     x1="4"
                     y1="10"
                     x2="26"
                     y2="59"
                     gradientUnits="userSpaceOnUse"
                   >
-                    <stop stopColor="#4ade80" />
-                    <stop offset="0.3" stopColor="#16a34a" />
-                    <stop offset="0.7" stopColor="#15803d" />
-                    <stop offset="1" stopColor="#14532d" />
+                    <stop stopColor={clipColors[0]} />
+                    <stop offset="0.3" stopColor={clipColors[1]} />
+                    <stop offset="0.7" stopColor={clipColors[2]} />
+                    <stop offset="1" stopColor={clipColors[3]} />
                   </linearGradient>
                 </defs>
               </svg>
