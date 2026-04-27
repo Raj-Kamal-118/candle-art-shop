@@ -352,10 +352,10 @@ export default function GiftSetDetailPage() {
                 }`}
               >
                 {added ? (
-                  "Added to bag ✓"
+                  "Added to Cart ✓"
                 ) : (
                   <>
-                    Add to bag — {formatPrice(set.price)}{" "}
+                    Add to Cart — {formatPrice(set.price)}{" "}
                     <ArrowRight size={18} />
                   </>
                 )}
