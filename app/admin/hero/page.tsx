@@ -300,7 +300,7 @@ export default function AdminHeroPage() {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         title="Edit Hero Section"
-        size="lg"
+        size="4xl"
       >
         <div className="max-h-[75vh] overflow-y-auto pr-2 custom-scrollbar -mr-2">
           <div className="grid lg:grid-cols-2 gap-8">

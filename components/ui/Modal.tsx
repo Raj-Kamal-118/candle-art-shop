@@ -9,7 +9,7 @@ interface ModalProps {
   onClose: () => void;
   title?: string;
   children: React.ReactNode;
-  size?: "sm" | "md" | "lg" | "xl";
+  size?: "sm" | "md" | "lg" | "xl" | "4xl";
 }
 
 export default function Modal({
@@ -43,6 +43,7 @@ export default function Modal({
     md: "max-w-md",
     lg: "max-w-lg",
     xl: "max-w-2xl",
+    "4xl": "max-w-[95vw]",
   };
 
   return (
@@ -65,7 +66,9 @@ export default function Modal({
           >
             {title && (
               <div className="flex items-center justify-between px-6 py-4 border-b border-cream-200">
-                <h2 className="text-lg font-semibold text-brown-900">{title}</h2>
+                <h2 className="text-lg font-semibold text-brown-900">
+                  {title}
+                </h2>
                 <button
                   onClick={onClose}
                   className="text-brown-400 hover:text-brown-700 transition-colors p-1 rounded-full hover:bg-brown-100"
