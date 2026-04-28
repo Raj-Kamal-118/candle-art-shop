@@ -133,10 +133,6 @@ export default function AdminLoginPage() {
               )}
             </button>
           </form>
-
-          <p className="mt-6 text-[11px] text-center text-brown-400 dark:text-amber-100/40 uppercase tracking-wider">
-            Default: admin / change-me-to-something-secure
-          </p>
         </div>
       </div>
     </div>
