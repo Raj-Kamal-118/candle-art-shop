@@ -17,7 +17,7 @@ export default function CopyFeedbackLink({ orderId }: { orderId: string }) {
     <button
       onClick={handleCopy}
       title="Copy Feedback Link"
-      className="p-1.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors flex items-center justify-center"
+      className="p-1.5 text-brown-400 dark:text-amber-100/50 hover:text-amber-600 dark:hover:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg transition-colors flex items-center justify-center"
     >
       {copied ? (
         <Check size={14} className="text-green-500" />

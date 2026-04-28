@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Flame, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Sparkles } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -49,41 +49,52 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brown-900 to-brown-800 flex items-center justify-center p-4">
-      <div className="w-full max-w-sm">
-        <div className="flex flex-col items-center justify-center text-center mb-4 gap-2">
+    <div className="min-h-screen bg-[var(--cream-50)] dark:bg-[#0a0a16] flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Decorative blurs matching brand design system */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-coral-200/30 dark:bg-amber-500/10 blur-[100px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-gold-100/50 dark:bg-amber-500/10 blur-[100px] rounded-full pointer-events-none" />
+
+      <div className="w-full max-w-sm relative z-10">
+        <div className="flex flex-col items-center justify-center text-center mb-8 gap-3">
           <ArtisanLogo />
-          <div className="text-brown-300 text-sm">Admin Dashboard</div>
+          <div className="text-[11px] tracking-[0.2em] font-semibold text-amber-700 uppercase">
+            Atelier Dashboard
+          </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-2xl p-8">
-          <h1 className="text-xl font-bold text-gray-900 mb-6">Sign In</h1>
+        <div className="bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-900/30 rounded-2xl shadow-xl dark:shadow-2xl p-8">
+          <h1 className="text-2xl font-serif font-bold text-brown-900 dark:text-amber-100 mb-2">
+            Welcome back
+          </h1>
+          <p className="text-sm text-brown-600 dark:text-amber-100/60 mb-6">
+            Sign in to manage your storefront and orders.
+          </p>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-700">{error}</p>
+            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/50 rounded-lg flex gap-2 items-center">
+              <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
             </div>
           )}
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label className="block text-[13px] font-medium text-brown-800 dark:text-amber-100/80 mb-1.5">
                 Username
               </label>
               <input
                 {...register("username")}
                 placeholder="admin"
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+                className="w-full px-4 py-2.5 bg-white dark:bg-[#12101e] border border-brown-300 dark:border-amber-900/40 rounded-lg text-sm text-brown-900 dark:text-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-400 dark:focus:ring-amber-500/50 transition-colors placeholder:text-brown-400 dark:placeholder:text-amber-100/30"
               />
               {errors.username && (
-                <p className="mt-1 text-xs text-red-600">
+                <p className="mt-1 text-xs text-red-600 dark:text-red-400">
                   {errors.username.message}
                 </p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label className="block text-[13px] font-medium text-brown-800 dark:text-amber-100/80 mb-1.5">
                 Password
               </label>
               <div className="relative">
@@ -91,18 +102,18 @@ export default function AdminLoginPage() {
                   {...register("password")}
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 pr-10"
+                  className="w-full px-4 py-2.5 bg-white dark:bg-[#12101e] border border-brown-300 dark:border-amber-900/40 rounded-lg text-sm text-brown-900 dark:text-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-400 dark:focus:ring-amber-500/50 transition-colors pr-10 placeholder:text-brown-400 dark:placeholder:text-amber-100/30"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-brown-400 dark:text-amber-100/40 hover:text-brown-600 dark:hover:text-amber-100/80 transition-colors"
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
               {errors.password && (
-                <p className="mt-1 text-xs text-red-600">
+                <p className="mt-1 text-xs text-red-600 dark:text-red-400">
                   {errors.password.message}
                 </p>
               )}
@@ -111,11 +122,21 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-amber-700 text-white rounded-lg font-semibold text-sm hover:bg-amber-800 transition-colors disabled:opacity-50 mt-2"
+              className="w-full py-3 bg-coral-600 text-white rounded-xl font-semibold text-sm hover:bg-coral-700 hover:-translate-y-0.5 shadow-lg shadow-coral-200 dark:shadow-none transition-all disabled:opacity-50 disabled:hover:translate-y-0 mt-2 flex items-center justify-center gap-2"
             >
-              {loading ? "Signing in..." : "Sign In"}
+              {loading ? (
+                "Entering atelier..."
+              ) : (
+                <>
+                  Sign In <Sparkles size={16} />
+                </>
+              )}
             </button>
           </form>
+
+          <p className="mt-6 text-[11px] text-center text-brown-400 dark:text-amber-100/40 uppercase tracking-wider">
+            Default: admin / change-me-to-something-secure
+          </p>
         </div>
       </div>
     </div>

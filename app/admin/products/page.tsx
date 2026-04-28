@@ -98,13 +98,13 @@ function SortableProductRow({
     <tr
       ref={setNodeRef}
       style={style}
-      className="border-b border-gray-50 hover:bg-gray-50 transition-colors"
+      className="border-b border-cream-100 dark:border-amber-900/20 hover:bg-cream-50 dark:hover:bg-amber-900/10 transition-colors"
     >
       <td className="pl-3 pr-1 py-4 w-8">
         <button
           {...attributes}
           {...listeners}
-          className="cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500 touch-none"
+          className="cursor-grab active:cursor-grabbing text-cream-300 dark:text-amber-900/40 hover:text-brown-400 dark:hover:text-amber-100/60 touch-none"
           title="Drag to reorder within category"
         >
           <GripVertical size={16} />
@@ -118,10 +118,10 @@ function SortableProductRow({
             className="w-10 h-10 rounded-xl object-cover"
           />
           <div>
-            <p className="font-medium text-gray-900 line-clamp-1">
+            <p className="font-medium text-brown-900 dark:text-amber-100 line-clamp-1">
               {product.name}
             </p>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-brown-400 dark:text-amber-100/50">
               {[
                 product.featured && "Featured",
                 product.customizable && "Customizable",
@@ -133,21 +133,25 @@ function SortableProductRow({
           </div>
         </div>
       </td>
-      <td className="px-4 py-4 text-gray-600">{categoryName}</td>
+      <td className="px-4 py-4 text-brown-600 dark:text-amber-100/70">
+        {categoryName}
+      </td>
       <td className="px-4 py-4">
-        <span className="font-semibold text-gray-900">
+        <span className="font-semibold text-brown-900 dark:text-amber-100">
           {formatPrice(product.price)}
         </span>
         {product.compareAtPrice && (
-          <span className="text-xs text-gray-400 line-through ml-1">
+          <span className="text-xs text-brown-400 dark:text-amber-100/50 line-through ml-1">
             {formatPrice(product.compareAtPrice)}
           </span>
         )}
       </td>
-      <td className="px-4 py-4 text-gray-600">{product.stockCount}</td>
+      <td className="px-4 py-4 text-brown-600 dark:text-amber-100/70">
+        {product.stockCount}
+      </td>
       <td className="px-4 py-4">
         <span
-          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${product.inStock ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
+          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] uppercase tracking-wider font-bold ${product.inStock ? "bg-forest-100 text-forest-800 dark:bg-forest-900/40 dark:text-forest-300" : "bg-coral-100 text-coral-800 dark:bg-coral-900/40 dark:text-coral-300"}`}
         >
           {product.inStock ? "In Stock" : "Out of Stock"}
         </span>
@@ -156,13 +160,13 @@ function SortableProductRow({
         <div className="flex items-center justify-end gap-2">
           <button
             onClick={() => onEdit(product)}
-            className="p-2 text-gray-400 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition-colors"
+            className="p-2 text-brown-400 dark:text-amber-100/50 hover:text-amber-700 dark:hover:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg transition-colors"
           >
             <Pencil size={15} />
           </button>
           <button
             onClick={() => onDelete(product.id)}
-            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+            className="p-2 text-brown-400 dark:text-amber-100/50 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
           >
             <Trash2 size={15} />
           </button>
@@ -232,12 +236,12 @@ function CategoryGroup({
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <div className="bg-white dark:bg-[#1a1830] rounded-2xl shadow-sm border border-cream-200 dark:border-amber-900/30 overflow-hidden">
       {/* Category header */}
       <button
         type="button"
         onClick={() => setCollapsed((v) => !v)}
-        className="w-full flex items-center justify-between px-5 py-3.5 bg-amber-50 border-b border-amber-100 hover:bg-amber-100 transition-colors"
+        className="w-full flex items-center justify-between px-5 py-3.5 bg-amber-50 dark:bg-amber-900/20 border-b border-amber-100 dark:border-amber-900/30 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors"
       >
         <div className="flex items-center gap-3">
           {category.image && (
@@ -247,24 +251,31 @@ function CategoryGroup({
               className="w-7 h-7 rounded-lg object-cover"
             />
           )}
-          <span className="font-semibold text-amber-900 text-sm">
+          <span className="font-semibold text-amber-900 dark:text-amber-100 text-sm">
             {category.name}
           </span>
-          <span className="text-xs text-amber-600 bg-amber-100 px-2 py-0.5 rounded-full">
+          <span className="text-xs font-semibold text-amber-700 bg-amber-100 dark:bg-amber-900/40 dark:text-amber-300 px-2.5 py-0.5 rounded-full">
             {filtered.length} product{filtered.length !== 1 ? "s" : ""}
           </span>
-          {saving && <span className="text-xs text-amber-600">Saving…</span>}
+          {saving && (
+            <span className="text-xs text-amber-600 dark:text-amber-400">
+              Saving…
+            </span>
+          )}
         </div>
         {collapsed ? (
-          <ChevronDown size={16} className="text-amber-700" />
+          <ChevronDown
+            size={16}
+            className="text-amber-700 dark:text-amber-300"
+          />
         ) : (
-          <ChevronUp size={16} className="text-amber-700" />
+          <ChevronUp size={16} className="text-amber-700 dark:text-amber-300" />
         )}
       </button>
 
       {!collapsed &&
         (filtered.length === 0 ? (
-          <div className="p-6 text-center text-gray-400 text-sm">
+          <div className="p-6 text-center text-brown-400 dark:text-amber-100/50 text-sm">
             {search
               ? "No products match your search"
               : "No products in this category"}
@@ -272,25 +283,25 @@ function CategoryGroup({
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-100">
+              <thead className="bg-cream-50 dark:bg-[#12101e] border-b border-cream-200 dark:border-amber-900/30">
                 <tr>
                   <th className="w-8 pl-3" />
-                  <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="text-left px-5 py-3 text-[11px] font-semibold text-brown-500 dark:text-amber-100/60 uppercase tracking-wider">
                     Product
                   </th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-brown-500 dark:text-amber-100/60 uppercase tracking-wider">
                     Category
                   </th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-brown-500 dark:text-amber-100/60 uppercase tracking-wider">
                     Price
                   </th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-brown-500 dark:text-amber-100/60 uppercase tracking-wider">
                     Stock
                   </th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-brown-500 dark:text-amber-100/60 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="text-right px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="text-right px-5 py-3 text-[11px] font-semibold text-brown-500 dark:text-amber-100/60 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -602,7 +613,7 @@ export default function AdminProductsPage() {
     .map((o) => o.label);
 
   const inputCls =
-    "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400";
+    "w-full px-3 py-2 bg-white dark:bg-[#12101e] border border-brown-300 dark:border-amber-900/40 rounded-lg text-sm text-brown-900 dark:text-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-400 dark:focus:ring-amber-500/50 transition-colors placeholder:text-brown-400 dark:placeholder:text-amber-100/30";
 
   const hasAnyProducts = products.length > 0;
   const matchesSearch = (p: Product) =>
@@ -621,7 +632,7 @@ export default function AdminProductsPage() {
         <div className="flex items-center gap-4">
           <div className="relative">
             <Search
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-brown-400 dark:text-amber-100/40"
               size={16}
             />
             <input
@@ -629,11 +640,14 @@ export default function AdminProductsPage() {
               placeholder="Search products..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 w-64"
+              className="pl-9 pr-4 py-2 bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-900/40 rounded-lg text-sm text-brown-900 dark:text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-400 dark:focus:ring-amber-500/50 w-64 transition-colors placeholder:text-brown-400 dark:placeholder:text-amber-100/40"
             />
           </div>
-          <p className="text-sm text-gray-500 flex items-center gap-1.5">
-            <GripVertical size={14} className="text-gray-400" />
+          <p className="text-sm text-brown-500 dark:text-amber-100/60 flex items-center gap-1.5">
+            <GripVertical
+              size={14}
+              className="text-brown-400 dark:text-amber-100/40"
+            />
             Drag to reorder products within each category
           </p>
         </div>
@@ -643,13 +657,18 @@ export default function AdminProductsPage() {
       </div>
 
       {loading ? (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center text-gray-400">
+        <div className="bg-white dark:bg-[#1a1830] rounded-2xl shadow-sm border border-cream-200 dark:border-amber-900/30 p-8 text-center text-brown-400 dark:text-amber-100/50">
           Loading...
         </div>
       ) : !hasAnyProducts ? (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
-          <Package className="mx-auto text-gray-300 mb-3" size={40} />
-          <p className="text-gray-400">No products found</p>
+        <div className="bg-white dark:bg-[#1a1830] rounded-2xl shadow-sm border border-cream-200 dark:border-amber-900/30 p-12 text-center">
+          <Package
+            className="mx-auto text-cream-300 dark:text-amber-900/40 mb-3"
+            size={40}
+          />
+          <p className="text-brown-400 dark:text-amber-100/50">
+            No products found
+          </p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -702,11 +721,11 @@ export default function AdminProductsPage() {
       >
         <form
           onSubmit={handleSubmit}
-          className="space-y-5 max-h-[75vh] overflow-y-auto pr-1"
+          className="space-y-5 max-h-[75vh] overflow-y-auto pr-2 custom-scrollbar"
         >
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-[13px] font-medium text-brown-800 dark:text-amber-100/80 mb-1.5">
                 Name *
               </label>
               <input
@@ -717,10 +736,10 @@ export default function AdminProductsPage() {
               />
             </div>
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-[13px] font-medium text-brown-800 dark:text-amber-100/80 mb-1.5">
                 Description *
               </label>
-              <div className="bg-white rounded-lg">
+              <div className="bg-white dark:bg-white rounded-lg text-gray-900">
                 <ReactQuill
                   theme="snow"
                   value={form.description}
@@ -730,7 +749,7 @@ export default function AdminProductsPage() {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-[13px] font-medium text-brown-800 dark:text-amber-100/80 mb-1.5">
                 Base Price (₹) *
               </label>
               <input
@@ -743,7 +762,7 @@ export default function AdminProductsPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-[13px] font-medium text-brown-800 dark:text-amber-100/80 mb-1.5">
                 Compare At Price
               </label>
               <input
@@ -757,7 +776,7 @@ export default function AdminProductsPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-[13px] font-medium text-brown-800 dark:text-amber-100/80 mb-1.5">
                 Category *
               </label>
               <select
@@ -777,7 +796,7 @@ export default function AdminProductsPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-[13px] font-medium text-brown-800 dark:text-amber-100/80 mb-1.5">
                 Stock Count
               </label>
               <input
@@ -790,7 +809,7 @@ export default function AdminProductsPage() {
               />
             </div>
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-[13px] font-medium text-brown-800 dark:text-amber-100/80 mb-1.5">
                 Images
               </label>
               <div className="flex gap-2">
@@ -804,7 +823,7 @@ export default function AdminProductsPage() {
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading}
-                  className="flex items-center gap-1.5 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50"
+                  className="flex items-center gap-1.5 px-3 py-2 bg-white dark:bg-[#1a1830] border border-brown-300 dark:border-amber-900/40 rounded-lg text-sm text-brown-600 dark:text-amber-100/80 hover:bg-cream-50 dark:hover:bg-[#12101e] transition-colors disabled:opacity-50"
                 >
                   <Upload size={14} /> {uploading ? "…" : "Upload"}
                 </button>
@@ -816,7 +835,7 @@ export default function AdminProductsPage() {
                 className="hidden"
                 onChange={handleImageUpload}
               />
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-brown-400 dark:text-amber-100/40 mt-1.5">
                 Multiple URLs comma-separated.
               </p>
               {form.images && (
@@ -830,14 +849,14 @@ export default function AdminProductsPage() {
                         key={idx}
                         src={imgUrl}
                         alt={`Product preview ${idx + 1}`}
-                        className="w-24 h-24 object-cover rounded-xl border border-gray-200 shadow-sm"
+                        className="w-24 h-24 object-cover rounded-xl border border-cream-200 dark:border-amber-900/40 shadow-sm"
                       />
                     ))}
                 </div>
               )}
             </div>
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-[13px] font-medium text-brown-800 dark:text-amber-100/80 mb-1.5">
                 Tags (comma-separated)
               </label>
               <input
@@ -862,7 +881,7 @@ export default function AdminProductsPage() {
                     }}
                     className="accent-amber-600 w-4 h-4"
                   />
-                  <span className="text-sm text-gray-700 capitalize">
+                  <span className="text-sm text-brown-700 dark:text-amber-100/80 capitalize">
                     {key === "inStock" ? "In Stock" : key}
                   </span>
                 </label>
@@ -871,11 +890,11 @@ export default function AdminProductsPage() {
           </div>
 
           {form.customizable && (
-            <div className="border border-amber-200 rounded-xl overflow-hidden">
+            <div className="border border-amber-200 dark:border-amber-900/30 rounded-xl overflow-hidden">
               <button
                 type="button"
                 onClick={() => setShowCustomization(!showCustomization)}
-                className="w-full flex items-center justify-between px-4 py-3 bg-amber-50 text-sm font-medium text-amber-800 hover:bg-amber-100 transition-colors"
+                className="w-full flex items-center justify-between px-4 py-3 bg-amber-50 dark:bg-amber-900/20 text-sm font-medium text-amber-800 dark:text-amber-100 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
               >
                 Customization Options & Variant Pricing
                 {showCustomization ? (
@@ -887,7 +906,7 @@ export default function AdminProductsPage() {
 
               {showCustomization && (
                 <div className="p-4 space-y-4">
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-brown-500 dark:text-amber-100/60">
                     Define options customers can choose from. Mark options as
                     &quot;Affects Price&quot; to set custom pricing per
                     combination.
@@ -896,23 +915,23 @@ export default function AdminProductsPage() {
                   {customOptions.map((opt, i) => (
                     <div
                       key={opt.id}
-                      className="border border-gray-200 rounded-xl p-4 space-y-3 bg-white"
+                      className="border border-cream-200 dark:border-amber-900/30 rounded-xl p-4 space-y-3 bg-white dark:bg-[#1a1830]"
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-gray-500">
+                        <span className="text-xs font-semibold text-brown-500 dark:text-amber-100/60">
                           Option {i + 1}
                         </span>
                         <button
                           type="button"
                           onClick={() => removeOption(i)}
-                          className="text-red-400 hover:text-red-600"
+                          className="text-red-400 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300"
                         >
                           <Trash2 size={14} />
                         </button>
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <label className="text-xs text-gray-500 mb-1 block">
+                          <label className="text-xs text-brown-500 dark:text-amber-100/60 mb-1 block">
                             Label
                           </label>
                           <input
@@ -924,7 +943,7 @@ export default function AdminProductsPage() {
                           />
                         </div>
                         <div>
-                          <label className="text-xs text-gray-500 mb-1 block">
+                          <label className="text-xs text-brown-500 dark:text-amber-100/60 mb-1 block">
                             Type
                           </label>
                           <select
@@ -945,7 +964,7 @@ export default function AdminProductsPage() {
                       </div>
                       {opt.type === "select" && (
                         <div>
-                          <label className="text-xs text-gray-500 mb-1 block">
+                          <label className="text-xs text-brown-500 dark:text-amber-100/60 mb-1 block">
                             Options (comma-separated)
                           </label>
                           <input
@@ -988,7 +1007,7 @@ export default function AdminProductsPage() {
                             }
                             className="accent-amber-600 w-4 h-4"
                           />
-                          <span className="text-xs text-gray-700">
+                          <span className="text-xs text-brown-700 dark:text-amber-100/80">
                             Affects Price (enable variant pricing for this
                             option)
                           </span>
@@ -1000,7 +1019,7 @@ export default function AdminProductsPage() {
                   <button
                     type="button"
                     onClick={addOption}
-                    className="text-xs text-amber-700 hover:text-amber-800 flex items-center gap-1 font-medium"
+                    className="text-xs text-amber-700 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300 flex items-center gap-1 font-medium"
                   >
                     <Plus size={12} /> Add Customization Option
                   </button>
@@ -1008,27 +1027,27 @@ export default function AdminProductsPage() {
                   {variantCombos.length > 0 && (
                     <div className="mt-4">
                       <div className="flex items-center justify-between mb-2">
-                        <p className="text-xs font-semibold text-gray-700">
+                        <p className="text-xs font-semibold text-brown-700 dark:text-amber-100/80">
                           Variant Pricing Matrix ({variantCombos.length}{" "}
                           combinations)
                         </p>
-                        <p className="text-xs text-gray-400">
+                        <p className="text-xs text-brown-400 dark:text-amber-100/50">
                           Leave 0 to use base price
                         </p>
                       </div>
-                      <div className="border border-gray-200 rounded-xl overflow-hidden">
+                      <div className="border border-cream-200 dark:border-amber-900/30 rounded-xl overflow-hidden">
                         <table className="w-full text-xs">
-                          <thead className="bg-gray-50">
+                          <thead className="bg-cream-50 dark:bg-[#12101e]">
                             <tr>
                               {pricingOptionLabels.map((l) => (
                                 <th
                                   key={l}
-                                  className="text-left px-3 py-2 font-medium text-gray-500"
+                                  className="text-left px-3 py-2 font-medium text-brown-500 dark:text-amber-100/60"
                                 >
                                   {l}
                                 </th>
                               ))}
-                              <th className="text-left px-3 py-2 font-medium text-gray-500">
+                              <th className="text-left px-3 py-2 font-medium text-brown-500 dark:text-amber-100/60">
                                 Price (₹)
                               </th>
                             </tr>
@@ -1039,12 +1058,12 @@ export default function AdminProductsPage() {
                               return (
                                 <tr
                                   key={key}
-                                  className="border-t border-gray-100"
+                                  className="border-t border-cream-100 dark:border-amber-900/20"
                                 >
                                   {combo.map((val, vi) => (
                                     <td
                                       key={vi}
-                                      className="px-3 py-2 text-gray-700"
+                                      className="px-3 py-2 text-brown-700 dark:text-amber-100/80"
                                     >
                                       {val}
                                     </td>
@@ -1062,7 +1081,7 @@ export default function AdminProductsPage() {
                                         }));
                                       }}
                                       placeholder={form.price || "0"}
-                                      className="w-24 px-2 py-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-400"
+                                      className="w-24 px-2 py-1 bg-white dark:bg-[#12101e] text-brown-900 dark:text-amber-100 border border-brown-300 dark:border-amber-900/40 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-400 dark:focus:ring-amber-500/50"
                                     />
                                   </td>
                                 </tr>
@@ -1079,13 +1098,13 @@ export default function AdminProductsPage() {
           )}
 
           {/* ── Characteristics ───────────────────────────────────────── */}
-          <div className="border border-cream-200 rounded-xl overflow-hidden">
-            <div className="px-4 py-3 bg-cream-50 flex items-center justify-between">
+          <div className="border border-cream-200 dark:border-amber-900/30 rounded-xl overflow-hidden">
+            <div className="px-4 py-3 bg-cream-50 dark:bg-[#12101e] flex items-center justify-between">
               <div>
-                <div className="text-sm font-semibold text-brown-900">
+                <div className="text-sm font-semibold text-brown-900 dark:text-amber-100">
                   Product characteristics
                 </div>
-                <div className="text-xs text-brown-500">
+                <div className="text-xs text-brown-500 dark:text-amber-100/60 mt-0.5">
                   Short specs shown under description (e.g. Burn time · Wick ·
                   Wax)
                 </div>
@@ -1103,7 +1122,7 @@ export default function AdminProductsPage() {
                     },
                   ])
                 }
-                className="text-xs text-amber-700 hover:text-amber-800 flex items-center gap-1 font-medium"
+                className="text-xs text-amber-700 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300 flex items-center gap-1 font-medium"
               >
                 <Plus size={12} /> Add
               </button>
@@ -1158,7 +1177,7 @@ export default function AdminProductsPage() {
                           prev.filter((_, idx) => idx !== i),
                         )
                       }
-                      className="p-2 text-red-400 hover:text-red-600"
+                      className="p-2 mt-1 text-red-400 hover:text-red-600 dark:hover:text-red-300"
                     >
                       <Trash2 size={14} />
                     </button>
@@ -1169,13 +1188,13 @@ export default function AdminProductsPage() {
           </div>
 
           {/* ── Extra buttons ─────────────────────────────────────────── */}
-          <div className="border border-cream-200 rounded-xl overflow-hidden">
-            <div className="px-4 py-3 bg-cream-50 flex items-center justify-between">
+          <div className="border border-cream-200 dark:border-amber-900/30 rounded-xl overflow-hidden">
+            <div className="px-4 py-3 bg-cream-50 dark:bg-[#12101e] flex items-center justify-between">
               <div>
-                <div className="text-sm font-semibold text-brown-900">
+                <div className="text-sm font-semibold text-brown-900 dark:text-amber-100">
                   Extra action buttons
                 </div>
-                <div className="text-xs text-brown-500">
+                <div className="text-xs text-brown-500 dark:text-amber-100/60 mt-0.5">
                   Shown under the Add to Cart button (e.g. &ldquo;Design your
                   own&rdquo; → /custom-candle)
                 </div>
@@ -1193,7 +1212,7 @@ export default function AdminProductsPage() {
                     },
                   ])
                 }
-                className="text-xs text-amber-700 hover:text-amber-800 flex items-center gap-1 font-medium"
+                className="text-xs text-amber-700 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300 flex items-center gap-1 font-medium"
               >
                 <Plus size={12} /> Add
               </button>
@@ -1257,7 +1276,7 @@ export default function AdminProductsPage() {
                           prev.filter((_, idx) => idx !== i),
                         )
                       }
-                      className="p-2 text-red-400 hover:text-red-600"
+                      className="p-2 mt-1 text-red-400 hover:text-red-600 dark:hover:text-red-300"
                     >
                       <Trash2 size={14} />
                     </button>
@@ -1268,19 +1287,19 @@ export default function AdminProductsPage() {
           </div>
 
           {/* ── Visibility & Upsells ─────────────────────────────────────────── */}
-          <div className="border border-cream-200 rounded-xl overflow-hidden">
-            <div className="px-4 py-3 bg-cream-50 flex items-center justify-between">
+          <div className="border border-cream-200 dark:border-amber-900/30 rounded-xl overflow-hidden">
+            <div className="px-4 py-3 bg-cream-50 dark:bg-[#12101e] flex items-center justify-between">
               <div>
-                <div className="text-sm font-semibold text-brown-900">
+                <div className="text-sm font-semibold text-brown-900 dark:text-amber-100">
                   Visibility & Upsell Settings
                 </div>
-                <div className="text-xs text-brown-500">
+                <div className="text-xs text-brown-500 dark:text-amber-100/60 mt-0.5">
                   Configure if this product is an upsell at checkout or hidden
                   from main store.
                 </div>
               </div>
             </div>
-            <div className="p-4 space-y-4 bg-white">
+            <div className="p-4 space-y-4 bg-white dark:bg-[#1a1830]">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
@@ -1290,7 +1309,7 @@ export default function AdminProductsPage() {
                   }
                   className="accent-amber-600 w-4 h-4"
                 />
-                <span className="text-sm text-gray-700">
+                <span className="text-sm text-brown-700 dark:text-amber-100/80">
                   Visible on Storefront (uncheck to hide from normal catalog)
                 </span>
               </label>
@@ -1303,15 +1322,15 @@ export default function AdminProductsPage() {
                   }
                   className="accent-amber-600 w-4 h-4"
                 />
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-sm font-medium text-brown-700 dark:text-amber-100/80">
                   Enable as an Upsell at Checkout
                 </span>
               </label>
 
               {form.isUpsell && (
-                <div className="pl-6 border-l-2 border-amber-100 space-y-3 mt-2">
+                <div className="pl-6 border-l-2 border-amber-200 dark:border-amber-900/50 space-y-3 mt-2">
                   <div>
-                    <label className="block text-xs font-medium text-gray-500 mb-1">
+                    <label className="block text-xs font-medium text-brown-500 dark:text-amber-100/60 mb-1">
                       Upsell Promotional Message
                     </label>
                     <input
@@ -1340,13 +1359,13 @@ export default function AdminProductsPage() {
                         }
                         className="accent-amber-600 w-4 h-4"
                       />
-                      <span className="text-xs text-gray-700">
+                      <span className="text-xs text-brown-700 dark:text-amber-100/80">
                         Always show this upsell
                       </span>
                     </label>
 
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 mb-1">
+                      <label className="block text-xs font-medium text-brown-500 dark:text-amber-100/60 mb-1">
                         Min Cart Value to Show (₹)
                       </label>
                       <input
@@ -1366,7 +1385,7 @@ export default function AdminProductsPage() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 mb-1">
+                      <label className="block text-xs font-medium text-brown-500 dark:text-amber-100/60 mb-1">
                         Required Category in Cart
                       </label>
                       <select
@@ -1392,7 +1411,7 @@ export default function AdminProductsPage() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 mb-1">
+                      <label className="block text-xs font-medium text-brown-500 dark:text-amber-100/60 mb-1">
                         Offer FREE if Cart {">"} (₹)
                       </label>
                       <input
@@ -1409,13 +1428,13 @@ export default function AdminProductsPage() {
                         }
                         className={inputCls}
                       />
-                      <p className="text-[10px] text-gray-400 mt-1">
+                      <p className="text-[10px] text-brown-400 dark:text-amber-100/50 mt-1">
                         Leave 0 for no free offer
                       </p>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 pt-2 border-t border-gray-100">
+                  <div className="grid grid-cols-2 gap-3 pt-2 border-t border-cream-100 dark:border-amber-900/20">
                     <label className="flex items-center gap-2 cursor-pointer mt-5">
                       <input
                         type="checkbox"
@@ -1431,14 +1450,14 @@ export default function AdminProductsPage() {
                         }
                         className="accent-amber-600 w-4 h-4"
                       />
-                      <span className="text-xs text-gray-700">
+                      <span className="text-xs text-brown-700 dark:text-amber-100/80">
                         Require Custom Text Input
                       </span>
                     </label>
 
                     {form.upsellRules.needsTextInput && (
                       <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">
+                        <label className="block text-xs font-medium text-brown-500 dark:text-amber-100/60 mb-1">
                           Text Input Label
                         </label>
                         <input
@@ -1464,13 +1483,13 @@ export default function AdminProductsPage() {
           </div>
 
           {/* ── Additional rich-text sections ─────────────────────────── */}
-          <div className="border border-cream-200 rounded-xl overflow-hidden">
-            <div className="px-4 py-3 bg-cream-50 flex items-center justify-between">
+          <div className="border border-cream-200 dark:border-amber-900/30 rounded-xl overflow-hidden">
+            <div className="px-4 py-3 bg-cream-50 dark:bg-[#12101e] flex items-center justify-between">
               <div>
-                <div className="text-sm font-semibold text-brown-900">
+                <div className="text-sm font-semibold text-brown-900 dark:text-amber-100">
                   Additional sections
                 </div>
-                <div className="text-xs text-brown-500">
+                <div className="text-xs text-brown-500 dark:text-amber-100/60 mt-0.5">
                   Rendered at the bottom of the product page. Each has a
                   heading, rich-text body, and optional image.
                 </div>
@@ -1488,7 +1507,7 @@ export default function AdminProductsPage() {
                     },
                   ])
                 }
-                className="text-xs text-amber-700 hover:text-amber-800 flex items-center gap-1 font-medium"
+                className="text-xs text-amber-700 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300 flex items-center gap-1 font-medium"
               >
                 <Plus size={12} /> Add section
               </button>
@@ -1498,10 +1517,10 @@ export default function AdminProductsPage() {
                 {additionalSections.map((s, i) => (
                   <div
                     key={s.id}
-                    className="border border-gray-200 rounded-xl p-4 space-y-3 bg-white"
+                    className="border border-cream-200 dark:border-amber-900/30 rounded-xl p-4 space-y-3 bg-white dark:bg-[#1a1830]"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold text-gray-500">
+                      <span className="text-xs font-semibold text-brown-500 dark:text-amber-100/60">
                         Section {i + 1}
                       </span>
                       <button
@@ -1511,7 +1530,7 @@ export default function AdminProductsPage() {
                             prev.filter((_, idx) => idx !== i),
                           )
                         }
-                        className="text-red-400 hover:text-red-600"
+                        className="text-red-400 hover:text-red-600 dark:hover:text-red-300"
                       >
                         <Trash2 size={14} />
                       </button>
@@ -1528,7 +1547,7 @@ export default function AdminProductsPage() {
                       }
                       className={inputCls}
                     />
-                    <div className="bg-white rounded-lg">
+                    <div className="bg-white dark:bg-white rounded-lg text-gray-900">
                       <ReactQuill
                         theme="snow"
                         value={s.body}
@@ -1543,7 +1562,7 @@ export default function AdminProductsPage() {
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-gray-500 mb-1 block">
+                      <label className="text-xs text-brown-500 dark:text-amber-100/60 mb-1 block">
                         Image (optional)
                       </label>
                       <div className="flex gap-2">
@@ -1564,7 +1583,7 @@ export default function AdminProductsPage() {
                           onClick={() =>
                             sectionFileInputs.current[s.id]?.click()
                           }
-                          className="flex items-center gap-1.5 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50"
+                          className="flex items-center gap-1.5 px-3 py-2 border border-brown-300 dark:border-amber-900/40 rounded-lg text-sm text-brown-600 dark:text-amber-100/80 hover:bg-cream-50 dark:hover:bg-[#12101e] transition-colors"
                         >
                           <Upload size={14} /> Upload
                         </button>
@@ -1601,7 +1620,7 @@ export default function AdminProductsPage() {
                         <img
                           src={s.image}
                           alt=""
-                          className="mt-2 w-32 h-20 object-cover rounded-lg border border-gray-200"
+                          className="mt-2 w-32 h-20 object-cover rounded-lg border border-cream-200 dark:border-amber-900/40"
                         />
                       )}
                     </div>
@@ -1611,7 +1630,7 @@ export default function AdminProductsPage() {
             )}
           </div>
 
-          <div className="flex gap-3 justify-end pt-2">
+          <div className="flex gap-3 justify-end pt-4 pb-2">
             <Button
               variant="outline"
               onClick={() => setModalOpen(false)}
@@ -1632,7 +1651,7 @@ export default function AdminProductsPage() {
         title="Delete Product"
         size="sm"
       >
-        <p className="text-gray-600 mb-5">
+        <p className="text-brown-700 dark:text-amber-100/80 mb-5">
           Are you sure you want to delete this product? This cannot be undone.
         </p>
         <div className="flex gap-3 justify-end">

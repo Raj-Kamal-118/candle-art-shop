@@ -49,9 +49,12 @@ export default function Header() {
     { href: "/custom", label: "Bespoke", badge: "New" },
   ];
 
+  // Hide the global storefront header on admin pages
+  if (pathname.startsWith("/admin")) return null;
+
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 overflow-hidden ${
         scrolled
           ? "bg-cream-200/95 dark:bg-[#0a0a16]/95 backdrop-blur-md shadow-sm dark:shadow-amber-900/10"
           : "bg-cream-100/90 dark:bg-[#0a0a16]/80 backdrop-blur-sm"
@@ -59,7 +62,9 @@ export default function Header() {
     >
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-24 md:h-20">
-          <div className="scale-[0.85] md:scale-100 origin-left flex-shrink-0 -mt-4">
+          <div className="scale-[0.85] md:scale-100 origin-left flex-shrink-0 -mt-4 relative group cursor-pointer">
+            {/* Soft atelier glow strictly behind logo */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-amber-200/50 dark:bg-amber-500/20 blur-[50px] rounded-full pointer-events-none -z-10 transition-all duration-700 group-hover:scale-110 group-hover:animate-pulse" />
             <ArtisanLogo />
           </div>
 

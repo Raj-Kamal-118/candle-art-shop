@@ -37,19 +37,22 @@ export default function AdminSidebar() {
   };
 
   return (
-    <aside className="w-72 bg-forest-900 min-h-screen flex flex-col">
-      <div className="p-6 border-b border-forest-700">
+    <aside className="w-72 bg-[var(--cream-50)] dark:bg-[#0a0a16] border-r border-cream-200 dark:border-amber-900/30 min-h-screen flex flex-col relative overflow-hidden">
+      {/* Soft atelier glow top-left */}
+      <div className="absolute top-[-5%] left-[-10%] w-[80%] h-48 bg-amber-200/40 dark:bg-amber-500/10 blur-[60px] rounded-full pointer-events-none" />
+
+      <div className="p-6 border-b border-cream-200 dark:border-amber-900/30 relative z-10">
         <Link href="/admin" className="flex items-center gap-3">
           <div className="leading-none">
             <ArtisanLogo />
-            <span className="block text-[9px] font-medium text-gold-400 tracking-widest uppercase mt-0.5">
-              Admin Panel
+            <span className="block text-[10px] font-bold text-amber-700 dark:text-amber-500 tracking-[0.2em] uppercase mt-1.5">
+              Atelier Dashboard
             </span>
           </div>
         </Link>
       </div>
 
-      <nav className="flex-1 p-4 space-y-1">
+      <nav className="flex-1 p-4 space-y-1.5 relative z-10">
         {navItems.map((item) => {
           const active = item.exact
             ? pathname === item.href
@@ -59,10 +62,10 @@ export default function AdminSidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                 active
-                  ? "bg-coral-600 text-white"
-                  : "text-forest-300 hover:bg-forest-700 hover:text-white"
+                  ? "bg-coral-600 text-white shadow-md shadow-coral-200 dark:shadow-none"
+                  : "text-brown-600 dark:text-amber-100/70 hover:bg-cream-100 dark:hover:bg-amber-900/20 hover:text-brown-900 dark:hover:text-amber-100"
               }`}
             >
               <Icon size={18} />
@@ -72,16 +75,16 @@ export default function AdminSidebar() {
         })}
       </nav>
 
-      <div className="p-4 border-t border-forest-700">
+      <div className="p-4 border-t border-cream-200 dark:border-amber-900/30 relative z-10">
         <Link
           href="/"
-          className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-forest-300 hover:bg-forest-700 hover:text-white transition-colors mb-1"
+          className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-brown-600 dark:text-amber-100/70 hover:bg-cream-100 dark:hover:bg-amber-900/20 hover:text-brown-900 dark:hover:text-amber-100 transition-colors mb-1"
         >
           ← Back to Store
         </Link>
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-forest-300 hover:bg-red-800 hover:text-white transition-colors w-full text-left"
+          className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-brown-600 dark:text-amber-100/70 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors w-full text-left"
         >
           <LogOut size={18} />
           Logout

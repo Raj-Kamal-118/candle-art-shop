@@ -33,6 +33,13 @@ import { Category, BannerButton, MagazineItem } from "@/lib/types";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import MultiImageUploader from "@/components/admin/MultiImageUploader";
+import CategoryBannerSection from "@/components/home/CategoryBannerSection";
+
+interface ExtendedMagazineItem extends MagazineItem {
+  kicker?: string;
+  offerText?: string;
+  buttonText?: string;
+}
 
 // ─── Sortable row ─────────────────────────────────────────────────────────────
 
@@ -65,13 +72,13 @@ function SortableCategoryRow({
     <tr
       ref={setNodeRef}
       style={style}
-      className="border-b border-gray-50 hover:bg-gray-50 transition-colors"
+      className="border-b border-cream-100 dark:border-amber-900/20 hover:bg-cream-50 dark:hover:bg-amber-900/10 transition-colors"
     >
       <td className="pl-3 pr-1 py-4 w-8">
         <button
           {...attributes}
           {...listeners}
-          className="cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500 touch-none"
+          className="cursor-grab active:cursor-grabbing text-cream-300 dark:text-amber-900/40 hover:text-brown-400 dark:hover:text-amber-100/60 touch-none"
           title="Drag to reorder"
         >
           <GripVertical size={16} />
@@ -85,29 +92,33 @@ function SortableCategoryRow({
             className="w-10 h-10 rounded-xl object-cover"
           />
           <div>
-            <p className="font-medium text-gray-900">{cat.name}</p>
-            <p className="text-xs text-gray-400 line-clamp-1 max-w-[200px]">
+            <p className="font-medium text-brown-900 dark:text-amber-100">
+              {cat.name}
+            </p>
+            <p className="text-xs text-brown-400 dark:text-amber-100/50 line-clamp-1 max-w-[200px]">
               {cat.description}
             </p>
           </div>
         </div>
       </td>
       <td className="px-4 py-4">
-        <code className="text-xs bg-gray-100 px-2 py-1 rounded">
+        <code className="text-xs bg-cream-100 dark:bg-amber-900/30 text-brown-700 dark:text-amber-100/80 px-2 py-1 rounded">
           {cat.slug}
         </code>
       </td>
-      <td className="px-4 py-4 text-gray-600">{cat.productCount}</td>
+      <td className="px-4 py-4 text-brown-600 dark:text-amber-100/70">
+        {cat.productCount}
+      </td>
       <td className="px-4 py-4">
         <span
-          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${cat.bannerTitle ? "bg-amber-100 text-amber-800" : "bg-gray-100 text-gray-500"}`}
+          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase ${cat.bannerTitle ? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300" : "bg-cream-100 text-brown-500 dark:bg-[#12101e] dark:text-amber-100/40"}`}
         >
           {cat.bannerTitle ? "Configured" : "None"}
         </span>
       </td>
       <td className="px-4 py-4">
         <span
-          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${cat.showInHomepage !== false ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}
+          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase ${cat.showInHomepage !== false ? "bg-forest-100 text-forest-700 dark:bg-forest-900/40 dark:text-forest-300" : "bg-cream-100 text-brown-500 dark:bg-[#12101e] dark:text-amber-100/40"}`}
         >
           {cat.showInHomepage !== false ? "Shown" : "Hidden"}
         </span>
@@ -116,13 +127,13 @@ function SortableCategoryRow({
         <div className="flex items-center justify-end gap-2">
           <button
             onClick={() => onEdit(cat)}
-            className="p-2 text-gray-400 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition-colors"
+            className="p-2 text-brown-400 dark:text-amber-100/50 hover:text-amber-700 dark:hover:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg transition-colors"
           >
             <Pencil size={15} />
           </button>
           <button
             onClick={() => onDelete(cat.id)}
-            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+            className="p-2 text-brown-400 dark:text-amber-100/50 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
           >
             <Trash2 size={15} />
           </button>
@@ -141,16 +152,27 @@ function SortableMagazineItem({
   handleMagazineImageUpload,
   updateMagazineItem,
   removeMagazineItem,
+  categoryName,
+  categorySlug,
+  bannerBgColor,
+  bannerButtons,
 }: {
-  item: MagazineItem & { id: string };
+  item: ExtendedMagazineItem & { id: string };
   index: number;
   uploadingMagItem: number | null;
   handleMagazineImageUpload: (
     index: number,
     e: React.ChangeEvent<HTMLInputElement>,
   ) => void;
-  updateMagazineItem: (i: number, updates: Partial<MagazineItem>) => void;
+  updateMagazineItem: (
+    i: number,
+    updates: Partial<ExtendedMagazineItem>,
+  ) => void;
   removeMagazineItem: (i: number) => void;
+  categoryName: string;
+  categorySlug: string;
+  bannerBgColor: string;
+  bannerButtons: BannerButton[];
 }) {
   const {
     attributes,
@@ -167,13 +189,13 @@ function SortableMagazineItem({
     zIndex: isDragging ? 10 : undefined,
   };
   const inputCls =
-    "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400";
+    "w-full px-3 py-2 bg-white dark:bg-[#12101e] border border-brown-300 dark:border-amber-900/40 rounded-lg text-sm text-brown-900 dark:text-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-400 dark:focus:ring-amber-500/50 transition-colors placeholder:text-brown-400 dark:placeholder:text-amber-100/30";
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className="border border-gray-200 rounded-xl p-3 space-y-3 bg-white relative"
+      className="border border-cream-200 dark:border-amber-900/30 rounded-xl p-3 space-y-3 bg-white dark:bg-[#1a1830] relative"
     >
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
@@ -181,24 +203,24 @@ function SortableMagazineItem({
             type="button"
             {...attributes}
             {...listeners}
-            className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 touch-none"
+            className="cursor-grab active:cursor-grabbing text-brown-400 dark:text-amber-100/40 hover:text-brown-600 dark:hover:text-amber-100/80 touch-none"
           >
             <GripVertical size={16} />
           </button>
-          <span className="text-xs font-semibold text-gray-600">
+          <span className="text-xs font-semibold text-brown-600 dark:text-amber-100/70">
             Page {index + 1}
           </span>
         </div>
         <button
           type="button"
           onClick={() => removeMagazineItem(index)}
-          className="text-red-500 hover:text-red-700"
+          className="text-red-400 hover:text-red-600 dark:hover:text-red-300"
         >
           <Trash2 size={14} />
         </button>
       </div>
       <div className="flex gap-3">
-        <div className="w-16 h-20 bg-gray-100 rounded-lg overflow-hidden shrink-0 border border-gray-200 relative flex items-center justify-center">
+        <div className="w-16 h-20 bg-cream-50 dark:bg-[#12101e] rounded-lg overflow-hidden shrink-0 border border-cream-200 dark:border-amber-900/40 relative flex items-center justify-center">
           {item.url ? (
             <img
               src={item.url}
@@ -206,10 +228,12 @@ function SortableMagazineItem({
               className="w-full h-full object-cover"
             />
           ) : (
-            <span className="text-[10px] text-gray-400">No Img</span>
+            <span className="text-[10px] text-brown-400 dark:text-amber-100/40">
+              No Img
+            </span>
           )}
           {uploadingMagItem === index && (
-            <div className="absolute inset-0 bg-white/70 flex items-center justify-center text-[10px]">
+            <div className="absolute inset-0 bg-white/70 dark:bg-black/50 flex items-center justify-center text-[10px] text-brown-900 dark:text-amber-100 font-medium">
               ...
             </div>
           )}
@@ -224,8 +248,11 @@ function SortableMagazineItem({
                 updateMagazineItem(index, { url: e.target.value })
               }
             />
-            <label className="flex items-center justify-center px-2 py-1.5 bg-gray-50 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 shrink-0">
-              <Upload size={14} className="text-gray-600" />
+            <label className="flex items-center justify-center px-2 py-1.5 bg-white dark:bg-[#1a1830] border border-brown-300 dark:border-amber-900/40 rounded-lg cursor-pointer hover:bg-cream-50 dark:hover:bg-[#12101e] shrink-0 transition-colors">
+              <Upload
+                size={14}
+                className="text-brown-600 dark:text-amber-100/80"
+              />
               <input
                 type="file"
                 className="hidden"
@@ -248,6 +275,30 @@ function SortableMagazineItem({
             value={item.link || ""}
             onChange={(e) =>
               updateMagazineItem(index, { link: e.target.value })
+            }
+          />
+          <input
+            className={`${inputCls} text-xs py-1.5`}
+            placeholder="Kicker (e.g. In Focus)"
+            value={item.kicker || ""}
+            onChange={(e) =>
+              updateMagazineItem(index, { kicker: e.target.value })
+            }
+          />
+          <input
+            className={`${inputCls} text-xs py-1.5`}
+            placeholder="Offer Text (e.g. 10% OFF)"
+            value={item.offerText || ""}
+            onChange={(e) =>
+              updateMagazineItem(index, { offerText: e.target.value })
+            }
+          />
+          <input
+            className={`${inputCls} text-xs py-1.5`}
+            placeholder="Button Text (e.g. Shop Now)"
+            value={item.buttonText || ""}
+            onChange={(e) =>
+              updateMagazineItem(index, { buttonText: e.target.value })
             }
           />
         </div>
@@ -282,7 +333,7 @@ export default function AdminCategoriesPage() {
     bannerImage: "",
     bannerBgColor: "#f5f0eb",
     bannerButtons: [] as BannerButton[],
-    magazineItems: [] as (MagazineItem & { id: string })[],
+    magazineItems: [] as (ExtendedMagazineItem & { id: string })[],
   });
 
   const sensors = useSensors(
@@ -337,7 +388,7 @@ export default function AdminCategoriesPage() {
     bannerImage: "",
     bannerBgColor: "#f5f0eb",
     bannerButtons: [] as BannerButton[],
-    magazineItems: [] as (MagazineItem & { id: string })[],
+    magazineItems: [] as (ExtendedMagazineItem & { id: string })[],
   });
 
   const openAdd = () => {
@@ -363,7 +414,7 @@ export default function AdminCategoriesPage() {
       magazineItems: (cat.magazineItems || []).map((i) => ({
         ...i,
         id: Math.random().toString(36).slice(2),
-      })),
+      })) as (ExtendedMagazineItem & { id: string })[],
     });
     setShowBanner(
       !!(cat.bannerTitle || cat.bannerDescription || cat.bannerImage),
@@ -449,7 +500,10 @@ export default function AdminCategoriesPage() {
     }));
   };
 
-  const updateMagazineItem = (i: number, updates: Partial<MagazineItem>) => {
+  const updateMagazineItem = (
+    i: number,
+    updates: Partial<ExtendedMagazineItem>,
+  ) => {
     setForm((f) => ({
       ...f,
       magazineItems: f.magazineItems.map((item, idx) =>
@@ -526,16 +580,21 @@ export default function AdminCategoriesPage() {
   };
 
   const inputCls =
-    "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400";
+    "w-full px-3 py-2 bg-white dark:bg-[#12101e] border border-brown-300 dark:border-amber-900/40 rounded-lg text-sm text-brown-900 dark:text-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-400 dark:focus:ring-amber-500/50 transition-colors placeholder:text-brown-400 dark:placeholder:text-amber-100/30";
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-500 flex items-center gap-2">
-          <GripVertical size={14} className="text-gray-400" />
+        <p className="text-sm text-brown-500 dark:text-amber-100/60 flex items-center gap-2">
+          <GripVertical
+            size={14}
+            className="text-brown-400 dark:text-amber-100/40"
+          />
           Drag rows to reorder — order is reflected on the homepage
           {saving && (
-            <span className="text-amber-600 font-medium">Saving…</span>
+            <span className="text-amber-600 dark:text-amber-400 font-medium">
+              Saving…
+            </span>
           )}
         </p>
         <Button onClick={openAdd} size="sm">
@@ -543,36 +602,43 @@ export default function AdminCategoriesPage() {
         </Button>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-white dark:bg-[#1a1830] rounded-2xl shadow-sm border border-cream-200 dark:border-amber-900/30 overflow-hidden">
         {loading ? (
-          <div className="p-8 text-center text-gray-400">Loading...</div>
+          <div className="p-8 text-center text-brown-400 dark:text-amber-100/50">
+            Loading...
+          </div>
         ) : categories.length === 0 ? (
           <div className="p-12 text-center">
-            <Tag className="mx-auto text-gray-300 mb-3" size={40} />
-            <p className="text-gray-400">No categories found</p>
+            <Tag
+              className="mx-auto text-cream-300 dark:text-amber-900/40 mb-3"
+              size={40}
+            />
+            <p className="text-brown-400 dark:text-amber-100/50">
+              No categories found
+            </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-100">
+              <thead className="bg-cream-50 dark:bg-[#12101e] border-b border-cream-200 dark:border-amber-900/30">
                 <tr>
                   <th className="w-8 pl-3" />
-                  <th className="text-left px-5 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="text-left px-5 py-3.5 text-[11px] font-semibold text-brown-500 dark:text-amber-100/60 uppercase tracking-wider">
                     Category
                   </th>
-                  <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="text-left px-4 py-3.5 text-[11px] font-semibold text-brown-500 dark:text-amber-100/60 uppercase tracking-wider">
                     Slug
                   </th>
-                  <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="text-left px-4 py-3.5 text-[11px] font-semibold text-brown-500 dark:text-amber-100/60 uppercase tracking-wider">
                     Products
                   </th>
-                  <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="text-left px-4 py-3.5 text-[11px] font-semibold text-brown-500 dark:text-amber-100/60 uppercase tracking-wider">
                     Banner
                   </th>
-                  <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="text-left px-4 py-3.5 text-[11px] font-semibold text-brown-500 dark:text-amber-100/60 uppercase tracking-wider">
                     Homepage
                   </th>
-                  <th className="text-right px-5 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="text-right px-5 py-3.5 text-[11px] font-semibold text-brown-500 dark:text-amber-100/60 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -603,6 +669,30 @@ export default function AdminCategoriesPage() {
         )}
       </div>
 
+      {/* Homepage Previews */}
+      {categories.filter((c) => c.showInHomepage).length > 0 && (
+        <div className="mt-10 space-y-6">
+          <h2 className="text-xl font-serif font-bold text-brown-900 dark:text-amber-100">
+            Homepage Previews
+          </h2>
+          {categories
+            .filter((c) => c.showInHomepage)
+            .map((cat) => (
+              <div
+                key={cat.id}
+                className="relative group bg-white dark:bg-[#1a1830] rounded-2xl p-4 border border-cream-200 dark:border-amber-900/30 shadow-sm overflow-hidden"
+              >
+                <div className="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Button size="sm" onClick={() => openEdit(cat)}>
+                    <Pencil size={14} className="mr-1.5" /> Edit Category
+                  </Button>
+                </div>
+                <CategoryBannerSection category={cat} products={[]} />
+              </div>
+            ))}
+        </div>
+      )}
+
       {/* Add/Edit Modal */}
       <Modal
         isOpen={modalOpen}
@@ -612,10 +702,10 @@ export default function AdminCategoriesPage() {
       >
         <form
           onSubmit={handleSubmit}
-          className="space-y-4 max-h-[75vh] overflow-y-auto pr-1"
+          className="space-y-5 max-h-[75vh] overflow-y-auto pr-2 custom-scrollbar"
         >
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-[13px] font-medium text-brown-800 dark:text-amber-100/80 mb-1.5">
               Name *
             </label>
             <input
@@ -626,7 +716,7 @@ export default function AdminCategoriesPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-[13px] font-medium text-brown-800 dark:text-amber-100/80 mb-1.5">
               Description *
             </label>
             <textarea
@@ -640,7 +730,7 @@ export default function AdminCategoriesPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-[13px] font-medium text-brown-800 dark:text-amber-100/80 mb-1.5">
               Category Image
             </label>
             <div className="flex gap-2">
@@ -654,7 +744,7 @@ export default function AdminCategoriesPage() {
                 type="button"
                 onClick={() => imageRef.current?.click()}
                 disabled={uploading === "image"}
-                className="flex items-center gap-1.5 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50"
+                className="flex items-center gap-1.5 px-3 py-2 bg-white dark:bg-[#1a1830] border border-brown-300 dark:border-amber-900/40 rounded-lg text-sm text-brown-600 dark:text-amber-100/80 hover:bg-cream-50 dark:hover:bg-[#12101e] transition-colors disabled:opacity-50"
               >
                 <Upload size={14} /> {uploading === "image" ? "…" : "Upload"}
               </button>
@@ -673,7 +763,7 @@ export default function AdminCategoriesPage() {
               <img
                 src={form.image}
                 alt="Category preview"
-                className="mt-3 object-cover rounded-xl border border-gray-200 shadow-sm"
+                className="mt-3 object-cover rounded-xl border border-cream-200 dark:border-amber-900/40 shadow-sm"
               />
             )}
           </div>
@@ -687,31 +777,31 @@ export default function AdminCategoriesPage() {
               }
               className="accent-amber-600 w-4 h-4"
             />
-            <span className="text-sm text-gray-700">
+            <span className="text-sm text-brown-700 dark:text-amber-100/80">
               Show this category on homepage (banner + carousel)
             </span>
           </label>
 
           {/* Banner section */}
-          <div className="border border-amber-200 rounded-xl overflow-hidden">
+          <div className="border border-amber-200 dark:border-amber-900/30 rounded-xl overflow-hidden">
             <button
               type="button"
               onClick={() => setShowBanner(!showBanner)}
-              className="w-full flex items-center justify-between px-4 py-3 bg-amber-50 text-sm font-medium text-amber-800 hover:bg-amber-100 transition-colors"
+              className="w-full flex items-center justify-between px-4 py-3 bg-amber-50 dark:bg-amber-900/20 text-sm font-medium text-amber-800 dark:text-amber-100 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
             >
               Category Banner Configuration
               {showBanner ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
             </button>
 
             {showBanner && (
-              <div className="p-4 space-y-4">
-                <p className="text-xs text-gray-500">
+              <div className="p-4 space-y-4 bg-white dark:bg-[#1a1830]">
+                <p className="text-xs text-brown-500 dark:text-amber-100/60">
                   The banner appears at the top of the category section on the
                   homepage, above the product carousel.
                 </p>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-[13px] font-medium text-brown-800 dark:text-amber-100/80 mb-1.5">
                     Banner Title
                   </label>
                   <input
@@ -725,7 +815,7 @@ export default function AdminCategoriesPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-[13px] font-medium text-brown-800 dark:text-amber-100/80 mb-1.5">
                     Banner Description
                   </label>
                   <textarea
@@ -740,7 +830,7 @@ export default function AdminCategoriesPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-[13px] font-medium text-brown-800 dark:text-amber-100/80 mb-1.5">
                     Banner Images (optional — drag and drop multiple images)
                   </label>
                   <MultiImageUploader
@@ -765,7 +855,7 @@ export default function AdminCategoriesPage() {
                   />
                   {form.bannerImage && (
                     <div className="mt-3 space-y-2">
-                      <label className="text-xs font-medium text-gray-500 block">
+                      <label className="text-xs font-medium text-brown-500 dark:text-amber-100/60 block">
                         Uploaded Image URLs
                       </label>
                       {form.bannerImage
@@ -776,7 +866,7 @@ export default function AdminCategoriesPage() {
                             <input
                               readOnly
                               value={url.trim()}
-                              className={`${inputCls} text-xs py-1.5 flex-1 bg-gray-50`}
+                              className={`${inputCls} text-xs py-1.5 flex-1 bg-cream-50 dark:bg-[#12101e]`}
                             />
                             <button
                               type="button"
@@ -789,7 +879,7 @@ export default function AdminCategoriesPage() {
                                   btn.innerHTML = originalHtml;
                                 }, 2000);
                               }}
-                              className="px-3 py-1.5 flex items-center gap-1.5 bg-white hover:bg-gray-50 border border-gray-300 rounded-lg text-xs font-medium text-gray-700 transition-colors shrink-0"
+                              className="px-3 py-1.5 flex items-center gap-1.5 bg-white dark:bg-[#1a1830] hover:bg-cream-50 dark:hover:bg-[#12101e] border border-cream-300 dark:border-amber-900/40 rounded-lg text-xs font-medium text-brown-700 dark:text-amber-100/80 transition-colors shrink-0"
                             >
                               <Copy size={14} /> Copy
                             </button>
@@ -800,7 +890,7 @@ export default function AdminCategoriesPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-[13px] font-medium text-brown-800 dark:text-amber-100/80 mb-1.5">
                     Banner Background Colour
                   </label>
                   <div className="flex items-center gap-3">
@@ -810,7 +900,7 @@ export default function AdminCategoriesPage() {
                       onChange={(e) =>
                         setForm({ ...form, bannerBgColor: e.target.value })
                       }
-                      className="w-10 h-10 rounded-lg border border-gray-300 cursor-pointer p-0.5"
+                      className="w-10 h-10 rounded-lg border border-cream-300 dark:border-amber-900/40 cursor-pointer p-0.5 bg-transparent"
                     />
                     <input
                       className={`${inputCls} flex-1`}
@@ -825,13 +915,13 @@ export default function AdminCategoriesPage() {
 
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <label className="text-sm font-medium text-gray-700">
+                    <label className="text-[13px] font-medium text-brown-800 dark:text-amber-100/80">
                       Banner Buttons
                     </label>
                     <button
                       type="button"
                       onClick={addBannerButton}
-                      className="text-xs text-amber-700 flex items-center gap-1 hover:text-amber-800"
+                      className="text-xs text-amber-700 dark:text-amber-400 flex items-center gap-1 hover:text-amber-800 dark:hover:text-amber-300 font-medium"
                     >
                       <Plus size={12} /> Add Button
                     </button>
@@ -839,11 +929,11 @@ export default function AdminCategoriesPage() {
                   {form.bannerButtons.map((btn, i) => (
                     <div
                       key={i}
-                      className="border border-gray-200 rounded-xl p-3 mb-2 space-y-2"
+                      className="border border-cream-200 dark:border-amber-900/30 rounded-xl p-3 mb-2 space-y-2"
                     >
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <label className="text-xs text-gray-500 mb-1 block">
+                          <label className="text-xs text-brown-500 dark:text-amber-100/60 mb-1 block">
                             Text
                           </label>
                           <input
@@ -855,7 +945,7 @@ export default function AdminCategoriesPage() {
                           />
                         </div>
                         <div>
-                          <label className="text-xs text-gray-500 mb-1 block">
+                          <label className="text-xs text-brown-500 dark:text-amber-100/60 mb-1 block">
                             Link
                           </label>
                           <input
@@ -867,7 +957,7 @@ export default function AdminCategoriesPage() {
                           />
                         </div>
                         <div>
-                          <label className="text-xs text-gray-500 mb-1 block">
+                          <label className="text-xs text-brown-500 dark:text-amber-100/60 mb-1 block">
                             Variant
                           </label>
                           <select
@@ -889,7 +979,7 @@ export default function AdminCategoriesPage() {
                           <button
                             type="button"
                             onClick={() => removeBannerButton(i)}
-                            className="px-3 py-2 text-xs text-red-500 hover:text-red-700 border border-red-200 rounded-lg"
+                            className="px-3 py-2 text-xs text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 border border-red-200 dark:border-red-900/40 rounded-lg transition-colors"
                           >
                             Remove
                           </button>
@@ -903,11 +993,11 @@ export default function AdminCategoriesPage() {
           </div>
 
           {/* Magazine section */}
-          <div className="border border-amber-200 rounded-xl overflow-hidden mt-4">
+          <div className="border border-amber-200 dark:border-amber-900/30 rounded-xl overflow-hidden mt-4">
             <button
               type="button"
               onClick={() => setShowMagazine(!showMagazine)}
-              className="w-full flex items-center justify-between px-4 py-3 bg-amber-50 text-sm font-medium text-amber-800 hover:bg-amber-100 transition-colors"
+              className="w-full flex items-center justify-between px-4 py-3 bg-amber-50 dark:bg-amber-900/20 text-sm font-medium text-amber-800 dark:text-amber-100 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
             >
               Magazine Album Pages
               {showMagazine ? (
@@ -918,15 +1008,15 @@ export default function AdminCategoriesPage() {
             </button>
 
             {showMagazine && (
-              <div className="p-4 space-y-4 bg-white">
+              <div className="p-4 space-y-4 bg-white dark:bg-[#1a1830]">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-brown-500 dark:text-amber-100/60">
                     Add pages to the interactive flipbook album on the homepage.
                   </p>
                   <button
                     type="button"
                     onClick={addMagazineItem}
-                    className="text-xs text-amber-700 flex items-center gap-1 hover:text-amber-800"
+                    className="text-xs text-amber-700 dark:text-amber-400 flex items-center gap-1 hover:text-amber-800 dark:hover:text-amber-300 font-medium"
                   >
                     <Plus size={12} /> Add Page
                   </button>
@@ -951,6 +1041,12 @@ export default function AdminCategoriesPage() {
                           handleMagazineImageUpload={handleMagazineImageUpload}
                           updateMagazineItem={updateMagazineItem}
                           removeMagazineItem={removeMagazineItem}
+                          categoryName={form.name}
+                          categorySlug={form.name
+                            .toLowerCase()
+                            .replace(/\s+/g, "-")}
+                          bannerBgColor={form.bannerBgColor}
+                          bannerButtons={form.bannerButtons}
                         />
                       ))}
                     </div>
@@ -981,7 +1077,7 @@ export default function AdminCategoriesPage() {
         title="Delete Category"
         size="sm"
       >
-        <p className="text-gray-600 mb-5">
+        <p className="text-brown-700 dark:text-amber-100/80 mb-5">
           Delete this category? Products will become uncategorized.
         </p>
         <div className="flex gap-3 justify-end">

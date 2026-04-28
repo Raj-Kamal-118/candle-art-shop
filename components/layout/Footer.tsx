@@ -2,10 +2,15 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { Instagram, Youtube, Mail, Phone, MessageCircle } from "lucide-react";
 import ArtisanLogo from "@/components/ui/ArtisanLogo";
 
 export default function Footer() {
+  // Hide the global storefront footer on admin pages
+  const pathname = usePathname();
+  if (pathname.startsWith("/admin")) return null;
+
   return (
     <footer className="text-forest-100 relative overflow-hidden">
       {/* Optimized Background Image */}
@@ -25,7 +30,11 @@ export default function Footer() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <ArtisanLogo variant="light" />
+            <div className="relative inline-block group cursor-pointer">
+              {/* Targeted glow behind footer logo */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-amber-500/20 blur-[50px] rounded-full pointer-events-none -z-10 transition-all duration-700 group-hover:scale-110 group-hover:animate-pulse" />
+              <ArtisanLogo variant="light" />
+            </div>
             <p className="text-sm text-forest-200/80 leading-relaxed mt-6 mb-8 max-w-sm">
               Handcrafted candles, clay art, and creative crafts made with
               intention and delivered with love. Each piece tells a story.

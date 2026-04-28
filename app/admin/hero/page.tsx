@@ -10,6 +10,7 @@ import {
   EyeOff,
   GripVertical,
   Layers,
+  Pencil,
 } from "lucide-react";
 import {
   HeroSettings,
@@ -18,7 +19,9 @@ import {
   HeroButtonIcon,
   HeroImage,
 } from "@/lib/types";
+import HeroSection from "@/components/home/HeroSection";
 import Button from "@/components/ui/Button";
+import Modal from "@/components/ui/Modal";
 
 const ICON_OPTIONS: { value: HeroButtonIcon; label: string }[] = [
   { value: "", label: "No icon" },
@@ -87,6 +90,19 @@ const defaultSettings: HeroSettings = {
   updatedAt: "",
 };
 
+function HeroPreview({ settings }: { settings: HeroSettings }) {
+  return (
+    <section className="bg-white dark:bg-[#1a1830] rounded-2xl p-6 shadow-sm border border-cream-200 dark:border-amber-900/30">
+      <h2 className="font-semibold text-brown-800 dark:text-amber-100/80 text-[11px] uppercase tracking-wider mb-4">
+        Live Preview
+      </h2>
+      <div className="relative w-full rounded-xl overflow-hidden border border-cream-200 dark:border-amber-900/30 pointer-events-none">
+        <HeroSection settings={settings} />
+      </div>
+    </section>
+  );
+}
+
 export default function AdminHeroPage() {
   const [settings, setSettings] = useState<HeroSettings>(defaultSettings);
   const [loading, setLoading] = useState(true);
@@ -101,6 +117,7 @@ export default function AdminHeroPage() {
   ];
   const bgFileRef = useRef<HTMLInputElement>(null);
 
+  const [modalOpen, setModalOpen] = useState(false);
   useEffect(() => {
     fetch("/api/hero-settings")
       .then((r) => r.json())
@@ -129,6 +146,7 @@ export default function AdminHeroPage() {
         const updated = await res.json();
         setSettings(updated);
         setSaved(true);
+        setModalOpen(false);
         setTimeout(() => setSaved(false), 3000);
       }
     } finally {
@@ -232,7 +250,7 @@ export default function AdminHeroPage() {
   };
 
   const field = (label: string, children: React.ReactNode) => (
-    <div>
+    <div className="w-full">
       <label className="block text-sm font-medium text-gray-700 mb-1">
         {label}
       </label>
@@ -241,511 +259,555 @@ export default function AdminHeroPage() {
   );
 
   const inputCls =
-    "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400";
+    "w-full px-3 py-2 bg-white dark:bg-[#12101e] border border-brown-300 dark:border-amber-900/40 rounded-lg text-sm text-brown-900 dark:text-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-400 dark:focus:ring-amber-500/50 transition-colors placeholder:text-brown-400 dark:placeholder:text-amber-100/30";
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-400 text-sm">Loading hero settings…</div>
+        <div className="text-brown-400 dark:text-amber-100/50 text-sm">
+          Loading hero settings…
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 pb-12">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-amber-100 rounded-xl flex items-center justify-center">
+          <div className="w-9 h-9 bg-amber-100 dark:bg-amber-900/40 rounded-xl flex items-center justify-center">
             <Layers size={18} className="text-amber-700" />
           </div>
           <div>
-            <h1 className="font-bold text-gray-900 text-lg">Hero Section</h1>
-            <p className="text-xs text-gray-500">
+            <h1 className="font-serif font-bold text-brown-900 dark:text-amber-100 text-2xl">
+              Hero Section
+            </h1>
+            <p className="text-sm text-brown-500 dark:text-amber-100/60 mt-0.5">
               Customize the homepage hero banner
             </p>
           </div>
         </div>
-        <Button onClick={handleSave} loading={saving} size="sm">
-          <Save size={15} />
-          {saved ? "Saved!" : "Save Changes"}
+        <Button onClick={() => setModalOpen(true)} size="sm">
+          <Pencil size={15} />
+          Edit Hero Section
         </Button>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-8">
-        {/* ── Left column: Text & Content ─────────────────────────────── */}
-        <div className="space-y-6">
-          {/* Text content */}
-          <section className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-4">
-            <h2 className="font-semibold text-gray-800 text-sm uppercase tracking-wide">
-              Text Content
-            </h2>
-            {field(
-              "Badge Text",
-              <input
-                className={inputCls}
-                value={settings.badgeText}
-                onChange={(e) =>
-                  setSettings({ ...settings, badgeText: e.target.value })
-                }
-              />,
-            )}
-            {field(
-              "Heading (H1)",
-              <input
-                className={inputCls}
-                value={settings.h1Text}
-                onChange={(e) =>
-                  setSettings({ ...settings, h1Text: e.target.value })
-                }
-              />,
-            )}
-            {field(
-              "Highlighted Text (coloured line)",
-              <input
-                className={inputCls}
-                value={settings.h1HighlightedText}
-                onChange={(e) =>
-                  setSettings({
-                    ...settings,
-                    h1HighlightedText: e.target.value,
-                  })
-                }
-              />,
-            )}
-            {field(
-              "Highlight Colour",
-              <div className="flex items-center gap-3">
-                <input
-                  type="color"
-                  value={settings.h1TextColor}
-                  onChange={(e) =>
-                    setSettings({ ...settings, h1TextColor: e.target.value })
-                  }
-                  className="w-10 h-10 rounded-lg border border-gray-300 cursor-pointer p-0.5"
-                />
-                <input
-                  className={`${inputCls} flex-1`}
-                  value={settings.h1TextColor}
-                  onChange={(e) =>
-                    setSettings({ ...settings, h1TextColor: e.target.value })
-                  }
-                  placeholder="#e85d4a"
-                />
-              </div>,
-            )}
-            {field(
-              "Description",
-              <textarea
-                className={`${inputCls} resize-none`}
-                rows={3}
-                value={settings.description}
-                onChange={(e) =>
-                  setSettings({ ...settings, description: e.target.value })
-                }
-              />,
-            )}
-            {field(
-              "Floating Badge Text",
-              <input
-                className={inputCls}
-                value={settings.floatingBadgeText || ""}
-                onChange={(e) =>
-                  setSettings({
-                    ...settings,
-                    floatingBadgeText: e.target.value,
-                  })
-                }
-                placeholder="Free shipping on Orders over ₹999"
-              />,
-            )}
-          </section>
+      <HeroPreview settings={settings} />
 
-          {/* Buttons */}
-          <section className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="font-semibold text-gray-800 text-sm uppercase tracking-wide">
-                Buttons (max 6, 2 per row)
-              </h2>
-              <button
-                onClick={addButton}
-                disabled={settings.buttons.length >= 6}
-                className="text-xs text-amber-700 hover:text-amber-800 flex items-center gap-1 disabled:opacity-40"
-              >
-                <Plus size={12} /> Add
-              </button>
-            </div>
-            {settings.buttons.map((btn, i) => (
-              <div
-                key={i}
-                className="border border-gray-200 rounded-xl p-4 space-y-3"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1 text-xs text-gray-400">
-                    <GripVertical size={12} /> Button {i + 1}
-                  </div>
-                  <button
-                    onClick={() => removeButton(i)}
-                    className="text-red-400 hover:text-red-600"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs text-gray-500 mb-1">
-                      Text
-                    </label>
-                    <input
-                      className={inputCls}
-                      value={btn.text}
-                      onChange={(e) =>
-                        updateButton(i, { text: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs text-gray-500 mb-1">
-                      Link
-                    </label>
-                    <input
-                      className={inputCls}
-                      value={btn.link}
-                      onChange={(e) =>
-                        updateButton(i, { link: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs text-gray-500 mb-1">
-                      Variant
-                    </label>
-                    <select
-                      className={inputCls}
-                      value={btn.variant}
-                      onChange={(e) =>
-                        updateButton(i, {
-                          variant: e.target.value as "primary" | "secondary",
-                        })
-                      }
-                    >
-                      <option value="primary">Primary</option>
-                      <option value="secondary">Secondary</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs text-gray-500 mb-1">
-                      Icon
-                    </label>
-                    <select
-                      className={inputCls}
-                      value={btn.icon}
-                      onChange={(e) =>
-                        updateButton(i, {
-                          icon: e.target.value as HeroButtonIcon,
-                        })
-                      }
-                    >
-                      {ICON_OPTIONS.map((o) => (
-                        <option key={o.value} value={o.value}>
-                          {o.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </section>
-
-          {/* Stats */}
-          <section className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <h2 className="font-semibold text-gray-800 text-sm uppercase tracking-wide">
-                  Stats Bar
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title="Edit Hero Section"
+        size="lg"
+      >
+        <div className="max-h-[75vh] overflow-y-auto pr-2 custom-scrollbar -mr-2">
+          <div className="grid lg:grid-cols-2 gap-8">
+            {/* ── Left column: Text & Content ─────────────────────────────── */}
+            <div className="space-y-6">
+              {/* Text content */}
+              <section className="bg-white dark:bg-[#1a1830] rounded-2xl p-6 shadow-sm border border-cream-200 dark:border-amber-900/30 space-y-4">
+                <h2 className="font-semibold text-brown-800 dark:text-amber-100/80 text-[11px] uppercase tracking-wider">
+                  Text Content
                 </h2>
-                <button
-                  onClick={() =>
-                    setSettings({ ...settings, showStats: !settings.showStats })
-                  }
-                  className="text-xs text-gray-500 flex items-center gap-1 hover:text-gray-700"
-                >
-                  {settings.showStats ? (
-                    <Eye size={12} />
-                  ) : (
-                    <EyeOff size={12} />
-                  )}
-                  {settings.showStats ? "Visible" : "Hidden"}
-                </button>
-              </div>
-              <button
-                onClick={addStat}
-                className="text-xs text-amber-700 hover:text-amber-800 flex items-center gap-1"
-              >
-                <Plus size={12} /> Add
-              </button>
-            </div>
-            {settings.stats.map((stat, i) => (
-              <div key={i} className="flex items-start gap-3 mb-2">
-                <div className="w-24">
-                  <label className="block text-xs text-gray-500 mb-1">
-                    Value
-                  </label>
+                {field(
+                  "Badge Text",
                   <input
                     className={inputCls}
-                    value={stat.value}
-                    onChange={(e) => updateStat(i, { value: e.target.value })}
-                    placeholder="500+"
-                  />
-                </div>
-                <div className="flex-1">
-                  <label className="block text-xs text-gray-500 mb-1">
-                    Label
-                  </label>
+                    value={settings.badgeText}
+                    onChange={(e) =>
+                      setSettings({ ...settings, badgeText: e.target.value })
+                    }
+                  />,
+                )}
+                {field(
+                  "Heading (H1)",
                   <input
                     className={inputCls}
-                    value={stat.label}
-                    onChange={(e) => updateStat(i, { label: e.target.value })}
-                    placeholder="Happy Customers"
-                  />
-                </div>
-                <div className="flex-none pt-6">
+                    value={settings.h1Text}
+                    onChange={(e) =>
+                      setSettings({ ...settings, h1Text: e.target.value })
+                    }
+                  />,
+                )}
+                {field(
+                  "Highlighted Text (coloured line)",
+                  <input
+                    className={inputCls}
+                    value={settings.h1HighlightedText}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        h1HighlightedText: e.target.value,
+                      })
+                    }
+                  />,
+                )}
+                {field(
+                  "Highlight Colour",
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="color"
+                      value={settings.h1TextColor}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          h1TextColor: e.target.value,
+                        })
+                      }
+                      className="w-10 h-10 rounded-lg border border-brown-300 dark:border-amber-900/40 cursor-pointer p-0.5 bg-transparent"
+                    />
+                    <input
+                      className={`${inputCls} flex-1`}
+                      value={settings.h1TextColor}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          h1TextColor: e.target.value,
+                        })
+                      }
+                      placeholder="#e85d4a"
+                    />
+                  </div>,
+                )}
+                {field(
+                  "Description",
+                  <textarea
+                    className={`${inputCls} resize-none`}
+                    rows={3}
+                    value={settings.description}
+                    onChange={(e) =>
+                      setSettings({ ...settings, description: e.target.value })
+                    }
+                  />,
+                )}
+                {field(
+                  "Floating Badge Text",
+                  <input
+                    className={inputCls}
+                    value={settings.floatingBadgeText || ""}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        floatingBadgeText: e.target.value,
+                      })
+                    }
+                    placeholder="Free shipping on Orders over ₹999"
+                  />,
+                )}
+              </section>
+
+              {/* Buttons */}
+              <section className="bg-white dark:bg-[#1a1830] rounded-2xl p-6 shadow-sm border border-cream-200 dark:border-amber-900/30 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="font-semibold text-brown-800 dark:text-amber-100/80 text-[11px] uppercase tracking-wider">
+                    Buttons (max 6, 2 per row)
+                  </h2>
                   <button
-                    onClick={() => removeStat(i)}
-                    className="text-red-400 hover:text-red-600"
+                    onClick={addButton}
+                    disabled={settings.buttons.length >= 6}
+                    className="text-xs text-amber-700 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300 flex items-center gap-1 disabled:opacity-40 font-medium"
                   >
-                    <Trash2 size={14} />
+                    <Plus size={12} /> Add
                   </button>
                 </div>
-              </div>
-            ))}
-          </section>
-        </div>
-
-        {/* ── Right column: Background & Images ──────────────────────── */}
-        <div className="space-y-6">
-          {/* Background */}
-          <section className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-4">
-            <h2 className="font-semibold text-gray-800 text-sm uppercase tracking-wide">
-              Background
-            </h2>
-            {field(
-              "Background Type",
-              <div className="grid grid-cols-4 gap-2">
-                {(["gradient", "color", "image", "video"] as const).map(
-                  (type) => (
-                    <button
-                      key={type}
-                      onClick={() =>
-                        setSettings({ ...settings, backgroundType: type })
-                      }
-                      className={`py-2 text-xs font-medium rounded-lg border capitalize transition-colors ${
-                        settings.backgroundType === type
-                          ? "border-amber-500 bg-amber-50 text-amber-700"
-                          : "border-gray-200 text-gray-500 hover:bg-gray-50"
-                      }`}
-                    >
-                      {type}
-                    </button>
-                  ),
-                )}
-              </div>,
-            )}
-
-            {settings.backgroundType === "color" && (
-              <div className="flex items-center gap-3">
-                <input
-                  type="color"
-                  value={settings.backgroundValue || "#fdf6ec"}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      backgroundValue: e.target.value,
-                    })
-                  }
-                  className="w-10 h-10 rounded-lg border border-gray-300 cursor-pointer p-0.5"
-                />
-                <input
-                  className={`${inputCls} flex-1`}
-                  value={settings.backgroundValue || ""}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      backgroundValue: e.target.value,
-                    })
-                  }
-                  placeholder="#fdf6ec"
-                />
-              </div>
-            )}
-
-            {(settings.backgroundType === "image" ||
-              settings.backgroundType === "video") && (
-              <div className="space-y-2">
-                <input
-                  className={inputCls}
-                  value={settings.backgroundValue || ""}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      backgroundValue: e.target.value,
-                    })
-                  }
-                  placeholder={
-                    settings.backgroundType === "image"
-                      ? "https://... (image URL)"
-                      : "https://... (video URL)"
-                  }
-                />
-                {settings.backgroundType === "image" && (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() => bgFileRef.current?.click()}
-                      disabled={uploading === -1}
-                      className="flex items-center gap-1.5 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50"
-                    >
-                      <Upload size={14} />
-                      {uploading === -1 ? "Uploading…" : "Upload Image"}
-                    </button>
-                    <input
-                      ref={bgFileRef}
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={handleBgUpload}
-                    />
-                  </>
-                )}
-                {settings.backgroundValue &&
-                  settings.backgroundType === "image" && (
-                    <img
-                      src={settings.backgroundValue}
-                      alt="bg preview"
-                      className="w-full h-32 object-cover rounded-xl"
-                    />
-                  )}
-              </div>
-            )}
-          </section>
-
-          {/* Images */}
-          <section className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="font-semibold text-gray-800 text-sm uppercase tracking-wide">
-                4-Image Grid
-              </h2>
-              <button
-                onClick={() =>
-                  setSettings({ ...settings, showImages: !settings.showImages })
-                }
-                className="text-xs text-gray-500 flex items-center gap-1 hover:text-gray-700"
-              >
-                {settings.showImages ? <Eye size={12} /> : <EyeOff size={12} />}
-                {settings.showImages ? "Visible" : "Hidden"}
-              </button>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              {[0, 1, 2, 3].map((i) => {
-                const img = (settings.images[i] as HeroImage) || {
-                  url: "",
-                  name: "",
-                  link: "",
-                };
-                return (
-                  <div key={i} className="space-y-2">
-                    <label className="text-xs text-gray-500">
-                      Image {i + 1}
-                    </label>
-                    <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
-                      {img.url ? (
-                        <img
-                          src={img.url}
-                          alt={`Hero ${i + 1}`}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
-                          No image
-                        </div>
-                      )}
+                {settings.buttons.map((btn, i) => (
+                  <div
+                    key={i}
+                    className="border border-cream-200 dark:border-amber-900/30 rounded-xl p-4 space-y-3"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1 text-xs text-brown-400 dark:text-amber-100/50">
+                        <GripVertical size={12} /> Button {i + 1}
+                      </div>
                       <button
-                        onClick={() => fileRefs[i].current?.click()}
-                        disabled={uploading === i}
-                        className="absolute bottom-2 right-2 bg-white/90 text-gray-700 p-1.5 rounded-lg text-xs flex items-center gap-1 shadow hover:bg-white"
+                        onClick={() => removeButton(i)}
+                        className="text-red-400 hover:text-red-600 dark:hover:text-red-300"
                       >
-                        <Upload size={12} />
-                        {uploading === i ? "…" : "Upload"}
+                        <Trash2 size={14} />
                       </button>
-                      <input
-                        ref={fileRefs[i]}
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => handleImageUpload(i, e)}
-                      />
                     </div>
-                    <input
-                      className={`${inputCls} text-xs`}
-                      value={img.url || ""}
-                      onChange={(e) => updateImage(i, { url: e.target.value })}
-                      placeholder="Image URL"
-                    />
-                    <input
-                      className={`${inputCls} text-xs`}
-                      value={img.name || ""}
-                      onChange={(e) => updateImage(i, { name: e.target.value })}
-                      placeholder="Title (e.g. Candles)"
-                    />
-                    <input
-                      className={`${inputCls} text-xs`}
-                      value={img.link || ""}
-                      onChange={(e) => updateImage(i, { link: e.target.value })}
-                      placeholder="Link (e.g. /categories/scented-candles)"
-                    />
-                    <div className="pt-3 border-t border-gray-100 mt-3 space-y-2">
-                      <label className="text-xs text-gray-500 font-medium block">
-                        Offer Badge (Optional)
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs text-brown-500 dark:text-amber-100/60 mb-1">
+                          Text
+                        </label>
+                        <input
+                          className={inputCls}
+                          value={btn.text}
+                          onChange={(e) =>
+                            updateButton(i, { text: e.target.value })
+                          }
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-brown-500 dark:text-amber-100/60 mb-1">
+                          Link
+                        </label>
+                        <input
+                          className={inputCls}
+                          value={btn.link}
+                          onChange={(e) =>
+                            updateButton(i, { link: e.target.value })
+                          }
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-brown-500 dark:text-amber-100/60 mb-1">
+                          Variant
+                        </label>
+                        <select
+                          className={inputCls}
+                          value={btn.variant}
+                          onChange={(e) =>
+                            updateButton(i, {
+                              variant: e.target.value as
+                                | "primary"
+                                | "secondary",
+                            })
+                          }
+                        >
+                          <option value="primary">Primary</option>
+                          <option value="secondary">Secondary</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs text-brown-500 dark:text-amber-100/60 mb-1">
+                          Icon
+                        </label>
+                        <select
+                          className={inputCls}
+                          value={btn.icon}
+                          onChange={(e) =>
+                            updateButton(i, {
+                              icon: e.target.value as HeroButtonIcon,
+                            })
+                          }
+                        >
+                          {ICON_OPTIONS.map((o) => (
+                            <option key={o.value} value={o.value}>
+                              {o.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </section>
+
+              {/* Stats */}
+              <section className="bg-white dark:bg-[#1a1830] rounded-2xl p-6 shadow-sm border border-cream-200 dark:border-amber-900/30 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <h2 className="font-semibold text-brown-800 dark:text-amber-100/80 text-[11px] uppercase tracking-wider">
+                      Stats Bar
+                    </h2>
+                    <button
+                      onClick={() =>
+                        setSettings({
+                          ...settings,
+                          showStats: !settings.showStats,
+                        })
+                      }
+                      className="text-xs text-brown-500 dark:text-amber-100/60 flex items-center gap-1 hover:text-brown-700 dark:hover:text-amber-100/80"
+                    >
+                      {settings.showStats ? (
+                        <Eye size={12} />
+                      ) : (
+                        <EyeOff size={12} />
+                      )}
+                      {settings.showStats ? "Visible" : "Hidden"}
+                    </button>
+                  </div>
+                  <button
+                    onClick={addStat}
+                    className="text-xs text-amber-700 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300 flex items-center gap-1 font-medium"
+                  >
+                    <Plus size={12} /> Add
+                  </button>
+                </div>
+                {settings.stats.map((stat, i) => (
+                  <div key={i} className="flex items-start gap-3 mb-2">
+                    <div className="w-24">
+                      <label className="block text-xs text-brown-500 dark:text-amber-100/60 mb-1">
+                        Value
                       </label>
                       <input
-                        className={`${inputCls} text-xs`}
-                        value={img.offerType || ""}
+                        className={inputCls}
+                        value={stat.value}
                         onChange={(e) =>
-                          updateImage(i, { offerType: e.target.value })
+                          updateStat(i, { value: e.target.value })
                         }
-                        placeholder="Type (e.g. Special Offer)"
-                      />
-                      <input
-                        className={`${inputCls} text-xs`}
-                        value={img.offerText || ""}
-                        onChange={(e) =>
-                          updateImage(i, { offerText: e.target.value })
-                        }
-                        placeholder="Text (e.g. Free shipping on orders...)"
+                        placeholder="500+"
                       />
                     </div>
+                    <div className="flex-1">
+                      <label className="block text-xs text-brown-500 dark:text-amber-100/60 mb-1">
+                        Label
+                      </label>
+                      <input
+                        className={inputCls}
+                        value={stat.label}
+                        onChange={(e) =>
+                          updateStat(i, { label: e.target.value })
+                        }
+                        placeholder="Happy Customers"
+                      />
+                    </div>
+                    <div className="flex-none pt-6">
+                      <button
+                        onClick={() => removeStat(i)}
+                        className="text-red-400 hover:text-red-600 dark:hover:text-red-300"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
                   </div>
-                );
-              })}
+                ))}
+              </section>
             </div>
-          </section>
-        </div>
-      </div>
 
-      {/* Sticky save bar */}
-      <div className="fixed bottom-6 right-6">
-        <Button
-          onClick={handleSave}
-          loading={saving}
-          size="lg"
-          className="shadow-2xl"
-        >
-          <Save size={16} />
-          {saved ? "Saved!" : "Save Changes"}
-        </Button>
-      </div>
+            {/* ── Right column: Background & Images ──────────────────────── */}
+            <div className="space-y-6">
+              {/* Background */}
+              <section className="bg-white dark:bg-[#1a1830] rounded-2xl p-6 shadow-sm border border-cream-200 dark:border-amber-900/30 space-y-4">
+                <h2 className="font-semibold text-brown-800 dark:text-amber-100/80 text-[11px] uppercase tracking-wider">
+                  Background
+                </h2>
+                {field(
+                  "Background Type",
+                  <div className="grid grid-cols-4 gap-2">
+                    {(["gradient", "color", "image", "video"] as const).map(
+                      (type) => (
+                        <button
+                          key={type}
+                          type="button"
+                          onClick={() =>
+                            setSettings({ ...settings, backgroundType: type })
+                          }
+                          className={`py-2 text-xs font-medium rounded-lg border capitalize transition-colors ${
+                            settings.backgroundType === type
+                              ? "border-amber-500 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400"
+                              : "border-cream-300 dark:border-amber-900/40 text-brown-600 dark:text-amber-100/60 hover:bg-cream-50 dark:hover:bg-[#12101e]"
+                          }`}
+                        >
+                          {type}
+                        </button>
+                      ),
+                    )}
+                  </div>,
+                )}
+
+                {settings.backgroundType === "color" && (
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="color"
+                      value={settings.backgroundValue || "#fdf6ec"}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          backgroundValue: e.target.value,
+                        })
+                      }
+                      className="w-10 h-10 rounded-lg border border-brown-300 dark:border-amber-900/40 cursor-pointer p-0.5 bg-transparent"
+                    />
+                    <input
+                      className={`${inputCls} flex-1`}
+                      value={settings.backgroundValue || ""}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          backgroundValue: e.target.value,
+                        })
+                      }
+                      placeholder="#fdf6ec"
+                    />
+                  </div>
+                )}
+
+                {(settings.backgroundType === "image" ||
+                  settings.backgroundType === "video") && (
+                  <div className="space-y-2">
+                    <input
+                      className={inputCls}
+                      value={settings.backgroundValue || ""}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          backgroundValue: e.target.value,
+                        })
+                      }
+                      placeholder={
+                        settings.backgroundType === "image"
+                          ? "https://... (image URL)"
+                          : "https://... (video URL)"
+                      }
+                    />
+                    {settings.backgroundType === "image" && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => bgFileRef.current?.click()}
+                          disabled={uploading === -1}
+                          className="flex items-center gap-1.5 px-3 py-2 border border-brown-300 dark:border-amber-900/40 rounded-lg text-sm text-brown-600 dark:text-amber-100/80 hover:bg-cream-50 dark:hover:bg-[#12101e] transition-colors disabled:opacity-50"
+                        >
+                          <Upload size={14} />
+                          {uploading === -1 ? "Uploading…" : "Upload Image"}
+                        </button>
+                        <input
+                          ref={bgFileRef}
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={handleBgUpload}
+                        />
+                      </>
+                    )}
+                    {settings.backgroundValue &&
+                      settings.backgroundType === "image" && (
+                        <img
+                          src={settings.backgroundValue}
+                          alt="bg preview"
+                          className="w-full h-32 object-cover rounded-xl"
+                        />
+                      )}
+                  </div>
+                )}
+              </section>
+
+              {/* Images */}
+              <section className="bg-white dark:bg-[#1a1830] rounded-2xl p-6 shadow-sm border border-cream-200 dark:border-amber-900/30 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="font-semibold text-brown-800 dark:text-amber-100/80 text-[11px] uppercase tracking-wider">
+                    4-Image Grid
+                  </h2>
+                  <button
+                    onClick={() =>
+                      setSettings({
+                        ...settings,
+                        showImages: !settings.showImages,
+                      })
+                    }
+                    className="text-xs text-brown-500 dark:text-amber-100/60 flex items-center gap-1 hover:text-brown-700 dark:hover:text-amber-100/80"
+                  >
+                    {settings.showImages ? (
+                      <Eye size={12} />
+                    ) : (
+                      <EyeOff size={12} />
+                    )}
+                    {settings.showImages ? "Visible" : "Hidden"}
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  {[0, 1, 2, 3].map((i) => {
+                    const img = (settings.images[i] as HeroImage) || {
+                      url: "",
+                      name: "",
+                      link: "",
+                    };
+                    return (
+                      <div key={i} className="space-y-2">
+                        <label className="text-xs text-brown-500 dark:text-amber-100/60">
+                          Image {i + 1}
+                        </label>
+                        <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-cream-50 dark:bg-[#12101e] border border-cream-200 dark:border-amber-900/40">
+                          {img.url ? (
+                            <img
+                              src={img.url}
+                              alt={`Hero ${i + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-brown-400 dark:text-amber-100/40 text-xs">
+                              No image
+                            </div>
+                          )}
+                          <button
+                            onClick={() => fileRefs[i].current?.click()}
+                            disabled={uploading === i}
+                            className="absolute bottom-2 right-2 bg-white/90 dark:bg-black/60 text-brown-700 dark:text-amber-100 p-1.5 rounded-lg text-xs flex items-center gap-1 shadow hover:bg-white dark:hover:bg-black/80 transition-colors"
+                          >
+                            <Upload size={12} />
+                            {uploading === i ? "…" : "Upload"}
+                          </button>
+                          <input
+                            ref={fileRefs[i]}
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => handleImageUpload(i, e)}
+                          />
+                        </div>
+                        <input
+                          className={`${inputCls} text-xs`}
+                          value={img.url || ""}
+                          onChange={(e) =>
+                            updateImage(i, { url: e.target.value })
+                          }
+                          placeholder="Image URL"
+                        />
+                        <input
+                          className={`${inputCls} text-xs`}
+                          value={img.name || ""}
+                          onChange={(e) =>
+                            updateImage(i, { name: e.target.value })
+                          }
+                          placeholder="Title (e.g. Candles)"
+                        />
+                        <input
+                          className={`${inputCls} text-xs`}
+                          value={img.link || ""}
+                          onChange={(e) =>
+                            updateImage(i, { link: e.target.value })
+                          }
+                          placeholder="Link (e.g. /categories/scented-candles)"
+                        />
+                        <div className="pt-3 border-t border-cream-100 dark:border-amber-900/20 mt-3 space-y-2">
+                          <label className="text-xs text-brown-500 dark:text-amber-100/60 font-medium block">
+                            Offer Badge (Optional)
+                          </label>
+                          <input
+                            className={`${inputCls} text-xs`}
+                            value={img.offerType || ""}
+                            onChange={(e) =>
+                              updateImage(i, { offerType: e.target.value })
+                            }
+                            placeholder="Type (e.g. Special Offer)"
+                          />
+                          <input
+                            className={`${inputCls} text-xs`}
+                            value={img.offerText || ""}
+                            onChange={(e) =>
+                              updateImage(i, { offerText: e.target.value })
+                            }
+                            placeholder="Text (e.g. Free shipping on orders...)"
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+        <div className="flex gap-3 justify-end pt-4 mt-4 border-t border-cream-100 dark:border-amber-900/20">
+          <Button
+            variant="outline"
+            onClick={() => setModalOpen(false)}
+            type="button"
+          >
+            Cancel
+          </Button>
+          <Button onClick={handleSave} loading={saving}>
+            <Save size={15} />
+            {saved ? "Saved!" : "Save Changes"}
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 }

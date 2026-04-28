@@ -33,6 +33,8 @@ import { CSS } from "@dnd-kit/utilities";
 import { GiftSet, Product } from "@/lib/types";
 import { formatPrice } from "@/lib/utils";
 import { GS_OCCASIONS } from "@/components/gift-sets/OccasionFilter";
+import Modal from "@/components/ui/Modal";
+import Button from "@/components/ui/Button";
 
 const ACCENT_OPTIONS = [
   { label: "Amber", value: "#d97706" },
@@ -43,9 +45,10 @@ const ACCENT_OPTIONS = [
 ];
 
 const STATUS_STYLES: Record<string, string> = {
-  live: "bg-green-100 text-green-700",
-  draft: "bg-amber-100 text-amber-700",
-  archived: "bg-gray-100 text-gray-600",
+  live: "bg-forest-100 text-forest-800 dark:bg-forest-900/40 dark:text-forest-300",
+  draft: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300",
+  archived:
+    "bg-cream-100 text-brown-600 dark:bg-amber-900/30 dark:text-amber-100/70",
 };
 
 type EditableSet = Partial<GiftSet> & { productIds?: string[]; slug?: string };
@@ -76,7 +79,6 @@ function SortableGiftSetRow({
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
-    background: isSelected ? "#fffbeb" : "#fff",
   };
 
   return (
@@ -84,13 +86,13 @@ function SortableGiftSetRow({
       ref={setNodeRef}
       style={style}
       onClick={() => onSelect(s)}
-      className="cursor-pointer border-t border-cream-200 transition-colors hover:bg-cream-50"
+      className={`cursor-pointer border-t border-cream-100 dark:border-amber-900/20 transition-colors hover:bg-cream-50 dark:hover:bg-amber-900/10 ${isSelected ? "bg-amber-50/50 dark:bg-amber-900/20" : "bg-transparent"}`}
     >
       <td className="pl-3 pr-1 py-3 w-8" onClick={(e) => e.stopPropagation()}>
         <button
           {...attributes}
           {...listeners}
-          className="cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500 touch-none"
+          className="cursor-grab active:cursor-grabbing text-cream-300 dark:text-amber-900/40 hover:text-brown-400 dark:hover:text-amber-100/60 touch-none"
           title="Drag to reorder"
         >
           <GripVertical size={16} />
@@ -98,7 +100,7 @@ function SortableGiftSetRow({
       </td>
       <td className="px-4 py-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg overflow-hidden bg-cream-100 flex-shrink-0">
+          <div className="w-10 h-10 rounded-lg overflow-hidden bg-cream-100 dark:bg-[#12101e] flex-shrink-0">
             {s.image ? (
               <img
                 src={s.image}
@@ -112,20 +114,24 @@ function SortableGiftSetRow({
             )}
           </div>
           <div>
-            <div className="font-semibold text-brown-900">{s.name}</div>
+            <div className="font-semibold text-brown-900 dark:text-amber-100">
+              {s.name}
+            </div>
             {s.tagline && (
-              <div className="text-xs text-brown-500 italic truncate max-w-xs">
+              <div className="text-xs text-brown-500 dark:text-amber-100/60 italic truncate max-w-xs">
                 {s.tagline}
               </div>
             )}
           </div>
         </div>
       </td>
-      <td className="px-4 py-3 text-brown-600 text-xs">
+      <td className="px-4 py-3 text-brown-600 dark:text-amber-100/70 text-xs">
         {s.occasions?.join(", ") || "—"}
       </td>
-      <td className="px-4 py-3 text-brown-700">{(s.items ?? []).length}</td>
-      <td className="px-4 py-3 text-right font-semibold text-brown-900">
+      <td className="px-4 py-3 text-brown-700 dark:text-amber-100/80">
+        {(s.items ?? []).length}
+      </td>
+      <td className="px-4 py-3 text-right font-semibold text-brown-900 dark:text-amber-100">
         {formatPrice(s.price)}
       </td>
       <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
@@ -134,7 +140,7 @@ function SortableGiftSetRow({
             e.stopPropagation();
             onToggleStatus(s);
           }}
-          className={`px-2.5 py-1 rounded-full text-xs font-semibold capitalize ${STATUS_STYLES[s.status] ?? ""}`}
+          className={`px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase ${STATUS_STYLES[s.status] ?? ""}`}
         >
           {s.status}
         </button>
@@ -146,7 +152,7 @@ function SortableGiftSetRow({
             target="_blank"
             rel="noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="p-1.5 rounded-lg text-brown-500 hover:text-brown-700 hover:bg-cream-100 transition-colors"
+            className="p-1.5 rounded-lg text-brown-400 dark:text-amber-100/50 hover:text-amber-700 dark:hover:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors"
             title="Preview"
           >
             <Eye size={14} />
@@ -156,7 +162,7 @@ function SortableGiftSetRow({
               e.stopPropagation();
               onDelete(s.id);
             }}
-            className="p-1.5 rounded-lg text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+            className="p-1.5 rounded-lg text-brown-400 dark:text-amber-100/50 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
             title="Delete"
           >
             <Trash2 size={14} />
@@ -174,6 +180,7 @@ export default function AdminGiftSetsPage() {
   const [editing, setEditing] = useState<EditableSet>({});
   const [showNew, setShowNew] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const [productSearch, setProductSearch] = useState("");
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -227,6 +234,7 @@ export default function AdminGiftSetsPage() {
       productIds: initialIds,
     });
     setShowNew(false);
+    setModalOpen(true);
 
     // Fetch full set details to ensure we have the item mappings if they were omitted in the list view
     try {
@@ -268,6 +276,7 @@ export default function AdminGiftSetsPage() {
       productIds: [],
     });
     setShowNew(true);
+    setModalOpen(true);
   };
 
   const toggleOccasion = (id: string) => {
@@ -358,6 +367,7 @@ export default function AdminGiftSetsPage() {
       await reload();
       setSelected(null);
       setEditing({});
+      setModalOpen(false);
     } finally {
       setSaving(false);
     }
@@ -425,7 +435,6 @@ export default function AdminGiftSetsPage() {
     }
   };
 
-  const showInspector = showNew || !!selected;
   const editingProductIds = editing.productIds ?? [];
   const editingProducts = editingProductIds
     .map((id) => products.find((p) => p.id === id))
@@ -440,15 +449,20 @@ export default function AdminGiftSetsPage() {
       ),
   );
 
+  const inputCls =
+    "w-full px-3 py-2 bg-white dark:bg-[#12101e] border border-brown-300 dark:border-amber-900/40 rounded-lg text-sm text-brown-900 dark:text-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-400 dark:focus:ring-amber-500/50 transition-colors placeholder:text-brown-400 dark:placeholder:text-amber-100/30";
+  const labelCls =
+    "block text-[13px] font-medium text-brown-800 dark:text-amber-100/80 mb-1.5";
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
       {/* Page header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="font-serif text-3xl font-bold text-brown-900">
+          <h1 className="font-serif text-3xl font-bold text-brown-900 dark:text-amber-100">
             Gift Sets
           </h1>
-          <p className="text-brown-500 text-sm mt-1">
+          <p className="text-brown-500 dark:text-amber-100/60 text-sm mt-1">
             Curated premade sets shown on /gift-sets
           </p>
         </div>
@@ -460,31 +474,18 @@ export default function AdminGiftSetsPage() {
         </button>
       </div>
 
-      <div
-        className="grid gap-6"
-        style={{ gridTemplateColumns: showInspector ? "1.4fr 1fr" : "1fr" }}
-      >
+      <div className="space-y-6">
         {/* Table */}
-        <div className="bg-white rounded-2xl overflow-hidden border border-cream-200">
+        <div className="bg-white dark:bg-[#1a1830] rounded-2xl overflow-hidden shadow-sm border border-cream-200 dark:border-amber-900/30">
           <table className="w-full text-sm border-collapse">
-            <thead className="bg-cream-100 text-brown-600">
+            <thead className="bg-cream-50 dark:bg-[#12101e] text-[11px] font-semibold text-brown-500 dark:text-amber-100/60 border-b border-cream-200 dark:border-amber-900/30 uppercase tracking-wider">
               <tr>
                 <th className="w-8 pl-3" />
-                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider">
-                  Set
-                </th>
-                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider">
-                  Occasions
-                </th>
-                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider">
-                  Products
-                </th>
-                <th className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-wider">
-                  Price
-                </th>
-                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider">
-                  Status
-                </th>
+                <th className="text-left px-4 py-3">Set</th>
+                <th className="text-left px-4 py-3">Occasions</th>
+                <th className="text-left px-4 py-3">Products</th>
+                <th className="text-right px-4 py-3">Price</th>
+                <th className="text-left px-4 py-3">Status</th>
                 <th className="px-4 py-3" />
               </tr>
             </thead>
@@ -512,7 +513,7 @@ export default function AdminGiftSetsPage() {
                     <tr>
                       <td
                         colSpan={7}
-                        className="px-4 py-12 text-center text-brown-400"
+                        className="px-4 py-12 text-center text-brown-400 dark:text-amber-100/50"
                       >
                         <Package
                           size={28}
@@ -528,99 +529,92 @@ export default function AdminGiftSetsPage() {
           </table>
         </div>
 
-        {/* Inspector / Create panel */}
-        {showInspector && (
-          <div className="bg-white rounded-2xl border border-cream-200 p-5 sticky top-6 self-start max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-4">
-              <div className="text-xs font-semibold uppercase tracking-widest text-brown-600">
-                {showNew ? "New gift set" : "Edit set"}
-              </div>
-              <button
-                onClick={() => {
-                  setSelected(null);
-                  setEditing({});
-                  setShowNew(false);
-                }}
-                className="p-1.5 rounded-lg text-brown-400 hover:bg-cream-100"
-              >
-                <X size={16} />
-              </button>
-            </div>
-
-            {/* Name */}
-            <label className="block text-xs font-medium uppercase tracking-wider mb-1.5 text-brown-600">
-              Name
-            </label>
-            <input
-              value={editing.name ?? ""}
-              onChange={(e) =>
-                setEditing((p) => ({ ...p, name: e.target.value }))
-              }
-              className="w-full px-3 py-2 rounded-lg border border-cream-300 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-amber-400"
-            />
-
-            {/* Slug */}
-            <label className="block text-xs font-medium uppercase tracking-wider mb-1.5 text-brown-600">
-              Slug
-            </label>
-            <input
-              value={editing.slug ?? ""}
-              onChange={(e) =>
-                setEditing((p) => ({ ...p, slug: e.target.value }))
-              }
-              className="w-full px-3 py-2 rounded-lg border border-cream-300 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-amber-400"
-              placeholder="Auto-generated if empty"
-            />
-
-            {/* Tagline */}
-            <label className="block text-xs font-medium uppercase tracking-wider mb-1.5 text-brown-600">
-              Tagline
-            </label>
-            <input
-              value={editing.tagline ?? ""}
-              onChange={(e) =>
-                setEditing((p) => ({ ...p, tagline: e.target.value }))
-              }
-              className="w-full px-3 py-2 rounded-lg border border-cream-300 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-amber-400"
-            />
-
-            {/* Description */}
-            <label className="block text-xs font-medium uppercase tracking-wider mb-1.5 text-brown-600">
-              Short description
-            </label>
-            <textarea
-              value={editing.description ?? ""}
-              onChange={(e) =>
-                setEditing((p) => ({ ...p, description: e.target.value }))
-              }
-              rows={3}
-              className="w-full px-3 py-2 rounded-lg border border-cream-300 text-sm mb-3 resize-none focus:outline-none focus:ring-2 focus:ring-amber-400"
-            />
-
-            {/* Price + Saving */}
-            <div className="grid grid-cols-2 gap-3 mb-3">
+        {/* Add/Edit Modal */}
+        <Modal
+          isOpen={modalOpen}
+          onClose={() => {
+            setModalOpen(false);
+            setSelected(null);
+            setEditing({});
+            setShowNew(false);
+          }}
+          title={showNew ? "New Gift Set" : "Edit Gift Set"}
+          size="xl"
+        >
+          <div className="space-y-5 max-h-[75vh] overflow-y-auto pr-2 custom-scrollbar">
+            <div className="grid grid-cols-2 gap-4">
+              {/* Name */}
               <div>
-                <label className="block text-xs font-medium uppercase tracking-wider mb-1.5 text-brown-600">
-                  Price (paise)
-                </label>
+                <label className={labelCls}>Name *</label>
+                <input
+                  required
+                  value={editing.name ?? ""}
+                  onChange={(e) =>
+                    setEditing((p) => ({ ...p, name: e.target.value }))
+                  }
+                  className={inputCls}
+                />
+              </div>
+
+              {/* Slug */}
+              <div>
+                <label className={labelCls}>Slug</label>
+                <input
+                  value={editing.slug ?? ""}
+                  onChange={(e) =>
+                    setEditing((p) => ({ ...p, slug: e.target.value }))
+                  }
+                  className={inputCls}
+                  placeholder="Auto-generated if empty"
+                />
+              </div>
+
+              {/* Tagline */}
+              <div className="col-span-2">
+                <label className={labelCls}>Tagline</label>
+                <input
+                  value={editing.tagline ?? ""}
+                  onChange={(e) =>
+                    setEditing((p) => ({ ...p, tagline: e.target.value }))
+                  }
+                  className={inputCls}
+                />
+              </div>
+
+              {/* Description */}
+              <div className="col-span-2">
+                <label className={labelCls}>Short description</label>
+                <textarea
+                  value={editing.description ?? ""}
+                  onChange={(e) =>
+                    setEditing((p) => ({ ...p, description: e.target.value }))
+                  }
+                  rows={3}
+                  className={`${inputCls} resize-none`}
+                />
+              </div>
+
+              {/* Price */}
+              <div>
+                <label className={labelCls}>Price (paise)</label>
                 <input
                   type="number"
                   value={editing.price ?? 0}
                   onChange={(e) =>
                     setEditing((p) => ({ ...p, price: Number(e.target.value) }))
                   }
-                  className="w-full px-3 py-2 rounded-lg border border-cream-300 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+                  className={inputCls}
                 />
                 {editing.price ? (
-                  <div className="text-xs text-brown-500 mt-1">
+                  <div className="text-xs text-brown-500 dark:text-amber-100/60 mt-1">
                     {formatPrice(editing.price as number)}
                   </div>
                 ) : null}
               </div>
+
+              {/* Saving */}
               <div>
-                <label className="block text-xs font-medium uppercase tracking-wider mb-1.5 text-brown-600">
-                  Saving (paise)
-                </label>
+                <label className={labelCls}>Saving (paise)</label>
                 <input
                   type="number"
                   value={editing.saving ?? 0}
@@ -630,262 +624,274 @@ export default function AdminGiftSetsPage() {
                       saving: Number(e.target.value),
                     }))
                   }
-                  className="w-full px-3 py-2 rounded-lg border border-cream-300 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+                  className={inputCls}
                 />
               </div>
-            </div>
 
-            {/* Price helper */}
-            {editingProducts.length > 0 && (
-              <div
-                className="mb-3 px-3 py-2 rounded-lg text-xs"
-                style={{ background: "#f9f5ee", color: "#7c5c3a" }}
-              >
-                Individual total: <strong>{formatPrice(individualSum)}</strong>
-                {editing.price ? (
-                  <>
-                    {" "}
-                    · Saving:{" "}
-                    <strong>
-                      {formatPrice(individualSum - (editing.price as number))}
-                    </strong>
-                  </>
-                ) : null}
-              </div>
-            )}
+              {/* Price helper */}
+              {editingProducts.length > 0 && (
+                <div className="col-span-2 px-3 py-2 rounded-lg text-xs bg-cream-50 dark:bg-amber-900/20 text-brown-700 dark:text-amber-100/80 border border-cream-200 dark:border-amber-900/40">
+                  Individual total:{" "}
+                  <strong>{formatPrice(individualSum)}</strong>
+                  {editing.price ? (
+                    <>
+                      {" "}
+                      · Saving:{" "}
+                      <strong>
+                        {formatPrice(individualSum - (editing.price as number))}
+                      </strong>
+                    </>
+                  ) : null}
+                </div>
+              )}
 
-            {/* Image */}
-            <label className="block text-xs font-medium uppercase tracking-wider mb-1.5 text-brown-600">
-              Image
-            </label>
-            <div className="flex gap-2 mb-3">
-              <input
-                value={editing.image ?? ""}
-                onChange={(e) =>
-                  setEditing((p) => ({ ...p, image: e.target.value }))
-                }
-                className="flex-1 px-3 py-2 rounded-lg border border-cream-300 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
-                placeholder="https://..."
-              />
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={uploading}
-                className="flex items-center gap-1.5 px-3 py-2 border border-cream-300 rounded-lg text-sm text-brown-600 hover:bg-cream-50 disabled:opacity-50"
-              >
-                <Upload size={14} /> {uploading ? "..." : "Upload"}
-              </button>
-            </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleImageUpload}
-            />
-            {editing.image && (
-              <img
-                src={editing.image}
-                className="w-full h-32 object-cover rounded-xl border border-cream-200 mb-3"
-                alt="Set preview"
-              />
-            )}
-
-            {/* Accent colour */}
-            <label className="block text-xs font-medium uppercase tracking-wider mb-1.5 text-brown-600">
-              Accent colour
-            </label>
-            <div className="flex gap-2 mb-3">
-              {ACCENT_OPTIONS.map((a) => (
-                <button
-                  key={a.value}
-                  onClick={() => setEditing((p) => ({ ...p, accent: a.value }))}
-                  title={a.label}
-                  className="w-7 h-7 rounded-full transition-all"
-                  style={{
-                    background: a.value,
-                    border:
-                      editing.accent === a.value
-                        ? "2px solid #1c1209"
-                        : "2px solid transparent",
-                    boxShadow:
-                      editing.accent === a.value
-                        ? "0 0 0 3px #fefdf8, 0 0 0 4px #1c1209"
-                        : "none",
-                  }}
-                />
-              ))}
-            </div>
-
-            {/* Status */}
-            <label className="block text-xs font-medium uppercase tracking-wider mb-1.5 text-brown-600">
-              Status
-            </label>
-            <select
-              value={editing.status ?? "draft"}
-              onChange={(e) =>
-                setEditing((p) => ({
-                  ...p,
-                  status: e.target.value as GiftSet["status"],
-                }))
-              }
-              className="w-full px-3 py-2 rounded-lg border border-cream-300 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-amber-400"
-            >
-              <option value="live">Live</option>
-              <option value="draft">Draft</option>
-              <option value="archived">Archived</option>
-            </select>
-
-            {/* Occasions */}
-            <label className="block text-xs font-medium uppercase tracking-wider mb-2 text-brown-600">
-              Occasions / Tags
-            </label>
-            <div className="flex flex-wrap gap-1.5 mb-4">
-              {GS_OCCASIONS.map((o) => {
-                const active = (editing.occasions ?? []).includes(o.id);
-                return (
+              {/* Image */}
+              <div className="col-span-2">
+                <label className={labelCls}>Image</label>
+                <div className="flex gap-2 mb-3">
+                  <input
+                    value={editing.image ?? ""}
+                    onChange={(e) =>
+                      setEditing((p) => ({ ...p, image: e.target.value }))
+                    }
+                    className={`flex-1 ${inputCls}`}
+                    placeholder="https://..."
+                  />
                   <button
-                    key={o.id}
-                    onClick={() => toggleOccasion(o.id)}
-                    className="px-2.5 py-1 rounded-full text-xs font-medium transition-all"
-                    style={{
-                      background: active ? "#1c1209" : "transparent",
-                      color: active ? "#fefdf8" : "#5c3d1e",
-                      border: `1px solid ${active ? "#1c1209" : "#d4c9b4"}`,
-                    }}
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="flex items-center gap-1.5 px-3 py-2 bg-white dark:bg-[#1a1830] border border-brown-300 dark:border-amber-900/40 rounded-lg text-sm text-brown-600 dark:text-amber-100/80 hover:bg-cream-50 dark:hover:bg-[#12101e] transition-colors disabled:opacity-50"
                   >
-                    {active && <Check size={10} className="inline mr-1" />}
-                    {o.label}
+                    <Upload size={14} /> {uploading ? "..." : "Upload"}
                   </button>
-                );
-              })}
-            </div>
-
-            {/* Products in this set */}
-            <label className="block text-xs font-medium uppercase tracking-wider mb-2 text-brown-600">
-              Products ({editingProductIds.length})
-            </label>
-
-            {editingProducts.length > 0 && (
-              <div className="flex flex-col gap-1.5 mb-3 max-h-40 overflow-y-auto">
-                {editingProducts.map((product, index) => {
-                  const image = product.images?.[0] ?? "";
-                  return (
-                    <div
-                      key={`${product.id}-${index}`}
-                      className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-cream-50 border border-cream-200"
-                    >
-                      {image ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={image}
-                          alt={product.name}
-                          className="w-7 h-7 rounded object-cover flex-shrink-0"
-                        />
-                      ) : (
-                        <div className="w-7 h-7 rounded bg-amber-50 flex items-center justify-center text-sm flex-shrink-0">
-                          🎁
-                        </div>
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <div className="text-xs font-medium text-brown-900 truncate">
-                          {product.name}
-                        </div>
-                        <div className="text-xs text-brown-500">
-                          {formatPrice(product.price)}
-                        </div>
-                      </div>
-                      <div className="flex flex-col gap-0.5 mr-1">
-                        <button
-                          type="button"
-                          onClick={() => moveProduct(index, "up")}
-                          disabled={index === 0}
-                          className="text-brown-400 hover:text-brown-700 disabled:opacity-30"
-                        >
-                          <ChevronUp size={12} />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => moveProduct(index, "down")}
-                          disabled={index === editingProducts.length - 1}
-                          className="text-brown-400 hover:text-brown-700 disabled:opacity-30"
-                        >
-                          <ChevronDown size={12} />
-                        </button>
-                      </div>
-                      <button
-                        onClick={() => toggleProduct(product.id)}
-                        className="text-brown-400 hover:text-red-500 p-1"
-                      >
-                        <X size={14} />
-                      </button>
-                    </div>
-                  );
-                })}
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageUpload}
+                />
+                {editing.image && (
+                  <img
+                    src={editing.image}
+                    className="w-32 h-32 object-cover rounded-xl border border-cream-200 dark:border-amber-900/40 shadow-sm"
+                    alt="Set preview"
+                  />
+                )}
               </div>
-            )}
 
-            {/* Product search / add */}
-            <input
-              value={productSearch}
-              onChange={(e) => setProductSearch(e.target.value)}
-              placeholder="Search products to add…"
-              className="w-full px-3 py-2 rounded-lg border border-cream-300 text-sm mb-2 focus:outline-none focus:ring-2 focus:ring-amber-400"
-            />
-            <div className="flex flex-col gap-1 max-h-48 overflow-y-auto mb-4">
-              {filteredProducts
-                .filter((p) => !editingProductIds.includes(p.id))
-                .map((product) => {
-                  const image = product.images?.[0] ?? "";
-                  return (
+              {/* Accent colour */}
+              <div>
+                <label className={labelCls}>Accent colour</label>
+                <div className="flex gap-2">
+                  {ACCENT_OPTIONS.map((a) => (
                     <button
-                      key={product.id}
-                      onClick={() => toggleProduct(product.id)}
-                      className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-left hover:bg-cream-50 transition-colors w-full"
-                    >
-                      {image ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={image}
-                          alt={product.name}
-                          className="w-7 h-7 rounded object-cover flex-shrink-0"
-                        />
-                      ) : (
-                        <div className="w-7 h-7 rounded bg-amber-50 flex items-center justify-center text-sm flex-shrink-0">
-                          🎁
-                        </div>
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <div className="text-xs font-medium text-brown-900 truncate">
-                          {product.name}
-                        </div>
-                        <div className="text-xs text-brown-500">
-                          {product.tags?.[0] ?? ""} ·{" "}
-                          {formatPrice(product.price)}
-                        </div>
-                      </div>
-                      <Plus
-                        size={14}
-                        className="text-brown-400 flex-shrink-0"
-                      />
-                    </button>
-                  );
-                })}
-            </div>
+                      key={a.value}
+                      type="button"
+                      onClick={() =>
+                        setEditing((p) => ({ ...p, accent: a.value }))
+                      }
+                      title={a.label}
+                      className="w-7 h-7 rounded-full transition-all"
+                      style={{
+                        background: a.value,
+                        border:
+                          editing.accent === a.value
+                            ? "2px solid #1c1209"
+                            : "2px solid transparent",
+                        boxShadow:
+                          editing.accent === a.value
+                            ? "0 0 0 3px #fefdf8, 0 0 0 4px #1c1209"
+                            : "none",
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
 
-            <button
-              onClick={handleSave}
-              disabled={saving || !editing.name}
-              className="w-full py-2.5 rounded-xl text-sm font-semibold text-white bg-amber-700 hover:bg-amber-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              {/* Status */}
+              <div>
+                <label className={labelCls}>Status</label>
+                <select
+                  value={editing.status ?? "draft"}
+                  onChange={(e) =>
+                    setEditing((p) => ({
+                      ...p,
+                      status: e.target.value as GiftSet["status"],
+                    }))
+                  }
+                  className={inputCls}
+                >
+                  <option value="live">Live</option>
+                  <option value="draft">Draft</option>
+                  <option value="archived">Archived</option>
+                </select>
+              </div>
+
+              {/* Occasions */}
+              <div className="col-span-2">
+                <label className={labelCls}>Occasions / Tags</label>
+                <div className="flex flex-wrap gap-1.5">
+                  {GS_OCCASIONS.map((o) => {
+                    const active = (editing.occasions ?? []).includes(o.id);
+                    return (
+                      <button
+                        key={o.id}
+                        type="button"
+                        onClick={() => toggleOccasion(o.id)}
+                        className="px-2.5 py-1 rounded-full text-xs font-medium transition-all"
+                        style={{
+                          background: active ? "#1c1209" : "transparent",
+                          color: active ? "#fefdf8" : "#5c3d1e",
+                          border: `1px solid ${active ? "#1c1209" : "#d4c9b4"}`,
+                        }}
+                      >
+                        {active && <Check size={10} className="inline mr-1" />}
+                        {o.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Products */}
+              <div className="col-span-2 mt-2">
+                <label className={labelCls}>
+                  Products ({editingProductIds.length})
+                </label>
+
+                {editingProducts.length > 0 && (
+                  <div className="flex flex-col gap-1.5 mb-3 max-h-40 overflow-y-auto pr-1">
+                    {editingProducts.map((product, index) => {
+                      const image = product.images?.[0] ?? "";
+                      return (
+                        <div
+                          key={`${product.id}-${index}`}
+                          className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-cream-50 dark:bg-[#12101e] border border-cream-200 dark:border-amber-900/30"
+                        >
+                          {image ? (
+                            <img
+                              src={image}
+                              alt={product.name}
+                              className="w-7 h-7 rounded object-cover flex-shrink-0"
+                            />
+                          ) : (
+                            <div className="w-7 h-7 rounded bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center text-sm flex-shrink-0">
+                              🎁
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <div className="text-xs font-medium text-brown-900 dark:text-amber-100 truncate">
+                              {product.name}
+                            </div>
+                            <div className="text-xs text-brown-500 dark:text-amber-100/60">
+                              {formatPrice(product.price)}
+                            </div>
+                          </div>
+                          <div className="flex flex-col gap-0.5 mr-1">
+                            <button
+                              type="button"
+                              onClick={() => moveProduct(index, "up")}
+                              disabled={index === 0}
+                              className="text-brown-400 hover:text-brown-700 dark:hover:text-amber-100/80 disabled:opacity-30"
+                            >
+                              <ChevronUp size={12} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => moveProduct(index, "down")}
+                              disabled={index === editingProducts.length - 1}
+                              className="text-brown-400 hover:text-brown-700 dark:hover:text-amber-100/80 disabled:opacity-30"
+                            >
+                              <ChevronDown size={12} />
+                            </button>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => toggleProduct(product.id)}
+                            className="text-brown-400 hover:text-red-500 dark:hover:text-red-400 p-1"
+                          >
+                            <X size={14} />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Product search / add */}
+                <input
+                  value={productSearch}
+                  onChange={(e) => setProductSearch(e.target.value)}
+                  placeholder="Search products to add…"
+                  className={inputCls}
+                />
+                <div className="flex flex-col gap-1 max-h-48 overflow-y-auto mt-2 pr-1">
+                  {filteredProducts
+                    .filter((p) => !editingProductIds.includes(p.id))
+                    .map((product) => {
+                      const image = product.images?.[0] ?? "";
+                      return (
+                        <button
+                          type="button"
+                          key={product.id}
+                          onClick={() => toggleProduct(product.id)}
+                          className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-left hover:bg-cream-50 dark:hover:bg-amber-900/10 transition-colors w-full"
+                        >
+                          {image ? (
+                            <img
+                              src={image}
+                              alt={product.name}
+                              className="w-7 h-7 rounded object-cover flex-shrink-0"
+                            />
+                          ) : (
+                            <div className="w-7 h-7 rounded bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center text-sm flex-shrink-0">
+                              🎁
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <div className="text-xs font-medium text-brown-900 dark:text-amber-100 truncate">
+                              {product.name}
+                            </div>
+                            <div className="text-xs text-brown-500 dark:text-amber-100/60">
+                              {product.tags?.[0] ?? ""} ·{" "}
+                              {formatPrice(product.price)}
+                            </div>
+                          </div>
+                          <Plus
+                            size={14}
+                            className="text-brown-400 dark:text-amber-100/40 flex-shrink-0"
+                          />
+                        </button>
+                      );
+                    })}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="flex gap-3 justify-end pt-4 pb-2 mt-4 border-t border-cream-100 dark:border-amber-900/20">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setModalOpen(false);
+                setSelected(null);
+                setEditing({});
+                setShowNew(false);
+              }}
             >
+              Cancel
+            </Button>
+            <Button onClick={handleSave} disabled={saving || !editing.name}>
               {saving
                 ? "Saving…"
                 : showNew
                   ? "Create gift set"
                   : "Save changes"}
-            </button>
+            </Button>
           </div>
-        )}
+        </Modal>
       </div>
     </div>
   );

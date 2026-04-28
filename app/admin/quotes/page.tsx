@@ -62,13 +62,13 @@ export default function AdminQuotesPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
+      <h1 className="text-3xl font-serif font-bold text-brown-900 dark:text-amber-100 mb-8">
         Quote Requests
       </h1>
 
-      <div className="bg-white dark:bg-[#1a1830] rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
-        <table className="w-full text-left text-sm text-gray-600 dark:text-gray-300">
-          <thead className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 uppercase font-semibold">
+      <div className="bg-white dark:bg-[#1a1830] rounded-2xl shadow-sm border border-cream-200 dark:border-amber-900/30 overflow-hidden">
+        <table className="w-full text-left text-sm text-brown-600 dark:text-amber-100/70">
+          <thead className="bg-cream-50 dark:bg-[#12101e] text-[11px] font-semibold text-brown-500 dark:text-amber-100/60 uppercase tracking-wider">
             <tr>
               <th className="px-6 py-4">Date</th>
               <th className="px-6 py-4">Customer</th>
@@ -78,21 +78,25 @@ export default function AdminQuotesPage() {
               <th className="px-6 py-4 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+          <tbody className="divide-y divide-cream-100 dark:divide-amber-900/20">
             {quotes.map((quote) => (
               <tr
                 key={quote.id}
-                className="hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                className="hover:bg-cream-50 dark:hover:bg-amber-900/10 transition-colors"
               >
                 <td className="px-6 py-4">
                   {new Date(quote.created_at).toLocaleDateString()}
                 </td>
                 <td className="px-6 py-4">
-                  <div className="font-medium text-gray-900 dark:text-white">
+                  <div className="font-medium text-brown-900 dark:text-amber-100">
                     {quote.customer_name}
                   </div>
-                  <div className="text-xs">{quote.customer_email}</div>
-                  <div className="text-xs">{quote.customer_phone}</div>
+                  <div className="text-xs text-brown-500 dark:text-amber-100/60">
+                    {quote.customer_email}
+                  </div>
+                  <div className="text-xs text-brown-500 dark:text-amber-100/60">
+                    {quote.customer_phone}
+                  </div>
                 </td>
                 <td className="px-6 py-4 capitalize font-medium">
                   {quote.type}
@@ -106,11 +110,11 @@ export default function AdminQuotesPage() {
                         )
                         .map(([key, value]) => (
                           <div key={key} className="flex gap-2">
-                            <span className="font-medium text-gray-700 dark:text-gray-300 capitalize min-w-[70px]">
+                            <span className="font-medium text-brown-700 dark:text-amber-100/80 capitalize min-w-[70px]">
                               {key.replace(/([A-Z])/g, " $1").trim()}:
                             </span>
                             <span
-                              className="text-gray-600 dark:text-gray-400 truncate max-w-[120px]"
+                              className="text-brown-600 dark:text-amber-100/60 truncate max-w-[120px]"
                               title={String(value)}
                             >
                               {typeof value === "boolean"
@@ -125,7 +129,7 @@ export default function AdminQuotesPage() {
                 </td>
                 <td className="px-6 py-4">
                   <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${quote.status === "pending" ? "bg-amber-100 text-amber-800" : "bg-green-100 text-green-800"}`}
+                    className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase ${quote.status === "pending" ? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300" : "bg-forest-100 text-forest-800 dark:bg-forest-900/40 dark:text-forest-300"}`}
                   >
                     {quote.status}
                   </span>
@@ -133,13 +137,13 @@ export default function AdminQuotesPage() {
                 <td className="px-6 py-4 text-right space-x-2">
                   <button
                     onClick={() => setSelectedQuote(quote)}
-                    className="text-xs bg-amber-500 text-white px-3 py-1.5 rounded hover:bg-amber-600 inline-flex items-center gap-1 mr-2"
+                    className="text-xs bg-amber-500 text-white px-3 py-1.5 rounded-lg hover:bg-amber-600 inline-flex items-center gap-1 mr-2 transition-colors"
                   >
                     <Eye size={14} /> View
                   </button>
                   <button
                     onClick={() => updateStatus(quote.id, "contacted")}
-                    className="text-xs bg-blue-500 text-white px-3 py-1.5 rounded hover:bg-blue-600"
+                    className="text-xs bg-blue-500 text-white px-3 py-1.5 rounded-lg hover:bg-blue-600 transition-colors"
                   >
                     Mark Contacted
                   </button>
@@ -153,14 +157,14 @@ export default function AdminQuotesPage() {
       {/* Quote Details Modal */}
       {selectedQuote && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white dark:bg-[#1a1830] rounded-3xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-800 flex flex-col">
-            <div className="sticky top-0 z-10 flex items-center justify-between p-6 bg-white/95 dark:bg-[#1a1830]/95 backdrop-blur border-b border-gray-100 dark:border-gray-800">
-              <h2 className="text-2xl font-serif font-bold text-gray-900 dark:text-white capitalize">
+          <div className="bg-white dark:bg-[#1a1830] rounded-3xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto border border-cream-200 dark:border-amber-900/30 flex flex-col custom-scrollbar">
+            <div className="sticky top-0 z-10 flex items-center justify-between p-6 bg-white/95 dark:bg-[#1a1830]/95 backdrop-blur border-b border-cream-100 dark:border-amber-900/20">
+              <h2 className="text-2xl font-serif font-bold text-brown-900 dark:text-amber-100 capitalize">
                 {selectedQuote.type.replace("-", " ")} Request
               </h2>
               <button
                 onClick={() => setSelectedQuote(null)}
-                className="p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white bg-gray-100 dark:bg-gray-800 rounded-full transition-colors"
+                className="p-2 text-brown-400 hover:text-brown-900 dark:text-amber-100/50 dark:hover:text-amber-100 bg-cream-50 dark:bg-[#12101e] rounded-full transition-colors"
               >
                 <X size={20} />
               </button>
@@ -170,27 +174,27 @@ export default function AdminQuotesPage() {
               {/* Left Column: Text Details */}
               <div className="space-y-8">
                 <div>
-                  <h3 className="text-xs font-semibold text-amber-600 dark:text-amber-500 uppercase tracking-widest mb-3">
+                  <h3 className="text-[11px] font-semibold text-brown-500 dark:text-amber-100/60 uppercase tracking-wider mb-3">
                     Customer Information
                   </h3>
-                  <div className="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
-                    <p className="text-lg font-medium text-gray-900 dark:text-white mb-1">
+                  <div className="bg-cream-50 dark:bg-[#12101e] rounded-2xl p-5 border border-cream-100 dark:border-amber-900/20">
+                    <p className="text-lg font-medium text-brown-900 dark:text-amber-100 mb-1">
                       {selectedQuote.customer_name}
                     </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">
+                    <p className="text-sm text-brown-600 dark:text-amber-100/70 mb-1">
                       {selectedQuote.customer_email}
                     </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                    <p className="text-sm text-brown-600 dark:text-amber-100/70">
                       {selectedQuote.customer_phone || "No phone provided"}
                     </p>
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="text-xs font-semibold text-amber-600 dark:text-amber-500 uppercase tracking-widest mb-3">
+                  <h3 className="text-[11px] font-semibold text-brown-500 dark:text-amber-100/60 uppercase tracking-wider mb-3">
                     Request Details
                   </h3>
-                  <div className="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-5 border border-gray-100 dark:border-gray-800 space-y-4">
+                  <div className="bg-cream-50 dark:bg-[#12101e] rounded-2xl p-5 border border-cream-100 dark:border-amber-900/20 space-y-4">
                     {Object.entries(selectedQuote.details || {})
                       .filter(
                         ([k]) => k !== "originalImage" && k !== "alignment",
@@ -200,10 +204,10 @@ export default function AdminQuotesPage() {
                           key={key}
                           className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4"
                         >
-                          <span className="font-medium text-gray-500 dark:text-gray-400 capitalize min-w-[100px] text-sm">
+                          <span className="font-medium text-brown-500 dark:text-amber-100/60 capitalize min-w-[100px] text-sm">
                             {key.replace(/([A-Z])/g, " $1").trim()}:
                           </span>
-                          <span className="text-sm font-medium text-gray-900 dark:text-white break-words">
+                          <span className="text-sm font-medium text-brown-900 dark:text-amber-100 break-words">
                             {typeof value === "boolean"
                               ? value
                                 ? "Yes"
@@ -217,16 +221,16 @@ export default function AdminQuotesPage() {
               </div>
 
               {/* Right Column: Visual Preview */}
-              <div className="bg-gray-50 dark:bg-gray-800/50 rounded-3xl p-6 flex flex-col items-center justify-center border border-gray-100 dark:border-gray-800 min-h-[400px]">
+              <div className="bg-cream-50 dark:bg-[#12101e] rounded-3xl p-6 flex flex-col items-center justify-center border border-cream-100 dark:border-amber-900/20 min-h-[400px]">
                 {selectedQuote.type === "custom-magnet" &&
                 selectedQuote.details?.style === "flat-painted" &&
                 selectedQuote.details?.originalImage ? (
                   <div className="flex flex-col items-center w-full">
-                    <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-6">
+                    <p className="text-[11px] font-semibold text-brown-500 dark:text-amber-100/60 uppercase tracking-wider mb-6">
                       User Composition Preview
                     </p>
                     <div
-                      className="relative overflow-hidden shadow-xl border-4 border-white dark:border-gray-700"
+                      className="relative overflow-hidden shadow-xl border-4 border-white dark:border-amber-900/30"
                       style={{
                         width: "256px",
                         height:
@@ -267,26 +271,26 @@ export default function AdminQuotesPage() {
                   selectedQuote.details?.style === "3d-clay" &&
                   selectedQuote.details?.originalImage ? (
                   <div className="flex flex-col items-center w-full">
-                    <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-6">
+                    <p className="text-[11px] font-semibold text-brown-500 dark:text-amber-100/60 uppercase tracking-wider mb-6">
                       Reference Photo
                     </p>
                     <img
                       src={selectedQuote.details.originalImage}
                       alt="Reference Upload"
-                      className="w-64 h-64 object-cover rounded-2xl shadow-xl border-4 border-white dark:border-gray-700"
+                      className="w-64 h-64 object-cover rounded-2xl shadow-xl border-4 border-white dark:border-amber-900/30"
                     />
                   </div>
                 ) : selectedQuote.type === "candle" &&
                   selectedQuote.details?.color ? (
                   <div className="flex flex-col items-center w-full">
-                    <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-6">
+                    <p className="text-[11px] font-semibold text-brown-500 dark:text-amber-100/60 uppercase tracking-wider mb-6">
                       Requested Color
                     </p>
                     <div
-                      className="w-40 h-40 rounded-full shadow-inner border-8 border-white dark:border-gray-700"
+                      className="w-40 h-40 rounded-full shadow-inner border-8 border-white dark:border-amber-900/30"
                       style={{ backgroundColor: selectedQuote.details.color }}
                     />
-                    <p className="mt-4 font-mono text-lg font-medium text-gray-700 dark:text-gray-300">
+                    <p className="mt-4 font-mono text-lg font-medium text-brown-700 dark:text-amber-100/80">
                       {selectedQuote.details.color}
                     </p>
                   </div>
@@ -294,9 +298,9 @@ export default function AdminQuotesPage() {
                   <div className="text-center">
                     <Eye
                       size={48}
-                      className="mx-auto opacity-20 text-gray-500 mb-4"
+                      className="mx-auto opacity-20 text-brown-500 dark:text-amber-100/30 mb-4"
                     />
-                    <p className="text-gray-500 font-medium">
+                    <p className="text-brown-500 dark:text-amber-100/50 font-medium">
                       No visual preview available
                     </p>
                   </div>

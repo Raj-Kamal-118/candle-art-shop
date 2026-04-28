@@ -126,41 +126,48 @@ export default function AdminDiscountsPage() {
         </Button>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-white dark:bg-[#1a1830] rounded-2xl shadow-sm border border-cream-200 dark:border-amber-900/30 overflow-hidden">
         {loading ? (
-          <div className="p-8 text-center text-gray-400">Loading...</div>
+          <div className="p-8 text-center text-brown-400 dark:text-amber-100/50">
+            Loading...
+          </div>
         ) : discounts.length === 0 ? (
           <div className="p-12 text-center">
-            <Percent className="mx-auto text-gray-300 mb-3" size={40} />
-            <p className="text-gray-400">No discount codes yet</p>
+            <Percent
+              className="mx-auto text-cream-300 dark:text-amber-900/40 mb-3"
+              size={40}
+            />
+            <p className="text-brown-400 dark:text-amber-100/50">
+              No discount codes yet
+            </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-100">
+              <thead className="bg-cream-50 dark:bg-[#12101e] border-b border-cream-200 dark:border-amber-900/30">
                 <tr>
-                  <th className="text-left px-5 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="text-left px-5 py-3.5 text-[11px] font-semibold text-brown-500 dark:text-amber-100/60 uppercase tracking-wider">
                     Code
                   </th>
-                  <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="text-left px-4 py-3.5 text-[11px] font-semibold text-brown-500 dark:text-amber-100/60 uppercase tracking-wider">
                     Discount
                   </th>
-                  <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="text-left px-4 py-3.5 text-[11px] font-semibold text-brown-500 dark:text-amber-100/60 uppercase tracking-wider">
                     Min Order
                   </th>
-                  <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="text-left px-4 py-3.5 text-[11px] font-semibold text-brown-500 dark:text-amber-100/60 uppercase tracking-wider">
                     Usage
                   </th>
-                  <th className="text-center px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="text-center px-4 py-3.5 text-[11px] font-semibold text-brown-500 dark:text-amber-100/60 uppercase tracking-wider">
                     1 / Cust
                   </th>
-                  <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="text-left px-4 py-3.5 text-[11px] font-semibold text-brown-500 dark:text-amber-100/60 uppercase tracking-wider">
                     Expires
                   </th>
-                  <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="text-left px-4 py-3.5 text-[11px] font-semibold text-brown-500 dark:text-amber-100/60 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="text-right px-5 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="text-right px-5 py-3.5 text-[11px] font-semibold text-brown-500 dark:text-amber-100/60 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -169,16 +176,16 @@ export default function AdminDiscountsPage() {
                 {discounts.map((disc) => (
                   <tr
                     key={disc.id}
-                    className="border-b border-gray-50 hover:bg-gray-50 transition-colors"
+                    className="border-b border-cream-100 dark:border-amber-900/20 hover:bg-cream-50 dark:hover:bg-amber-900/10 transition-colors"
                   >
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-2">
-                        <code className="bg-gray-100 px-2 py-1 rounded text-xs font-mono font-bold">
+                        <code className="bg-cream-100 dark:bg-amber-900/30 text-brown-900 dark:text-amber-100 px-2 py-1 rounded text-xs font-mono font-bold">
                           {disc.code}
                         </code>
                         <button
                           onClick={() => copyCode(disc.id, disc.code)}
-                          className="text-gray-400 hover:text-amber-700 transition-colors"
+                          className="text-brown-400 dark:text-amber-100/40 hover:text-amber-700 dark:hover:text-amber-300 transition-colors"
                         >
                           {copiedId === disc.id ? (
                             <Check size={13} className="text-green-500" />
@@ -189,26 +196,28 @@ export default function AdminDiscountsPage() {
                       </div>
                     </td>
                     <td className="px-4 py-4">
-                      <span className="font-semibold text-gray-900">
+                      <span className="font-semibold text-brown-900 dark:text-amber-100">
                         {disc.type === "percentage"
                           ? `${disc.value}% off`
                           : `₹${disc.value} off`}
                       </span>
                     </td>
-                    <td className="px-4 py-4 text-gray-600">
+                    <td className="px-4 py-4 text-brown-600 dark:text-amber-100/70">
                       {disc.minOrderAmount === 0
                         ? "None"
                         : `₹${disc.minOrderAmount}`}
                     </td>
-                    <td className="px-4 py-4 text-gray-600">
+                    <td className="px-4 py-4 text-brown-600 dark:text-amber-100/70">
                       <div className="flex items-center gap-1.5">
                         <span>{disc.usedCount}</span>
-                        <span className="text-gray-400">/</span>
+                        <span className="text-brown-400 dark:text-amber-100/40">
+                          /
+                        </span>
                         <span>{disc.maxUses}</span>
                       </div>
-                      <div className="w-20 h-1 bg-gray-200 rounded-full mt-1">
+                      <div className="w-20 h-1 bg-cream-200 dark:bg-amber-900/30 rounded-full mt-1">
                         <div
-                          className="h-full bg-amber-500 rounded-full"
+                          className="h-full bg-amber-500 dark:bg-amber-500/80 rounded-full"
                           style={{
                             width: `${Math.min(100, (disc.usedCount / disc.maxUses) * 100)}%`,
                           }}
@@ -219,10 +228,12 @@ export default function AdminDiscountsPage() {
                       {(disc as any).oneUsePerCustomer ? (
                         <Check size={16} className="text-green-500 mx-auto" />
                       ) : (
-                        <span className="text-gray-300">-</span>
+                        <span className="text-cream-300 dark:text-amber-900/40">
+                          -
+                        </span>
                       )}
                     </td>
-                    <td className="px-4 py-4 text-xs text-gray-500">
+                    <td className="px-4 py-4 text-xs text-brown-500 dark:text-amber-100/60">
                       {new Date(disc.expiresAt).toLocaleDateString()}
                     </td>
                     <td className="px-4 py-4">
@@ -240,13 +251,13 @@ export default function AdminDiscountsPage() {
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => openEdit(disc)}
-                          className="p-2 text-gray-400 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition-colors"
+                          className="p-2 text-brown-400 dark:text-amber-100/50 hover:text-amber-700 dark:hover:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg transition-colors"
                         >
                           <Pencil size={15} />
                         </button>
                         <button
                           onClick={() => setDeleteId(disc.id)}
-                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-2 text-brown-400 dark:text-amber-100/50 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                         >
                           <Trash2 size={15} />
                         </button>
@@ -269,7 +280,7 @@ export default function AdminDiscountsPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-[13px] font-medium text-brown-800 dark:text-amber-100/80 mb-1.5">
                 Code *
               </label>
               <input
@@ -279,11 +290,11 @@ export default function AdminDiscountsPage() {
                   setForm({ ...form, code: e.target.value.toUpperCase() })
                 }
                 placeholder="SUMMER20"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 font-mono uppercase"
+                className="w-full px-3 py-2 bg-white dark:bg-[#12101e] border border-brown-300 dark:border-amber-900/40 rounded-lg text-sm text-brown-900 dark:text-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-400 dark:focus:ring-amber-500/50 transition-colors placeholder:text-brown-400 dark:placeholder:text-amber-100/30 font-mono uppercase"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-[13px] font-medium text-brown-800 dark:text-amber-100/80 mb-1.5">
                 Type *
               </label>
               <select
@@ -294,14 +305,14 @@ export default function AdminDiscountsPage() {
                     type: e.target.value as "percentage" | "fixed",
                   })
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+                className="w-full px-3 py-2 bg-white dark:bg-[#12101e] border border-brown-300 dark:border-amber-900/40 rounded-lg text-sm text-brown-900 dark:text-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-400 dark:focus:ring-amber-500/50 transition-colors"
               >
                 <option value="percentage">Percentage (%)</option>
                 <option value="fixed">Fixed (₹)</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-[13px] font-medium text-brown-800 dark:text-amber-100/80 mb-1.5">
                 Value *
               </label>
               <input
@@ -311,11 +322,11 @@ export default function AdminDiscountsPage() {
                 value={form.value}
                 onChange={(e) => setForm({ ...form, value: e.target.value })}
                 placeholder={form.type === "percentage" ? "20" : "10.00"}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+                className="w-full px-3 py-2 bg-white dark:bg-[#12101e] border border-brown-300 dark:border-amber-900/40 rounded-lg text-sm text-brown-900 dark:text-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-400 dark:focus:ring-amber-500/50 transition-colors placeholder:text-brown-400 dark:placeholder:text-amber-100/30"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-[13px] font-medium text-brown-800 dark:text-amber-100/80 mb-1.5">
                 Min Order Amount
               </label>
               <input
@@ -325,22 +336,22 @@ export default function AdminDiscountsPage() {
                 onChange={(e) =>
                   setForm({ ...form, minOrderAmount: e.target.value })
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+                className="w-full px-3 py-2 bg-white dark:bg-[#12101e] border border-brown-300 dark:border-amber-900/40 rounded-lg text-sm text-brown-900 dark:text-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-400 dark:focus:ring-amber-500/50 transition-colors"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-[13px] font-medium text-brown-800 dark:text-amber-100/80 mb-1.5">
                 Max Uses
               </label>
               <input
                 type="number"
                 value={form.maxUses}
                 onChange={(e) => setForm({ ...form, maxUses: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+                className="w-full px-3 py-2 bg-white dark:bg-[#12101e] border border-brown-300 dark:border-amber-900/40 rounded-lg text-sm text-brown-900 dark:text-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-400 dark:focus:ring-amber-500/50 transition-colors"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-[13px] font-medium text-brown-800 dark:text-amber-100/80 mb-1.5">
                 Expires At
               </label>
               <input
@@ -349,7 +360,7 @@ export default function AdminDiscountsPage() {
                 onChange={(e) =>
                   setForm({ ...form, expiresAt: e.target.value })
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+                className="w-full px-3 py-2 bg-white dark:bg-[#12101e] border border-brown-300 dark:border-amber-900/40 rounded-lg text-sm text-brown-900 dark:text-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-400 dark:focus:ring-amber-500/50 transition-colors"
               />
             </div>
             <div className="col-span-2 flex items-center gap-6">
@@ -365,7 +376,7 @@ export default function AdminDiscountsPage() {
                 />
                 <label
                   htmlFor="active-check"
-                  className="text-sm text-gray-700 cursor-pointer"
+                  className="text-sm text-brown-700 dark:text-amber-100/80 cursor-pointer"
                 >
                   Active
                 </label>
@@ -382,7 +393,7 @@ export default function AdminDiscountsPage() {
                 />
                 <label
                   htmlFor="one-use-check"
-                  className="text-sm text-gray-700 cursor-pointer"
+                  className="text-sm text-brown-700 dark:text-amber-100/80 cursor-pointer"
                 >
                   Limit to one use per customer
                 </label>
@@ -410,7 +421,7 @@ export default function AdminDiscountsPage() {
         title="Delete Discount Code"
         size="sm"
       >
-        <p className="text-gray-600 mb-5">
+        <p className="text-brown-700 dark:text-amber-100/80 mb-5">
           Are you sure you want to delete this discount code? This cannot be
           undone.
         </p>
