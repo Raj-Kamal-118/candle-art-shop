@@ -128,6 +128,7 @@ export interface Address {
   state: string;
   postalCode: string;
   country: string;
+  isDefault?: boolean;
 }
 
 export interface OrderItem {
@@ -160,6 +161,9 @@ export interface Order {
   customerPhone?: string;
   is_reviewed?: boolean;
   rating?: number;
+  isGift?: boolean;
+  giftMessage?: string;
+  saveAddress?: boolean;
 }
 
 export interface AdminCredentials {
@@ -285,6 +289,7 @@ export interface User {
   phone: string;
   name?: string;
   email?: string;
+  savedAddresses?: Address[];
   createdAt: string;
   updatedAt: string;
 }

@@ -188,12 +188,6 @@ export default function Footer() {
             >
               Terms of Service
             </Link>
-            <Link
-              href="/admin/login"
-              className="text-[13px] text-forest-300/60 hover:text-white transition-colors"
-            >
-              Admin
-            </Link>
           </div>
         </div>
       </div>

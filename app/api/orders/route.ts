@@ -6,7 +6,8 @@ import {
   getDiscountByCode,
   hasUserUsedDiscount,
   getUserById,
-  createUser
+  createUser,
+  updateUser
 } from "@/lib/data";
 import { generateId } from "@/lib/utils";
 
@@ -81,14 +82,26 @@ export async function POST(request: NextRequest) {
     // Ensure the user exists in the public.users table (important for Google Auth users)
     if (userId) {
       try {
-        const existingUser = await getUserById(userId);
-        if (!existingUser) {
-          await createUser({
+        let user = await getUserById(userId);
+        if (!user) {
+          user = await createUser({
             id: userId,
             phone: customerPhone || body.shippingAddress?.phone || "",
             name: body.shippingAddress?.fullName,
             email: body.shippingAddress?.email,
           });
+        }
+
+        // Save the shipping address to the user's profile if requested
+        if (body.saveAddress && body.shippingAddress) {
+          const existingAddresses = user.savedAddresses || [];
+          const isDuplicate = existingAddresses.some(
+            (a) => a.address1 === body.shippingAddress.address1 && a.postalCode === body.shippingAddress.postalCode
+          );
+
+          if (!isDuplicate) {
+            await updateUser(userId, { savedAddresses: [...existingAddresses, body.shippingAddress] });
+          }
         }
       } catch (err) {
         console.warn("Failed to ensure user exists (might be guest or db error):", err);

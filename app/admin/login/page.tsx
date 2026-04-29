@@ -49,7 +49,7 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--cream-50)] dark:bg-[#0a0a16] flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-full bg-[var(--cream-50)] dark:bg-[#0a0a16] flex items-center justify-center p-4 relative overflow-hidden">
       {/* Decorative blurs matching brand design system */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-coral-200/30 dark:bg-amber-500/10 blur-[100px] rounded-full pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-gold-100/50 dark:bg-amber-500/10 blur-[100px] rounded-full pointer-events-none" />

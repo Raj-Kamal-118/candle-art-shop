@@ -7,6 +7,7 @@ import {
   HeroSettings,
   User,
   OTPSession,
+  Address,
 } from "./types";
 
 // ─── Mappers (DB snake_case → TypeScript camelCase) ─────────────────────────
@@ -130,6 +131,7 @@ function mapUser(row: Record<string, unknown>): User {
     phone: row.phone as string,
     name: row.name as string | undefined,
     email: row.email as string | undefined,
+    savedAddresses: (row.saved_addresses as Address[]) || [],
     createdAt: row.created_at as string,
     updatedAt: row.updated_at as string,
   };
@@ -737,11 +739,12 @@ export async function createUser(user: {
 
 export async function updateUser(
   id: string,
-  updates: { name?: string; email?: string }
+  updates: { name?: string; email?: string; savedAddresses?: Address[] }
 ): Promise<User | null> {
   const dbUpdates: Record<string, unknown> = { updated_at: new Date().toISOString() };
   if (updates.name !== undefined) dbUpdates.name = updates.name;
   if (updates.email !== undefined) dbUpdates.email = updates.email;
+  if (updates.savedAddresses !== undefined) dbUpdates.saved_addresses = updates.savedAddresses;
 
   const { data, error } = await supabase
     .from("users")
@@ -751,6 +754,40 @@ export async function updateUser(
     .single();
   if (error) return null;
   return mapUser(data);
+}
+
+export async function removeSavedAddress(
+  userId: string,
+  addressIndex: number
+): Promise<User | null> {
+  const user = await getUserById(userId);
+  if (!user || !user.savedAddresses) return null;
+
+  const updatedAddresses = [...user.savedAddresses];
+  const wasDefault = updatedAddresses[addressIndex]?.isDefault;
+
+  updatedAddresses.splice(addressIndex, 1);
+
+  if (wasDefault && updatedAddresses.length > 0) {
+    updatedAddresses[0].isDefault = true;
+  }
+
+  return updateUser(userId, { savedAddresses: updatedAddresses });
+}
+
+export async function setDefaultAddress(
+  userId: string,
+  addressIndex: number
+): Promise<User | null> {
+  const user = await getUserById(userId);
+  if (!user || !user.savedAddresses) return null;
+
+  const updatedAddresses = user.savedAddresses.map((addr, idx) => ({
+    ...addr,
+    isDefault: idx === addressIndex,
+  }));
+
+  return updateUser(userId, { savedAddresses: updatedAddresses });
 }
 
 export async function createOTPSession(session: {

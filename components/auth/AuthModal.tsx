@@ -139,10 +139,11 @@ export default function AuthModal({
             id: data.user.id,
             email: data.user.email || undefined,
             name: data.user.user_metadata?.full_name || undefined,
+            avatarUrl: data.user.user_metadata?.avatar_url || undefined,
             phone: data.user.phone || "",
             createdAt: data.user.created_at,
             updatedAt: data.user.updated_at || data.user.created_at,
-          };
+          } as User;
           await fetch("/api/auth/session", {
             method: "POST",
             headers: { "Content-Type": "application/json" },

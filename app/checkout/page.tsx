@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   CheckCircle,
@@ -10,6 +10,9 @@ import {
   ShieldCheck,
   User as UserIcon,
   Sparkles,
+  Gift,
+  Pencil,
+  Check,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { Address, DiscountCode, User } from "@/lib/types";
@@ -20,6 +23,7 @@ import OrderSummary from "@/components/checkout/OrderSummary";
 import AuthModal from "@/components/auth/AuthModal";
 import Button from "@/components/ui/Button";
 import SecondaryHeader from "@/components/layout/SecondaryHeader";
+import { supabase } from "@/lib/supabase";
 
 type Step = "address" | "payment" | "confirmation";
 
@@ -30,6 +34,12 @@ function CheckoutContent() {
 
   const [step, setStep] = useState<Step>("address");
   const [shippingAddress, setShippingAddress] = useState<Address | null>(null);
+  const [orderType, setOrderType] = useState<"self" | "gift">("self");
+  const [giftMessage, setGiftMessage] = useState("");
+  const [saveAddress, setSaveAddress] = useState(false);
+  const [savedAddresses, setSavedAddresses] = useState<Address[]>([]);
+  const [selectedSavedAddress, setSelectedSavedAddress] =
+    useState<Address | null>(null);
   const [discountCode, setDiscountCode] = useState("");
   const [discountInput, setDiscountInput] = useState("");
   const [appliedDiscount, setAppliedDiscount] = useState<DiscountCode | null>(
@@ -47,17 +57,70 @@ function CheckoutContent() {
   const [redirecting, setRedirecting] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [verifiedUser, setVerifiedUser] = useState<User | null>(currentUser);
+  const [expectedSubtotal, setExpectedSubtotal] = useState<number | null>(null);
+  const errorRef = useRef<HTMLDivElement>(null);
 
   // Sync verifiedUser with store
   useEffect(() => {
     if (currentUser) setVerifiedUser(currentUser);
   }, [currentUser]);
 
+  // Fetch saved addresses for the verified user
+  useEffect(() => {
+    async function fetchSavedAddresses() {
+      if (!verifiedUser?.id) return;
+      const { data } = await supabase
+        .from("users")
+        .select("saved_addresses")
+        .eq("id", verifiedUser.id)
+        .single();
+      if (data?.saved_addresses) {
+        const addresses = data.saved_addresses as Address[];
+        setSavedAddresses(addresses);
+
+        if (addresses.length === 0) setSaveAddress(true);
+
+        const defaultAddr = addresses.find((a) => a.isDefault);
+        if (defaultAddr) setSelectedSavedAddress(defaultAddr);
+      } else {
+        setSaveAddress(true);
+      }
+    }
+    fetchSavedAddresses();
+  }, [verifiedUser?.id]);
+
   // Handle returning from PhonePe Gateway
   useEffect(() => {
     const callbackOrderId = searchParams.get("order");
     const callbackStatus = searchParams.get("status");
     const callbackRef = searchParams.get("ref");
+    const callbackMessage = searchParams.get("message");
+
+    // Attempt to recover checkout state so the address is kept filled
+    const savedStateStr = sessionStorage.getItem("checkoutState");
+    let stateRecovered = false;
+    let addressRecovered = false;
+    if (savedStateStr) {
+      try {
+        const savedState = JSON.parse(savedStateStr);
+        if (savedState.shippingAddress) {
+          setShippingAddress(savedState.shippingAddress);
+          addressRecovered = true;
+        }
+        if (savedState.orderType) setOrderType(savedState.orderType);
+        if (savedState.giftMessage) setGiftMessage(savedState.giftMessage);
+        if (savedState.discountCode) setDiscountCode(savedState.discountCode);
+        if (savedState.saveAddress !== undefined)
+          setSaveAddress(savedState.saveAddress);
+        if (savedState.expectedSubtotal !== undefined)
+          setExpectedSubtotal(savedState.expectedSubtotal);
+        stateRecovered = true;
+      } catch (e) {
+        console.error("Failed to parse checkout state", e);
+      }
+      // Clean up so it doesn't trigger on normal page refreshes
+      sessionStorage.removeItem("checkoutState");
+    }
 
     if (callbackOrderId && callbackStatus === "SUCCESS") {
       setRedirecting(true);
@@ -65,14 +128,47 @@ function CheckoutContent() {
       router.replace(`/order/${callbackOrderId}`);
       return;
     } else if (callbackStatus === "FAILED") {
-      setPaymentError("Payment failed or was cancelled. Please try again.");
+      setPaymentError(
+        callbackMessage || "Payment failed or was cancelled. Please try again.",
+      );
+      if (addressRecovered) setStep("payment");
+    } else if (stateRecovered && !callbackOrderId) {
+      setPaymentError(
+        "Payment was interrupted. Please review your details and try again.",
+      );
+      if (addressRecovered) setStep("payment");
     }
-  }, [searchParams, clearCart]);
+  }, [searchParams, clearCart, router]);
+
+  // Auto-scroll to the error banner when a payment error occurs
+  useEffect(() => {
+    if (paymentError && errorRef.current) {
+      setTimeout(() => {
+        errorRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }, 100);
+    }
+  }, [paymentError, step]);
 
   const subtotal = cartItems.reduce(
     (sum, item) => sum + (item.price ?? item.product.price) * item.quantity,
     0,
   );
+
+  useEffect(() => {
+    if (expectedSubtotal !== null && subtotal > 0) {
+      if (expectedSubtotal !== subtotal) {
+        setPaymentError((prev) =>
+          prev
+            ? `${prev} Please note: your cart was modified in another window. Review your updated total before retrying.`
+            : "Your cart was modified in another tab. Please review your updated total before retrying.",
+        );
+      }
+      setExpectedSubtotal(null);
+    }
+  }, [expectedSubtotal, subtotal]);
   const discountAmount = appliedDiscount
     ? calculateDiscount(subtotal, appliedDiscount.type, appliedDiscount.value)
     : 0;
@@ -119,8 +215,22 @@ function CheckoutContent() {
     }
   };
 
-  const handleAddressSubmit = (address: Address) => {
+  const handleAddressSubmit = async (address: Address) => {
     setShippingAddress(address);
+    setPaymentError("");
+
+    if (saveAddress && verifiedUser?.id) {
+      try {
+        await fetch("/api/user/address", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: verifiedUser.id, address }),
+        });
+      } catch {
+        // Non-critical — don't block checkout if this fails
+      }
+    }
+
     setStep("payment");
   };
 
@@ -161,6 +271,9 @@ function CheckoutContent() {
           paymentMethod,
           userId: verifiedUser?.id,
           customerPhone: shippingAddress.phone,
+          isGift: orderType === "gift",
+          giftMessage: orderType === "gift" ? giftMessage : undefined,
+          saveAddress: saveAddress,
         }),
       });
 
@@ -171,6 +284,19 @@ function CheckoutContent() {
       }
 
       if (paymentMethod === "online") {
+        // Save state to recover after redirect so address stays filled
+        sessionStorage.setItem(
+          "checkoutState",
+          JSON.stringify({
+            shippingAddress,
+            orderType,
+            giftMessage,
+            discountCode,
+            saveAddress,
+            expectedSubtotal: subtotal,
+          }),
+        );
+
         const ppRes = await fetch("/api/payment/phonepe", {
           method: "POST",
           body: JSON.stringify({
@@ -339,9 +465,17 @@ function CheckoutContent() {
                   ) : (
                     <div className="bg-white dark:bg-[#1a1830] rounded-3xl p-6 sm:p-8 shadow-[0_4px_12px_rgba(28,18,9,0.05)] border border-cream-200 dark:border-amber-900/30">
                       <div className="bg-cream-50 dark:bg-[#151326] rounded-2xl p-5 sm:p-6 mb-8 border border-cream-100 dark:border-amber-900/20 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-5 shadow-sm">
-                        <div className="w-12 h-12 bg-coral-100 dark:bg-amber-900/40 border border-coral-200 dark:border-amber-700/30 rounded-full flex items-center justify-center text-coral-700 dark:text-amber-400 shrink-0">
-                          <Sparkles size={20} />
-                        </div>
+                        {(verifiedUser as any).avatarUrl ? (
+                          <img
+                            src={(verifiedUser as any).avatarUrl}
+                            alt={verifiedUser.name || "Profile picture"}
+                            className="w-12 h-12 rounded-full object-cover shrink-0 border border-coral-200 dark:border-amber-700/30 shadow-sm"
+                          />
+                        ) : (
+                          <div className="w-12 h-12 bg-coral-100 dark:bg-amber-900/40 border border-coral-200 dark:border-amber-700/30 rounded-full flex items-center justify-center text-coral-700 dark:text-amber-400 shrink-0">
+                            <Sparkles size={20} />
+                          </div>
+                        )}
                         <div>
                           <h3 className="font-serif text-xl font-bold text-brown-900 dark:text-amber-100 mb-2">
                             Welcome back,{" "}
@@ -357,12 +491,214 @@ function CheckoutContent() {
                         <h2 className="font-serif text-2xl font-bold text-brown-900 dark:text-amber-100">
                           Shipping Address
                         </h2>
+                        <p className="text-xs text-brown-500 dark:text-amber-100/60 mt-1 flex items-center gap-1.5 bg-cream-100/50 dark:bg-amber-900/20 px-3 py-1.5 rounded-lg border border-cream-200 dark:border-amber-900/30">
+                          <Sparkles size={12} className="text-amber-500" />
+                          We'll send the invoice and tracking updates to{" "}
+                          <span className="font-semibold text-brown-700 dark:text-amber-100/90">
+                            {verifiedUser.email || "your registered email"}
+                          </span>
+                          .
+                        </p>
                       </div>
+
+                      {/* Order Intent Selection */}
+                      <div className="mb-8">
+                        <h3 className="text-sm font-semibold text-brown-800 dark:text-amber-200 mb-3 uppercase tracking-wider">
+                          Who is this for?
+                        </h3>
+                        <div className="grid grid-cols-2 gap-4">
+                          <button
+                            onClick={() => {
+                              setOrderType("self");
+                              setPaymentError("");
+                            }}
+                            className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all ${
+                              orderType === "self"
+                                ? "border-coral-500 bg-coral-50 dark:border-amber-500 dark:bg-amber-900/20"
+                                : "border-cream-200 bg-white dark:bg-[#151326] dark:border-amber-900/20 hover:border-coral-300"
+                            }`}
+                          >
+                            <UserIcon
+                              size={24}
+                              className={
+                                orderType === "self"
+                                  ? "text-coral-600 dark:text-amber-400 mb-2"
+                                  : "text-brown-400 dark:text-amber-100/50 mb-2"
+                              }
+                            />
+                            <span
+                              className={`font-semibold text-sm ${orderType === "self" ? "text-coral-900 dark:text-amber-100" : "text-brown-600 dark:text-amber-100/70"}`}
+                            >
+                              For Myself
+                            </span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              setOrderType("gift");
+                              setPaymentError("");
+                            }}
+                            className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all ${
+                              orderType === "gift"
+                                ? "border-coral-500 bg-coral-50 dark:border-amber-500 dark:bg-amber-900/20"
+                                : "border-cream-200 bg-white dark:bg-[#151326] dark:border-amber-900/20 hover:border-coral-300"
+                            }`}
+                          >
+                            <Gift
+                              size={24}
+                              className={
+                                orderType === "gift"
+                                  ? "text-coral-600 dark:text-amber-400 mb-2"
+                                  : "text-brown-400 dark:text-amber-100/50 mb-2"
+                              }
+                            />
+                            <span
+                              className={`font-semibold text-sm ${orderType === "gift" ? "text-coral-900 dark:text-amber-100" : "text-brown-600 dark:text-amber-100/70"}`}
+                            >
+                              For Someone Else
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Gift Message */}
+                      {orderType === "gift" && (
+                        <div className="mb-8 p-5 bg-amber-50/50 dark:bg-amber-900/10 rounded-2xl border border-amber-200 dark:border-amber-900/30 transition-all shadow-sm">
+                          <label className="flex items-center gap-2 font-serif text-lg font-bold text-brown-900 dark:text-amber-100 mb-2">
+                            <Pencil
+                              size={18}
+                              className="text-amber-600 dark:text-amber-400"
+                            />
+                            Add a handwritten note
+                          </label>
+                          <p className="text-sm text-brown-600 dark:text-amber-100/70 mb-4">
+                            We'll carefully transcribe your message onto a
+                            beautifully crafted card and tuck it into the
+                            package.
+                          </p>
+                          <textarea
+                            value={giftMessage}
+                            onChange={(e) => setGiftMessage(e.target.value)}
+                            placeholder="Dearest..."
+                            rows={3}
+                            className="w-full px-4 py-3 text-sm border border-brown-300 dark:border-amber-900/40 rounded-xl bg-white dark:bg-[#12101e] text-brown-900 dark:text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-400 dark:focus:ring-amber-500 placeholder:text-brown-400 dark:placeholder:text-amber-100/30 resize-none shadow-inner"
+                          />
+                        </div>
+                      )}
+
+                      {/* Saved Addresses Selection */}
+                      {savedAddresses.length > 0 && (
+                        <div className="mb-8">
+                          <h3 className="text-sm font-semibold text-brown-800 dark:text-amber-200 mb-3 uppercase tracking-wider">
+                            Your Saved Addresses
+                          </h3>
+                          <div className="grid gap-4 sm:grid-cols-2 mb-4">
+                            {savedAddresses.map((addr, idx) => {
+                              const isSelected = selectedSavedAddress === addr;
+                              return (
+                                <div
+                                  key={idx}
+                                  onClick={() => {
+                                    setSelectedSavedAddress(addr);
+                                    setPaymentError("");
+                                  }}
+                                  className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                                    isSelected
+                                      ? "border-coral-500 bg-coral-50 dark:border-amber-500 dark:bg-amber-900/30"
+                                      : "border-cream-200 bg-white dark:bg-[#151326] dark:border-amber-900/20 hover:border-coral-300"
+                                  }`}
+                                >
+                                  <p className="font-semibold text-sm text-brown-900 dark:text-amber-100">
+                                    {addr.fullName}
+                                  </p>
+                                  <p className="text-xs mt-1 text-brown-600 dark:text-amber-100/70">
+                                    {addr.address1}
+                                    {addr.address2 ? `, ${addr.address2}` : ""}
+                                  </p>
+                                  <p className="text-xs text-brown-600 dark:text-amber-100/70">
+                                    {addr.city}, {addr.state} {addr.postalCode}
+                                  </p>
+                                </div>
+                              );
+                            })}
+                          </div>
+                          {selectedSavedAddress && (
+                            <button
+                              onClick={() => {
+                                setSelectedSavedAddress(null);
+                                setSaveAddress(true);
+                              }}
+                              className="text-xs text-coral-600 dark:text-amber-400 font-semibold uppercase tracking-wide hover:underline"
+                            >
+                              + Use a different address
+                            </button>
+                          )}
+                        </div>
+                      )}
+
+                      {paymentError && (
+                        <div
+                          ref={errorRef}
+                          className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 text-sm font-medium rounded-xl border border-red-200 dark:border-red-800/50 flex items-start gap-3"
+                        >
+                          <ShieldCheck size={18} className="shrink-0 mt-0.5" />
+                          <div>
+                            <strong className="block mb-1">
+                              Payment Failed
+                            </strong>
+                            {paymentError}
+                          </div>
+                        </div>
+                      )}
+
                       <AddressForm
+                        key={`${orderType}-${selectedSavedAddress ? savedAddresses.indexOf(selectedSavedAddress) : "new"}-${shippingAddress ? "restored" : "empty"}`}
                         onSubmit={handleAddressSubmit}
-                        submitLabel="Continue to Payment"
-                        defaultValues={shippingAddress || undefined}
+                        submitLabel={
+                          paymentError ? "Retry Payment" : "Continue to Payment"
+                        }
+                        defaultValues={
+                          selectedSavedAddress ||
+                          shippingAddress ||
+                          ({
+                            fullName:
+                              orderType === "self"
+                                ? verifiedUser.name || ""
+                                : "",
+                            email: verifiedUser.email || "", // Always prefill to receive the invoice
+                            phone: verifiedUser.phone || "", // Always prefill for shipping tracking updates
+                          } as Address)
+                        }
                       />
+
+                      {/* Save Address Toggle */}
+                      <label
+                        htmlFor="saveAddress"
+                        className="mt-6 flex items-center gap-3 p-4 bg-cream-50 dark:bg-[#151326] rounded-xl border border-cream-100 dark:border-amber-900/20 cursor-pointer group hover:border-coral-200 dark:hover:border-amber-800/40 transition-colors"
+                      >
+                        <div className="relative shrink-0">
+                          <input
+                            type="checkbox"
+                            id="saveAddress"
+                            checked={saveAddress}
+                            onChange={(e) => setSaveAddress(e.target.checked)}
+                            className="sr-only"
+                          />
+                          <div
+                            className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all duration-150 ${
+                              saveAddress
+                                ? "bg-coral-500 border-coral-500 dark:bg-amber-500 dark:border-amber-500 shadow-sm"
+                                : "border-brown-300 dark:border-amber-900/50 bg-white dark:bg-[#12101e] group-hover:border-coral-400 dark:group-hover:border-amber-700"
+                            }`}
+                          >
+                            {saveAddress && (
+                              <Check size={12} strokeWidth={3} className="text-white" />
+                            )}
+                          </div>
+                        </div>
+                        <span className="text-sm font-medium text-brown-800 dark:text-amber-100 flex-1 select-none">
+                          Save this address to my profile for future orders
+                        </span>
+                      </label>
                     </div>
                   )}
                 </>
@@ -407,6 +743,23 @@ function CheckoutContent() {
                           Logged in as {verifiedUser.email || verifiedUser.name}
                         </p>
                       )}
+
+                      {orderType === "gift" && (
+                        <div className="mt-4 pt-4 border-t border-cream-200 dark:border-amber-900/30">
+                          <p className="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                            <Gift size={12} /> Gift Order
+                          </p>
+                          {giftMessage ? (
+                            <p className="text-sm text-brown-600 dark:text-amber-100/70 italic bg-white dark:bg-amber-900/20 p-3 rounded-lg border border-cream-100 dark:border-amber-900/40">
+                              "{giftMessage}"
+                            </p>
+                          ) : (
+                            <p className="text-sm text-brown-500 dark:text-amber-100/50 italic">
+                              No gift note added.
+                            </p>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -415,9 +768,15 @@ function CheckoutContent() {
                       Payment Method
                     </h2>
                     {paymentError && (
-                      <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 text-sm font-medium rounded-xl border border-red-200 dark:border-red-800/50 flex items-start gap-3">
+                      <div
+                        ref={errorRef}
+                        className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 text-sm font-medium rounded-xl border border-red-200 dark:border-red-800/50 flex items-start gap-3"
+                      >
                         <ShieldCheck size={18} className="shrink-0 mt-0.5" />
-                        {paymentError}
+                        <div>
+                          <strong className="block mb-1">Payment Failed</strong>
+                          {paymentError}
+                        </div>
                       </div>
                     )}
                     <PaymentStep
@@ -520,7 +879,7 @@ function CheckoutContent() {
                         setDiscountInput(e.target.value.toUpperCase())
                       }
                       placeholder="Enter code"
-                    className="flex-1 px-4 py-2.5 text-base sm:text-sm border border-brown-300 dark:border-amber-900/40 rounded-xl bg-white dark:bg-[#151326] text-brown-900 dark:text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-400 dark:focus:ring-amber-500 placeholder:text-brown-400 dark:placeholder:text-amber-100/30"
+                      className="flex-1 px-4 py-2.5 text-base sm:text-sm border border-brown-300 dark:border-amber-900/40 rounded-xl bg-white dark:bg-[#151326] text-brown-900 dark:text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-400 dark:focus:ring-amber-500 placeholder:text-brown-400 dark:placeholder:text-amber-100/30"
                       onKeyDown={(e) =>
                         e.key === "Enter" && handleApplyDiscount()
                       }

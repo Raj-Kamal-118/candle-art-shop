@@ -66,6 +66,8 @@ CREATE TABLE IF NOT EXISTS orders (
   billing_address  JSONB,
   payment_method   TEXT,
   payment_reference TEXT,
+  refund_status    TEXT NOT NULL DEFAULT 'none' CHECK (refund_status IN ('none', 'pending', 'partial', 'full')),
+  refunded_amount  NUMERIC NOT NULL DEFAULT 0,
   created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
