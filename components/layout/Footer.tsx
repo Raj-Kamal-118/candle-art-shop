@@ -109,7 +109,11 @@ export default function Footer() {
                 { href: "/informational/about", label: "About Us" },
                 { href: "/informational/faq", label: "FAQ" },
                 { href: "/informational/shipping", label: "Shipping Policy" },
-                { href: "/informational/returns", label: "Returns & Refunds" },
+                { href: "/informational/returns", label: "Return Policy" },
+                {
+                  href: "/informational/refund",
+                  label: "Refund & Cancellation Policy",
+                },
                 { href: "/informational/contact", label: "Contact Us" },
               ].map((link) => (
                 <li key={link.href}>

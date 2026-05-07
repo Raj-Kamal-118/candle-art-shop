@@ -1,116 +1,71 @@
-import { Camera, Mail, Heart, CheckCircle, Check, Info, X } from "lucide-react";
+import { Metadata } from "next";
+import { Clock, CheckCircle2, PackageCheck } from "lucide-react";
 import SecondaryHeader from "@/components/layout/SecondaryHeader";
 
-const steps = [
+export const metadata: Metadata = {
+  title: "Return Policy",
+  description: "Read the return and exchange policy for Artisan House.",
+};
+
+const sections = [
   {
-    n: "1",
-    Icon: Camera,
-    title: "Take a photo",
-    desc: "Within 48 hours of delivery, snap a clear picture of the issue.",
+    Icon: Clock,
+    heading: "Return & Exchange Window",
+    body: "<p>We offer refund / exchange within first 3 days from the date of your purchase. If 3 days have passed since your purchase, you will not be offered a return, exchange or refund of any kind.</p>",
   },
   {
-    n: "2",
-    Icon: Mail,
-    title: "Email us",
-    desc: "Send it to artisanhouse.in@gmail.com with your order number.",
+    Icon: CheckCircle2,
+    heading: "Eligibility Criteria",
+    body: "<p>In order to become eligible for a return or an exchange, (i) the purchased item should be unused and in the same condition as you received it, (ii) the item must have original packaging, (iii) if the item that you purchased on a sale, then the item may not be eligible for a return / exchange.</p><p>Further, only such items are replaced by us (based on an exchange request), if such items are found defective or damaged.</p>",
   },
   {
-    n: "3",
-    Icon: Heart,
-    title: "We make it right",
-    desc: "Replacement, refund, or store credit — your call.",
+    Icon: PackageCheck,
+    heading: "Inspection & Processing",
+    body: "<p>You agree that there may be a certain category of products / items that are exempted from returns or refunds. Such categories of the products would be identified to you at the item of purchase.</p><p>For exchange / return accepted request(s) (as applicable), once your returned product / item is received and inspected by us, we will send you an email to notify you about receipt of the returned / exchanged product. Further. If the same has been approved after the quality check at our end, your request (i.e. return / exchange) will be processed in accordance with our policies.</p>",
   },
 ];
 
-const canReplace = [
-  "Broken or cracked vessels on arrival",
-  "Wicks that don't light properly",
-  "Incorrect item shipped",
-  "Missing items from a gift set",
-  "A fragrance that's clearly off",
-];
+export default function ReturnPolicyPage() {
+  const lastUpdated = new Date().toLocaleDateString("en-IN", {
+    month: "long",
+    year: "numeric",
+  });
 
-const cannotAccept = [
-  "Candles that have been lit or burnt",
-  "Custom-made pieces (unless defective)",
-  "Items reported after 48 hours",
-  "Change-of-mind returns on hygiene items",
-  "Dew or minor surface texture — this is natural",
-];
-
-export default function ReturnsPage() {
   return (
     <main className="min-h-screen bg-[var(--home-bg-alt)] dark:bg-[#1a1612] pb-20">
       <SecondaryHeader
-        eyebrow="✦ Returns & Refunds ✦"
-        titlePrefix="A"
-        titleHighlighted="kept"
-        titleSuffix="promise."
-        description="If something arrives less than perfect, we make it right. No forms, no guilt-trips, no fuss."
+        eyebrow="✦ Return Policy ✦"
+        titlePrefix="Returns &"
+        titleHighlighted="exchanges"
+        titleSuffix="."
+        description="How to process a return within the approved 3-day window."
       />
+
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-          {steps.map(({ n, Icon, title, desc }) => (
+        <div className="text-[13px] text-brown-500 dark:text-amber-100/50 mb-6 text-center md:text-left">
+          Last updated · {lastUpdated}
+        </div>
+
+        <div className="space-y-4">
+          {sections.map(({ Icon, heading, body }) => (
             <div
-              key={n}
-              className="relative bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-900/30 rounded-2xl p-6"
+              key={heading}
+              className="bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-900/30 rounded-2xl p-6 md:p-7"
             >
-              <div className="absolute top-5 right-5 font-serif text-[40px] font-bold text-cream-200 dark:text-amber-900/30 leading-none">
-                {n}
+              <div className="flex items-start gap-4 mb-3">
+                <div className="w-10 h-10 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 flex items-center justify-center flex-none">
+                  <Icon size={18} />
+                </div>
+                <h2 className="font-serif text-xl md:text-2xl font-bold text-brown-900 dark:text-amber-100 leading-snug pt-1.5">
+                  {heading}
+                </h2>
               </div>
-              <div className="w-10 h-10 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 flex items-center justify-center mb-4">
-                <Icon size={18} />
-              </div>
-              <h3 className="font-serif text-xl font-bold text-brown-900 dark:text-amber-100 mb-2">
-                {title}
-              </h3>
-              <p className="text-sm text-brown-600 dark:text-amber-100/60 leading-[1.6]">
-                {desc}
-              </p>
+              <div
+                className="text-[15px] leading-[1.7] text-brown-700 dark:text-amber-100/70 [&>p]:mb-4 [&>p:last-child]:mb-0"
+                dangerouslySetInnerHTML={{ __html: body }}
+              />
             </div>
           ))}
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10">
-          <div className="bg-forest-50 dark:bg-forest-900/30 border border-forest-100 dark:border-forest-800 rounded-2xl p-7">
-            <div className="inline-flex items-center gap-2 text-[11px] font-semibold tracking-[0.2em] uppercase text-forest-800 dark:text-forest-200 mb-4">
-              <CheckCircle size={14} /> We can replace
-            </div>
-            <ul className="flex flex-col gap-2.5 text-sm text-brown-800 dark:text-amber-100/80 leading-[1.5]">
-              {canReplace.map((i) => (
-                <li key={i} className="flex gap-2">
-                  <Check
-                    size={14}
-                    className="text-forest-700 dark:text-forest-400 mt-[3px] flex-none"
-                  />
-                  {i}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="bg-cream-100 dark:bg-[#1a1830] border border-cream-300 dark:border-amber-900/30 rounded-2xl p-7">
-            <div className="inline-flex items-center gap-2 text-[11px] font-semibold tracking-[0.2em] uppercase text-brown-700 dark:text-amber-200 mb-4">
-              <Info size={14} /> We can't accept
-            </div>
-            <ul className="flex flex-col gap-2.5 text-sm text-brown-800 dark:text-amber-100/80 leading-[1.5]">
-              {cannotAccept.map((i) => (
-                <li key={i} className="flex gap-2">
-                  <X
-                    size={14}
-                    className="text-brown-500 dark:text-amber-100/50 mt-[3px] flex-none"
-                  />
-                  {i}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-900/30 rounded-2xl p-6 text-sm leading-[1.7] text-brown-700 dark:text-amber-100/70">
-          <b className="text-brown-900 dark:text-amber-100">Refund timeline.</b>{" "}
-          Approved refunds land back on your original payment method within 5–7
-          business days. COD orders are refunded via UPI — we'll reach out for
-          your handle.
         </div>
       </div>
     </main>
