@@ -274,7 +274,7 @@ export default function AdminHeroPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 bg-amber-100 dark:bg-amber-900/40 rounded-xl flex items-center justify-center">
             <Layers size={18} className="text-amber-700" />
@@ -428,7 +428,7 @@ export default function AdminHeroPage() {
                         <Trash2 size={14} />
                       </button>
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label className="block text-xs text-brown-500 dark:text-amber-100/60 mb-1">
                           Text
@@ -529,8 +529,11 @@ export default function AdminHeroPage() {
                   </button>
                 </div>
                 {settings.stats.map((stat, i) => (
-                  <div key={i} className="flex items-start gap-3 mb-2">
-                    <div className="w-24">
+                  <div
+                    key={i}
+                    className="flex flex-col sm:flex-row sm:items-start gap-3 mb-6 sm:mb-2 border-b border-cream-100 dark:border-amber-900/20 pb-4 sm:pb-0 sm:border-0 last:border-0"
+                  >
+                    <div className="w-full sm:w-24">
                       <label className="block text-xs text-brown-500 dark:text-amber-100/60 mb-1">
                         Value
                       </label>
@@ -556,7 +559,7 @@ export default function AdminHeroPage() {
                         placeholder="Happy Customers"
                       />
                     </div>
-                    <div className="flex-none pt-6">
+                    <div className="flex-none sm:pt-6">
                       <button
                         onClick={() => removeStat(i)}
                         className="text-red-400 hover:text-red-600 dark:hover:text-red-300"
@@ -578,7 +581,7 @@ export default function AdminHeroPage() {
                 </h2>
                 {field(
                   "Background Type",
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {(["gradient", "color", "image", "video"] as const).map(
                       (type) => (
                         <button
@@ -701,7 +704,7 @@ export default function AdminHeroPage() {
                   </button>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {[0, 1, 2, 3].map((i) => {
                     const img = (settings.images[i] as HeroImage) || {
                       url: "",
@@ -794,15 +797,20 @@ export default function AdminHeroPage() {
             </div>
           </div>
         </div>
-        <div className="flex gap-3 justify-end pt-4 mt-4 border-t border-cream-100 dark:border-amber-900/20">
+        <div className="flex flex-col-reverse sm:flex-row gap-3 sm:justify-end pt-4 mt-4 border-t border-cream-100 dark:border-amber-900/20">
           <Button
             variant="outline"
             onClick={() => setModalOpen(false)}
             type="button"
+            className="w-full sm:w-auto"
           >
             Cancel
           </Button>
-          <Button onClick={handleSave} loading={saving}>
+          <Button
+            onClick={handleSave}
+            loading={saving}
+            className="w-full sm:w-auto"
+          >
             <Save size={15} />
             {saved ? "Saved!" : "Save Changes"}
           </Button>

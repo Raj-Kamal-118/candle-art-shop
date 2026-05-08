@@ -4,18 +4,21 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Heart, ShoppingCart, Check, Sparkles } from "lucide-react";
-import { motion } from "framer-motion";
 import { Product } from "@/lib/types";
 import { useStore } from "@/lib/store";
 import { formatPrice } from "@/lib/utils";
-import Badge from "@/components/ui/Badge";
 import Image from "next/image";
+import ManilaTag from "@/components/craft/ManilaTag";
 
 interface ProductCardProps {
   product: Product;
+  viewMode?: "grid" | "list";
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({
+  product,
+  viewMode = "grid",
+}: ProductCardProps) {
   const { addToCart, addToFavorites, removeFromFavorites, isFavorite } =
     useStore();
   const router = useRouter();
@@ -57,9 +60,13 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Link href={`/products/${product.slug}`}>
-      <div className="group relative bg-white dark:bg-[#1a1830] rounded-2xl overflow-hidden shadow-[0_4px_12px_rgba(28,18,9,0.05)] border border-cream-200 dark:border-amber-900/30 hover:shadow-[0_12px_32px_rgba(28,18,9,0.08)] dark:hover:border-amber-700/50 transition-all duration-300 cursor-pointer">
+      <div
+        className={`group relative bg-white dark:bg-[#1a1830] rounded-2xl overflow-hidden shadow-[0_4px_12px_rgba(28,18,9,0.05)] border border-cream-200 dark:border-amber-900/30 hover:shadow-[0_12px_32px_rgba(28,18,9,0.08)] dark:hover:border-amber-700/50 transition-all duration-300 cursor-pointer flex ${viewMode === "list" ? "flex-col sm:flex-row" : "flex-col"}`}
+      >
         {/* Image container */}
-        <div className="relative aspect-square overflow-hidden bg-cream-100 dark:bg-amber-900/20">
+        <div
+          className={`relative overflow-hidden bg-cream-100 dark:bg-amber-900/20 ${viewMode === "list" ? "w-full sm:w-64 shrink-0 aspect-[4/3] sm:aspect-square" : "aspect-square w-full"}`}
+        >
           {product.images?.[0] ? (
             <Image
               src={product.images[0]}
@@ -73,19 +80,52 @@ export default function ProductCard({ product }: ProductCardProps) {
               🕯️
             </div>
           )}
-          {/* Badges */}
-          <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-            {discount && (
-              <Badge variant="danger" className="text-xs">
-                -{discount}%
-              </Badge>
-            )}
-            {!product.inStock && (
-              <Badge variant="warning" className="text-xs">
-                Sold Out
-              </Badge>
-            )}
-          </div>
+          {/* Discount ribbon — banner shape pointing right */}
+          {discount && (
+            <div className="absolute top-3 left-0 z-10">
+              <div
+                style={{
+                  background: "var(--home-coral, #e85d4a)",
+                  color: "white",
+                  fontFamily: "var(--font-hand)",
+                  fontSize: 18,
+                  letterSpacing: "0.05em",
+                  fontWeight: 700,
+                  padding: "0px 12px 0px 8px",
+                  clipPath:
+                    "polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%)",
+                  boxShadow: "2px 2px 6px rgba(0,0,0,0.15)",
+                }}
+              >
+                {discount}% off
+              </div>
+            </div>
+          )}
+
+          {/* Sold-out stamp overlay */}
+          {!product.inStock && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/25 dark:bg-black/30 backdrop-blur-[1px]">
+              <div
+                style={{
+                  border: "2.5px solid rgba(180,40,30,0.85)",
+                  borderRadius: "50%",
+                  padding: "6px 14px",
+                  transform: "rotate(-18deg)",
+                  color: "rgba(180,40,30,0.9)",
+                  fontFamily: "var(--font-hand)",
+                  fontSize: 15,
+                  fontWeight: 700,
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  background: "rgba(255,255,255,0.65)",
+                  whiteSpace: "nowrap",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                }}
+              >
+                Sold out
+              </div>
+            </div>
+          )}
 
           {/* Favorite button */}
           <button
@@ -102,28 +142,65 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
 
         {/* Content */}
-        <div className="p-3 sm:p-4 flex flex-col h-auto min-h-[110px] sm:min-h-[130px]">
-          <p className="text-[10px] sm:text-xs text-amber-600 dark:text-amber-500 font-medium uppercase tracking-wide mb-1 truncate">
+        <div
+          className={`p-4 sm:p-5 flex flex-col ${viewMode === "list" ? "justify-center flex-1" : "h-auto min-h-[110px] sm:min-h-[130px]"}`}
+        >
+          <p className="text-[10px] sm:text-xs text-amber-600 dark:text-amber-500 font-bold uppercase tracking-wide mb-1.5 truncate">
             {product.customizable ? "Customizable" : "Ready to Ship"}
           </p>
-          <h3 className="font-semibold text-brown-900 dark:text-amber-50 text-xs sm:text-sm leading-tight mb-auto group-hover:text-amber-700 dark:group-hover:text-amber-400 transition-colors line-clamp-2">
+          <h3
+            className={`font-bold text-brown-900 dark:text-amber-50 leading-tight mb-1 group-hover:text-amber-700 dark:group-hover:text-amber-400 transition-colors line-clamp-2 ${viewMode === "list" ? "text-lg sm:text-xl font-serif" : "text-sm sm:text-base font-serif"}`}
+          >
             {product.name}
           </h3>
-          <div className="flex items-end justify-between mt-3 gap-2">
-            <div className="flex flex-col">
-              <div className="flex items-baseline gap-1.5 flex-wrap">
-                <span className="text-sm sm:text-base font-bold text-brown-900 dark:text-amber-100">
-                  {formatPrice(product.price)}
-                </span>
-                {product.compareAtPrice && (
-                  <span className="text-[10px] sm:text-xs text-brown-400 dark:text-amber-100/50 line-through">
-                    {formatPrice(product.compareAtPrice)}
+
+          {/* Short description for list view */}
+          {viewMode === "list" && product.description && (
+            <div
+              className="hidden sm:block mt-2 mb-4 text-sm text-brown-500 dark:text-amber-100/60 line-clamp-2 font-serif italic"
+              dangerouslySetInnerHTML={{ __html: product.description }}
+            />
+          )}
+
+          <div
+            className={`flex items-end justify-between gap-2 ${viewMode === "list" ? "mt-auto pt-2" : "mt-auto pt-4"}`}
+          >
+            <div className="flex flex-col gap-2">
+              {viewMode === "list" ? (
+                <ManilaTag
+                  value={formatPrice(product.price)}
+                  label={product.compareAtPrice ? "Now" : "Price"}
+                  strikethrough={
+                    product.compareAtPrice
+                      ? formatPrice(product.compareAtPrice)
+                      : undefined
+                  }
+                />
+              ) : (
+                <div className="flex items-baseline gap-1.5 flex-wrap">
+                  <span className="text-sm sm:text-base font-bold text-brown-900 dark:text-amber-100 font-serif">
+                    {formatPrice(product.price)}
                   </span>
-                )}
-              </div>
-              {product.stockCount < 10 && product.inStock && (
-                <span className="text-[10px] text-amber-600 dark:text-amber-400 font-medium hidden md:block">
-                  Only {product.stockCount} left
+                  {product.compareAtPrice && (
+                    <span className="text-[10px] sm:text-xs text-brown-400 dark:text-amber-100/50 line-through">
+                      {formatPrice(product.compareAtPrice)}
+                    </span>
+                  )}
+                </div>
+              )}
+              {product.stockCount < 20 && product.inStock && (
+                <span
+                  className="hidden md:inline-block self-start text-amber-800 dark:text-amber-400 border border-dashed border-amber-400/60 dark:border-amber-600/50 px-2 py-0.5 rounded-sm"
+                  style={{
+                    fontFamily: "var(--font-hand)",
+                    fontSize: 13,
+                    transform: "rotate(-1.5deg)",
+                    display: "inline-block",
+                    background: "rgba(251,191,36,0.08)",
+                    letterSpacing: "0.02em",
+                  }}
+                >
+                  only {product.stockCount} left!
                 </span>
               )}
             </div>

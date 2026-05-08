@@ -10,6 +10,7 @@ import {
   updateUser
 } from "@/lib/data";
 import { generateId } from "@/lib/utils";
+import { supabase } from "@/lib/supabase";
 
 export async function GET() {
   try {
@@ -37,6 +38,48 @@ export async function POST(request: NextRequest) {
       undefined;
 
     const codFee = body.codFee || 0;
+
+    let screenshotUrl = null;
+
+    if (body.paymentScreenshot) {
+      const matches = body.paymentScreenshot.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+
+      if (matches && matches.length === 3) {
+        const mimeType = matches[1];
+        const base64Data = matches[2];
+        const buffer = Buffer.from(base64Data, "base64");
+
+        const fileExt = mimeType.split("/")[1] || "png";
+        const fileName = `upi-proofs/order_${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+        const BUCKET = "order-attachments";
+
+        // Ensure bucket exists (idempotent — no-ops if it already does)
+        const { error: bucketError } = await supabase.storage.createBucket(BUCKET, {
+          public: true,
+          fileSizeLimit: 5 * 1024 * 1024, // 5 MB
+        });
+        if (bucketError && !bucketError.message.includes("already exists")) {
+          console.error("Error creating storage bucket:", bucketError);
+        }
+
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from(BUCKET)
+          .upload(fileName, buffer, {
+            contentType: mimeType,
+            upsert: false
+          });
+
+        if (uploadError) {
+          console.error("Error uploading screenshot:", uploadError);
+        } else if (uploadData) {
+          const { data: publicUrlData } = supabase.storage
+            .from(BUCKET)
+            .getPublicUrl(fileName);
+
+          screenshotUrl = publicUrlData.publicUrl;
+        }
+      }
+    }
 
     // Prevent total mismatch / payload tampering
     const expectedTotal = body.subtotal - body.discount + body.shipping + codFee;
@@ -92,6 +135,12 @@ export async function POST(request: NextRequest) {
           });
         }
 
+        // Backfill phone on user profile if it's missing
+        const phoneFromOrder = customerPhone || body.shippingAddress?.phone;
+        if (phoneFromOrder && !user.phone) {
+          await updateUser(userId, { phone: phoneFromOrder });
+        }
+
         // Save the shipping address to the user's profile if requested
         if (body.saveAddress && body.shippingAddress) {
           const existingAddresses = user.savedAddresses || [];
@@ -108,13 +157,20 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    const { paymentScreenshot, ...orderData } = body;
+
+    // UPI orders need manual payment verification before processing
+    const isUpiOrder = body.paymentMethod === "upi";
+    const orderStatus = isUpiOrder ? "payment_verification" : "pending";
+
     const order = await createOrder({
       id: generateId("order"),
       createdAt: new Date().toISOString(),
-      status: "pending",
+      status: orderStatus,
       userId,
       customerPhone,
-      ...body,
+      paymentScreenshotUrl: screenshotUrl,
+      ...orderData,
     });
 
     // Increment discount usage if a code was applied
@@ -128,6 +184,10 @@ export async function POST(request: NextRequest) {
     // Send Admin Notification Email via Resend
     if (process.env.RESEND_API_KEY) {
       try {
+        const adminSubject = isUpiOrder
+          ? `⚠️ Payment Verification Required! #${order.id}`
+          : `🎉 New Order Received! #${order.id}`;
+
         const emailRes = await fetch("https://api.resend.com/emails", {
           method: "POST",
           headers: {
@@ -136,8 +196,8 @@ export async function POST(request: NextRequest) {
           },
           body: JSON.stringify({
           from: `Artisan House Admin <${process.env.STORE_EMAIL || "orders@artisanhouse.in"}>`,
-            to: [process.env.ADMIN_EMAIL || "rkcse118@gmail.com"],
-            subject: `🎉 New Order Received! #${order.id}`,
+            to: [process.env.ADMIN_EMAIL || "artisanhouse.in@gmail.com"],
+            subject: adminSubject,
             html: `
               <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #fdfbf9; padding: 40px 20px; color: #4a3320;">
                 <div style="background-color: #ffffff; border: 1px solid #e5dcd3; border-radius: 16px; padding: 40px; box-shadow: 0 8px 24px rgba(74, 51, 32, 0.04);">
@@ -146,13 +206,22 @@ export async function POST(request: NextRequest) {
                     <img src="https://pub-1f6a6fc4e92548b987db5dbea7cd456e.r2.dev/candle-art-shop-images/Asset/assets-03%20(2).png" alt="Artisan House Logo" style="width: 64px; height: 64px; border-radius: 50%; display: block; margin: 0 auto 12px auto;" />
                     <span style="display: block; font-family: Georgia, serif; font-size: 20px; font-weight: bold; color: #4a3320;">Artisan House</span>
                     <span style="display: block; font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: #b45309; margin-top: 4px;">Candles &middot; Clays &middot; Crafts</span>
-                    <h2 style="margin: 24px 0 0 0; color: #4a3320; font-size: 24px; font-weight: bold; border-top: 1px solid #e5dcd3; padding-top: 24px;">New Order Received</h2>
+                    <h2 style="margin: 24px 0 0 0; color: #4a3320; font-size: 24px; font-weight: bold; border-top: 1px solid #e5dcd3; padding-top: 24px;">${isUpiOrder ? 'Payment Verification Required' : 'New Order Received'}</h2>
                   </div>
-                  
+
+                  ${isUpiOrder ? `
+                  <div style="background-color: #fef3c7; border: 1px solid #f59e0b; border-radius: 12px; padding: 16px 20px; margin-bottom: 24px;">
+                    <p style="margin: 0; font-size: 14px; font-weight: bold; color: #92400e;">⚠️ ACTION REQUIRED: This customer paid via UPI. Please verify their payment before processing the order.</p>
+                    ${body.paymentReference ? `<p style="margin: 8px 0 0 0; font-size: 13px; color: #78350f;">Transaction ID / UTR: <strong style="font-family: monospace;">${body.paymentReference}</strong></p>` : ''}
+                    ${screenshotUrl ? `<p style="margin: 8px 0 0 0; font-size: 13px; color: #78350f;"><a href="${screenshotUrl}" target="_blank" style="color: #b45309; font-weight: bold;">View Payment Screenshot →</a></p>` : '<p style="margin: 8px 0 0 0; font-size: 13px; color: #78350f; font-style: italic;">No screenshot uploaded — verify via Transaction ID only.</p>'}
+                    ${customerPhone ? `<p style="margin: 8px 0 0 0; font-size: 13px; color: #78350f;">Customer phone: <strong>${customerPhone}</strong></p>` : ''}
+                  </div>
+                  ` : ''}
+
                   <p style="font-size: 15px; line-height: 1.6; color: #5c4028; margin-bottom: 25px; text-align: center;">
-                    Great news! <strong>${body.shippingAddress?.fullName}</strong> just placed an order.
+                    ${isUpiOrder ? `<strong>${body.shippingAddress?.fullName}</strong> placed a UPI order. Verify payment and mark as Verified &amp; Process in the admin dashboard.` : `Great news! <strong>${body.shippingAddress?.fullName}</strong> just placed an order.`}
                   </p>
-                  
+
                   <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 15px;">
                     <tr>
                       <td style="padding: 8px 0; color: #8c6a50;">Order ID</td>
@@ -164,7 +233,11 @@ export async function POST(request: NextRequest) {
                     </tr>
                     <tr>
                       <td style="padding: 8px 0; color: #8c6a50;">Payment Method</td>
-                      <td style="padding: 8px 0; text-align: right; font-weight: 600; text-transform: uppercase;">${body.paymentMethod}</td>
+                      <td style="padding: 8px 0; text-align: right; font-weight: 600; text-transform: uppercase;">${body.paymentMethod === 'upi' ? 'UPI (Manual Verification)' : body.paymentMethod}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 8px 0; color: #8c6a50;">Order Status</td>
+                      <td style="padding: 8px 0; text-align: right; font-weight: 600; text-transform: uppercase; color: ${isUpiOrder ? '#b45309' : '#4a3320'};">${order.status.replace('_', ' ')}</td>
                     </tr>
                   </table>
                   
@@ -210,11 +283,6 @@ export async function POST(request: NextRequest) {
                         <td style="padding: 8px 0; color: #8c6a50; text-align: right;">COD Fee</td>
                         <td style="padding: 8px 0; text-align: right; font-weight: 600;">₹${codFee}</td>
                       </tr>` : ''}
-                        ${codFee > 0 ? `
-                        <tr>
-                          <td style="padding: 8px 0; color: #8c6a50; text-align: right;">COD Fee</td>
-                          <td style="padding: 8px 0; text-align: right; font-weight: 600;">₹${codFee}</td>
-                        </tr>` : ''}
                       <tr>
                         <td style="padding: 16px 0 0 0; font-weight: bold; font-size: 18px; color: #4a3320; text-align: right;">Total</td>
                         <td style="padding: 16px 0 0 0; font-weight: bold; font-size: 18px; color: #D76E60; text-align: right;">₹${order.total}</td>
@@ -239,7 +307,8 @@ export async function POST(request: NextRequest) {
         }
 
         // Send Customer Confirmation Email
-        if (body.shippingAddress?.email) {
+        // UPI orders: do NOT send confirmation yet — wait for admin payment verification
+        if (!isUpiOrder && body.shippingAddress?.email) {
           const customerEmailRes = await fetch("https://api.resend.com/emails", {
             method: "POST",
             headers: {

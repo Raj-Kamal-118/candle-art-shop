@@ -64,12 +64,13 @@ export default async function AdminDashboard() {
     getDiscounts(),
   ]);
 
-  const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
-  const pendingOrders = orders.filter((o) => o.status === "pending").length;
-  const deliveredOrders = orders.filter((o) => o.status === "delivered").length;
+  const realOrders = orders.filter((o) => !o.isTest);
+  const totalRevenue = realOrders.reduce((sum, o) => sum + o.total, 0);
+  const pendingOrders = realOrders.filter((o) => o.status === "pending").length;
+  const deliveredOrders = realOrders.filter((o) => o.status === "delivered").length;
   const activeDiscounts = discounts.filter((d) => d.active).length;
   const inStockProducts = products.filter((p) => p.inStock).length;
-  const avgOrderValue = orders.length ? totalRevenue / orders.length : 0;
+  const avgOrderValue = realOrders.length ? totalRevenue / realOrders.length : 0;
 
   const stats = [
     {
@@ -83,7 +84,7 @@ export default async function AdminDashboard() {
     },
     {
       title: "Total Orders",
-      value: orders.length.toString(),
+      value: realOrders.length.toString(),
       icon: ShoppingBag,
       accent: "border-forest-400 dark:border-forest-600",
       iconBg:
@@ -136,9 +137,9 @@ export default async function AdminDashboard() {
   });
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* Page header */}
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-serif font-bold text-brown-900 dark:text-amber-100">
             Overview
@@ -147,14 +148,14 @@ export default async function AdminDashboard() {
             {today}
           </p>
         </div>
-        <div className="flex items-center gap-2 bg-forest-50 text-forest-800 border border-forest-200 dark:bg-forest-900/30 dark:text-forest-300 dark:border-forest-800 rounded-full px-4 py-2 text-[13px] font-medium">
+        <div className="flex items-center self-start sm:self-auto gap-2 bg-forest-50 text-forest-800 border border-forest-200 dark:bg-forest-900/30 dark:text-forest-300 dark:border-forest-800 rounded-full px-4 py-2 text-[13px] font-medium">
           <span className="w-2 h-2 rounded-full bg-forest-500 animate-pulse" />
           Store is Live
         </div>
       </div>
 
       {/* Instructional Banner */}
-      <div className="bg-white dark:bg-[#1a1830] border border-amber-200 dark:border-amber-900/40 rounded-2xl p-6 flex gap-4 items-start shadow-sm">
+      <div className="bg-white dark:bg-[#1a1830] border border-amber-200 dark:border-amber-900/40 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row gap-4 items-start shadow-sm">
         <div className="w-10 h-10 rounded-full bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 flex items-center justify-center flex-none border border-amber-100 dark:border-amber-900/50">
           <Sparkles size={18} />
         </div>
@@ -173,13 +174,13 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Stats grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (
             <div
               key={stat.title}
-              className={`bg-white dark:bg-[#1a1830] rounded-2xl p-6 shadow-sm hover:shadow-md dark:shadow-none border border-cream-200 dark:border-amber-900/30 border-l-4 ${stat.accent} transition-shadow`}
+              className={`bg-white dark:bg-[#1a1830] rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-md dark:shadow-none border border-cream-200 dark:border-amber-900/30 border-l-4 ${stat.accent} transition-shadow`}
             >
               <div className="flex items-center justify-between mb-4">
                 <div className={`p-2.5 rounded-xl ${stat.iconBg}`}>
@@ -202,7 +203,7 @@ export default async function AdminDashboard() {
 
       {/* Recent orders */}
       <div className="bg-white dark:bg-[#1a1830] rounded-2xl shadow-sm border border-cream-200 dark:border-amber-900/30 overflow-hidden">
-        <div className="flex items-center justify-between px-6 pt-6 pb-5 border-b border-cream-100 dark:border-amber-900/20">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 sm:px-6 pt-5 sm:pt-6 pb-4 sm:pb-5 border-b border-cream-100 dark:border-amber-900/20">
           <h3 className="text-xl font-serif font-bold text-brown-900 dark:text-amber-100">
             Recent Orders
           </h3>
@@ -229,34 +230,34 @@ export default async function AdminDashboard() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-left bg-cream-100 dark:bg-amber-900/20 border-b border-cream-200 dark:border-amber-900/30">
-                  <th className="px-6 py-3 text-[11px] font-semibold text-brown-600 dark:text-amber-100/60 uppercase tracking-wider">
+                  <th className="px-4 sm:px-6 py-3 text-[11px] font-semibold text-brown-600 dark:text-amber-100/60 uppercase tracking-wider">
                     Order
                   </th>
-                  <th className="px-6 py-3 text-[11px] font-semibold text-brown-600 dark:text-amber-100/60 uppercase tracking-wider">
+                  <th className="px-4 sm:px-6 py-3 text-[11px] font-semibold text-brown-600 dark:text-amber-100/60 uppercase tracking-wider">
                     Customer
                   </th>
-                  <th className="px-6 py-3 text-[11px] font-semibold text-brown-600 dark:text-amber-100/60 uppercase tracking-wider">
+                  <th className="px-4 sm:px-6 py-3 text-[11px] font-semibold text-brown-600 dark:text-amber-100/60 uppercase tracking-wider">
                     Items
                   </th>
-                  <th className="px-6 py-3 text-[11px] font-semibold text-brown-600 dark:text-amber-100/60 uppercase tracking-wider">
+                  <th className="px-4 sm:px-6 py-3 text-[11px] font-semibold text-brown-600 dark:text-amber-100/60 uppercase tracking-wider">
                     Total
                   </th>
-                  <th className="px-6 py-3 text-[11px] font-semibold text-brown-600 dark:text-amber-100/60 uppercase tracking-wider">
+                  <th className="px-4 sm:px-6 py-3 text-[11px] font-semibold text-brown-600 dark:text-amber-100/60 uppercase tracking-wider">
                     Payment
                   </th>
-                  <th className="px-6 py-3 text-[11px] font-semibold text-brown-600 dark:text-amber-100/60 uppercase tracking-wider">
+                  <th className="px-4 sm:px-6 py-3 text-[11px] font-semibold text-brown-600 dark:text-amber-100/60 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-[11px] font-semibold text-brown-600 dark:text-amber-100/60 uppercase tracking-wider">
+                  <th className="px-4 sm:px-6 py-3 text-[11px] font-semibold text-brown-600 dark:text-amber-100/60 uppercase tracking-wider">
                     Date
                   </th>
-                  <th className="px-6 py-3 text-[11px] font-semibold text-brown-600 dark:text-amber-100/60 uppercase tracking-wider text-right">
+                  <th className="px-4 sm:px-6 py-3 text-[11px] font-semibold text-brown-600 dark:text-amber-100/60 uppercase tracking-wider text-right">
                     Feedback
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {orders.slice(0, 10).map((order) => {
+                {realOrders.slice(0, 10).map((order) => {
                   const s = statusConfig[order.status] ?? {
                     label: order.status,
                     classes:
@@ -269,19 +270,19 @@ export default async function AdminDashboard() {
                       key={order.id}
                       className="hover:bg-cream-100/50 dark:hover:bg-amber-900/10 transition-colors border-b border-cream-100 dark:border-amber-900/20 last:border-0"
                     >
-                      <td className="px-6 py-4 font-mono text-xs text-brown-500 dark:text-amber-100/50">
+                      <td className="px-4 sm:px-6 py-4 font-mono text-xs text-brown-500 dark:text-amber-100/50">
                         #{order.id.slice(-8).toUpperCase()}
                       </td>
-                      <td className="px-6 py-4 font-medium text-brown-800 dark:text-amber-100">
+                      <td className="px-4 sm:px-6 py-4 font-medium text-brown-800 dark:text-amber-100">
                         {order.shippingAddress.fullName}
                       </td>
-                      <td className="px-6 py-4 text-brown-600 dark:text-amber-100/70">
+                      <td className="px-4 sm:px-6 py-4 text-brown-600 dark:text-amber-100/70">
                         {order.items.reduce((s, i) => s + i.quantity, 0)} items
                       </td>
-                      <td className="px-6 py-4 font-semibold text-brown-900 dark:text-amber-100">
+                      <td className="px-4 sm:px-6 py-4 font-semibold text-brown-900 dark:text-amber-100">
                         {formatPrice(order.total)}
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-4 sm:px-6 py-4">
                         <span
                           className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold tracking-wider uppercase ${
                             order.paymentMethod === "cod"
@@ -292,20 +293,20 @@ export default async function AdminDashboard() {
                           {order.paymentMethod === "cod" ? "COD" : "QR Pay"}
                         </span>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-4 sm:px-6 py-4">
                         <OrderStatusSelector
                           orderId={order.id}
                           currentStatus={order.status}
                         />
                       </td>
-                      <td className="px-6 py-4 text-brown-500 dark:text-amber-100/50 text-xs">
+                      <td className="px-4 sm:px-6 py-4 text-brown-500 dark:text-amber-100/50 text-xs">
                         {new Date(order.createdAt).toLocaleDateString("en-IN", {
                           day: "numeric",
                           month: "short",
                           year: "numeric",
                         })}
                       </td>
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-4 sm:px-6 py-4 text-right">
                         {order.status === "delivered" ? (
                           <CopyFeedbackLink orderId={order.id} />
                         ) : (
@@ -325,7 +326,7 @@ export default async function AdminDashboard() {
 
       {/* Product inventory */}
       <div className="bg-white dark:bg-[#1a1830] rounded-2xl shadow-sm border border-cream-200 dark:border-amber-900/30 overflow-hidden">
-        <div className="flex items-center justify-between px-6 pt-6 pb-5 border-b border-cream-100 dark:border-amber-900/20">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 sm:px-6 pt-5 sm:pt-6 pb-4 sm:pb-5 border-b border-cream-100 dark:border-amber-900/20">
           <h3 className="text-xl font-serif font-bold text-brown-900 dark:text-amber-100">
             Atelier Inventory
           </h3>
@@ -340,16 +341,16 @@ export default async function AdminDashboard() {
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left bg-cream-100 dark:bg-amber-900/20 border-b border-cream-200 dark:border-amber-900/30">
-                <th className="px-6 py-3 text-[11px] font-semibold text-brown-600 dark:text-amber-100/60 uppercase tracking-wider">
+                <th className="px-4 sm:px-6 py-3 text-[11px] font-semibold text-brown-600 dark:text-amber-100/60 uppercase tracking-wider">
                   Product
                 </th>
-                <th className="px-6 py-3 text-[11px] font-semibold text-brown-600 dark:text-amber-100/60 uppercase tracking-wider">
+                <th className="px-4 sm:px-6 py-3 text-[11px] font-semibold text-brown-600 dark:text-amber-100/60 uppercase tracking-wider">
                   Price
                 </th>
-                <th className="px-6 py-3 text-[11px] font-semibold text-brown-600 dark:text-amber-100/60 uppercase tracking-wider">
+                <th className="px-4 sm:px-6 py-3 text-[11px] font-semibold text-brown-600 dark:text-amber-100/60 uppercase tracking-wider">
                   Stock
                 </th>
-                <th className="px-6 py-3 text-[11px] font-semibold text-brown-600 dark:text-amber-100/60 uppercase tracking-wider">
+                <th className="px-4 sm:px-6 py-3 text-[11px] font-semibold text-brown-600 dark:text-amber-100/60 uppercase tracking-wider">
                   Status
                 </th>
               </tr>
@@ -360,7 +361,7 @@ export default async function AdminDashboard() {
                   key={product.id}
                   className="hover:bg-cream-100/50 dark:hover:bg-amber-900/10 transition-colors border-b border-cream-100 dark:border-amber-900/20 last:border-0"
                 >
-                  <td className="px-6 py-4">
+                  <td className="px-4 sm:px-6 py-4">
                     <div className="flex items-center gap-3">
                       <img
                         src={product.images[0]}
@@ -372,10 +373,10 @@ export default async function AdminDashboard() {
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 font-semibold text-brown-800 dark:text-amber-100">
+                  <td className="px-4 sm:px-6 py-4 font-semibold text-brown-800 dark:text-amber-100">
                     {formatPrice(product.price)}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 sm:px-6 py-4">
                     <div className="flex items-center gap-2">
                       <span
                         className={`text-sm font-medium ${
@@ -404,7 +405,7 @@ export default async function AdminDashboard() {
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 sm:px-6 py-4">
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase ${
                         product.inStock

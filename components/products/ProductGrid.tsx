@@ -6,12 +6,14 @@ interface ProductGridProps {
   emptyMessage?: string;
   customCard?: React.ReactNode;
   customCardEnd?: React.ReactNode;
+  viewMode?: "grid" | "list";
 }
 
 export default function ProductGrid({
   products,
   emptyMessage = "No products found.",
   customCard,
+  viewMode = "grid",
   customCardEnd,
 }: ProductGridProps) {
   if (products.length === 0 && !customCard && !customCardEnd) {
@@ -24,10 +26,16 @@ export default function ProductGrid({
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div
+      className={
+        viewMode === "list"
+          ? "grid grid-cols-1 gap-6"
+          : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+      }
+    >
       {customCard}
       {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
+        <ProductCard key={product.id} product={product} viewMode={viewMode} />
       ))}
       {customCardEnd}
     </div>

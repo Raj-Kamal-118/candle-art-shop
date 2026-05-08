@@ -87,3 +87,386 @@
     -webkit-line-clamp: 1;
   }
 }
+
+/* ════════════════════════════════════════════════════════════
+   Artisan House — Craft UI Primitives
+   ════════════════════════════════════════════════════════════ */
+
+/* ── Postage stamp (mini) ───────────────────────────────────── */
+.stamp-mini {
+  display: inline-block;
+  padding: 4px;
+  background: #fff;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  position: relative;
+  --stamp-size: 8px;
+}
+.stamp-mini::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle var(--stamp-size) at 0 0, transparent var(--stamp-size), #fff var(--stamp-size)),
+    radial-gradient(circle var(--stamp-size) at 0 0, transparent var(--stamp-size), #fff var(--stamp-size));
+  background-size: calc(var(--stamp-size) * 2) calc(var(--stamp-size) * 2);
+  pointer-events: none;
+}
+.stamp-mini .inner {
+  position: relative;
+  padding: 12px 14px;
+  background: var(--coral-200, #fecaca);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 80px;
+  border: 1px solid rgba(232,93,74,0.3);
+}
+.stamp-mini .inner .label { font-family: var(--font-script); font-size: 22px; color: var(--coral-800, #9f1239); line-height: 1; }
+.stamp-mini .inner .denom { font-family: var(--font-sans); font-size: 9px; font-weight: 700; letter-spacing: 0.16em; color: var(--coral-800, #9f1239); text-transform: uppercase; }
+.stamp-mini .inner .ill   { font-size: 16px; display: flex; align-items: center; justify-content: center; margin: 4px 0; }
+.stamp-mini.tilt-l { transform: rotate(-6deg); }
+.stamp-mini.tilt-r { transform: rotate(5deg); }
+.stamp-mini.kind-mint  .inner { background: var(--forest-200, #bbf7d0); border-color: rgba(61,138,114,0.3); }
+.stamp-mini.kind-mint  .inner .label,
+.stamp-mini.kind-mint  .inner .denom { color: var(--forest-800, #166534); }
+.stamp-mini.kind-cream .inner { background: var(--cream-200, #fef3c7); border-color: rgba(122,80,40,0.25); }
+.stamp-mini.kind-cream .inner .label,
+.stamp-mini.kind-cream .inner .denom { color: var(--brown-800, #422006); }
+.stamp-mini.kind-gold  .inner { background: #fef3c7; border-color: rgba(217,119,6,0.3); }
+.stamp-mini.kind-gold  .inner .label,
+.stamp-mini.kind-gold  .inner .denom { color: var(--gold-700, #b45309); }
+
+/* ── Manila tag ─────────────────────────────────────────────── */
+.manila-tag {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  padding: 10px 16px 10px 28px;
+  background: linear-gradient(135deg, #f0d7a4, #e2c180);
+  clip-path: polygon(18px 0%, 100% 0%, 100% 100%, 18px 100%, 0% 50%);
+  box-shadow: 2px 4px 10px rgba(0,0,0,0.13), inset 0 1px 0 rgba(255,255,255,0.4);
+  font-family: var(--font-serif);
+  color: var(--brown-900, #422006);
+}
+.manila-tag::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #6b4523;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.45);
+}
+.manila-tag .mt-label { font-size: 10px; font-style: italic; color: var(--brown-600, #92400e); line-height: 1; }
+.manila-tag .mt-value { font-weight: 700; font-size: 16px; line-height: 1.1; }
+.manila-tag .mt-strike { font-size: 10px; color: var(--brown-400, #a16207); text-decoration: line-through; margin-left: 4px; }
+.dark .manila-tag {
+  background: linear-gradient(135deg, #4a3010, #3a2208);
+  box-shadow: 2px 4px 10px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.07);
+  color: #f0d7a4;
+}
+.dark .manila-tag::before { background: #c49a60; }
+.dark .manila-tag .mt-label { color: #c49a60; }
+.dark .manila-tag .mt-strike { color: #a07040; }
+
+/* ── Order config card ──────────────────────────────────────── */
+.order-config-card {
+  background: linear-gradient(150deg, #fff6ed 0%, #ffeedd 45%, #fff9f2 100%);
+  background-image: url('https://www.transparenttextures.com/patterns/cream-paper.png'),
+    linear-gradient(150deg, #fff6ed 0%, #ffeedd 45%, #fff9f2 100%);
+  box-shadow: 0 0 0 3px rgba(232,93,74,0.1), 0 20px 40px -8px rgba(122,60,20,0.2);
+  border: 1.5px solid rgba(232,93,74,0.25);
+}
+.dark .order-config-card {
+  background: linear-gradient(150deg, #1e150f 0%, #231710 45%, #1c1309 100%);
+  background-image: url('https://www.transparenttextures.com/patterns/cream-paper.png'),
+    linear-gradient(150deg, #1e150f 0%, #231710 45%, #1c1309 100%);
+  box-shadow: 0 0 0 3px rgba(232,93,74,0.07), 0 20px 40px -8px rgba(0,0,0,0.45);
+  border: 1.5px solid rgba(232,93,74,0.15);
+}
+.order-config-row {
+  background: rgba(255,255,255,0.82);
+}
+.dark .order-config-row {
+  background: rgba(14,9,4,0.55);
+}
+
+/* ── Tape / washi ───────────────────────────────────────────── */
+.craft-tape {
+  clip-path: polygon(0% 0%, 100% 0%, 96% 16%, 100% 32%, 96% 48%, 100% 64%, 96% 80%, 100% 100%, 0% 100%, 4% 80%, 0% 64%, 4% 48%, 0% 32%, 4% 16%);
+  backdrop-filter: blur(2px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+}
+
+/* ── Perforation margin dots ────────────────────────────────── */
+.craft-perf {
+  position: relative;
+}
+.craft-perf::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-image: radial-gradient(circle 2px at 2px 6px, rgba(122,80,40,0.22) 2px, transparent 2px);
+  background-size: 4px 14px;
+  pointer-events: none;
+  z-index: 1;
+}
+.dark .craft-perf::before {
+  background-image: radial-gradient(circle 2px at 2px 6px, rgba(251,191,36,0.15) 2px, transparent 2px);
+}
+
+/* ── Polaroid photo frame ───────────────────────────────────── */
+.craft-polaroid {
+  background: #fff;
+  padding: 5px 5px 16px;
+  box-shadow: 0 8px 18px rgba(67,44,26,0.18), 0 2px 4px rgba(0,0,0,0.06);
+  position: relative;
+  flex-shrink: 0;
+}
+.dark .craft-polaroid {
+  background: #2a2018;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* ── Order book (receipt pad) ───────────────────────────────── */
+.craft-order-book {
+  background: #ffffff;
+  border: 1px solid rgba(122,80,40,0.2);
+  border-radius: 6px;
+  box-shadow: 0 14px 30px rgba(67,44,26,0.10), 0 2px 6px rgba(0,0,0,0.04);
+  overflow: hidden;
+}
+.dark .craft-order-book {
+  background: #1a1830;
+  border-color: rgba(251,191,36,0.12);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.3);
+}
+
+/* ── Dotted connector line for totals ───────────────────────── */
+.craft-dot-line {
+  flex: 1;
+  border-bottom: 1px dotted rgba(122,80,40,0.4);
+  align-self: flex-end;
+  transform: translateY(-3px);
+  margin: 0 8px;
+}
+.dark .craft-dot-line {
+  border-color: rgba(251,191,36,0.2);
+}
+
+/* ── Discount code row ──────────────────────────────────────── */
+.craft-code-input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid rgba(122,80,40,0.3);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.7);
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 13px;
+  color: #362821;
+  font-style: italic;
+  letter-spacing: 0.04em;
+}
+.craft-code-input::placeholder {
+  color: rgba(122,80,40,0.5);
+}
+.craft-code-input:focus {
+  outline: none;
+  border-color: #e85d4a;
+  background: #fff;
+}
+.dark .craft-code-input {
+  background: rgba(26,24,48,0.8);
+  border-color: rgba(251,191,36,0.2);
+  color: #fef3c7;
+}
+.dark .craft-code-input::placeholder {
+  color: rgba(251,191,36,0.3);
+}
+.dark .craft-code-input:focus {
+  border-color: #d97706;
+  background: #1a1830;
+}
+
+/* ── Progress bar ───────────────────────────────────────────── */
+.craft-progress-track {
+  height: 5px;
+  background: rgba(61,138,114,0.2);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.craft-progress-fill {
+  height: 100%;
+  background: #3d8a72;
+  border-radius: 999px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Summary card corner tape ───────────────────────────────── */
+.craft-corner-tape {
+  position: absolute;
+  top: -10px;
+  left: 24px;
+  width: 90px;
+  height: 22px;
+  background: rgba(252,165,165,0.55);
+  clip-path: polygon(0% 0%, 100% 0%, 96% 16%, 100% 32%, 96% 48%, 100% 64%, 96% 80%, 100% 100%, 0% 100%, 4% 80%, 0% 64%, 4% 48%, 0% 32%, 4% 16%);
+}
+.dark .craft-corner-tape {
+  background: rgba(252,165,165,0.25);
+}
+
+/* ── Coupon cut line ────────────────────────────────────────── */
+.craft-coupon {
+  border: 1px solid rgba(122,80,40,0.18);
+  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.dark .craft-coupon {
+  border-color: rgba(251,191,36,0.12);
+}
+
+/* ── Clipboard filter panel ─────────────────────────────────── */
+.craft-clipboard {
+  position: relative;
+  background: #fdf8ef;
+  border: 1px solid rgba(122,80,40,0.18);
+  border-radius: 3px;
+  box-shadow: 0 4px 16px rgba(67,44,26,0.10), 0 1px 3px rgba(0,0,0,0.04);
+  background-image: repeating-linear-gradient(
+    transparent, transparent 27px,
+    rgba(122,80,40,0.07) 27px, rgba(122,80,40,0.07) 28px
+  );
+}
+.dark .craft-clipboard {
+  background: #1c1710;
+  border-color: rgba(180,120,60,0.18);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  background-image: repeating-linear-gradient(
+    transparent, transparent 27px,
+    rgba(180,120,60,0.08) 27px, rgba(180,120,60,0.08) 28px
+  );
+}
+
+/* Clipboard spring clip */
+.craft-clipboard-clip {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44px;
+  height: 20px;
+  background: linear-gradient(180deg, #c8a45a 0%, #a07830 100%);
+  border-radius: 3px 3px 0 0;
+  z-index: 10;
+  box-shadow: 0 -2px 6px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.25);
+}
+.craft-clipboard-clip::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 28px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 2px 2px 0 0;
+}
+.craft-clipboard-clip::after {
+  content: '';
+  position: absolute;
+  bottom: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 26px;
+  height: 8px;
+  background: linear-gradient(180deg, #8b6520 0%, #7a5518 100%);
+  border-radius: 0 0 3px 3px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.dark .craft-clipboard-clip {
+  background: linear-gradient(180deg, #8b6914 0%, #6b5010 100%);
+}
+.dark .craft-clipboard-clip::after {
+  background: linear-gradient(180deg, #5a4010 0%, #4a3008 100%);
+}
+
+/* Manila filter tag buttons */
+.craft-filter-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px 5px 16px;
+  font-family: var(--font-serif);
+  font-size: 12px;
+  border: 1px solid rgba(122,80,40,0.22);
+  border-radius: 2px;
+  background: rgba(253,248,239,0.8);
+  color: #7a5028;
+  position: relative;
+  transition: all 0.15s;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+.craft-filter-tag::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #d4a870;
+  border: 1px solid rgba(122,80,40,0.3);
+  transition: all 0.15s;
+}
+.craft-filter-tag.active,
+.craft-filter-tag[data-active="true"] {
+  background: rgba(122,80,40,0.12);
+  color: #6b3f10;
+  border-color: rgba(122,80,40,0.4);
+  font-weight: 600;
+}
+.craft-filter-tag.active::before,
+.craft-filter-tag[data-active="true"]::before {
+  background: #e85d4a;
+  border-color: #c04030;
+}
+.craft-filter-tag:hover:not(.active):not([data-active="true"]) {
+  background: rgba(212,168,112,0.15);
+  border-color: rgba(122,80,40,0.35);
+}
+.dark .craft-filter-tag {
+  background: rgba(180,120,60,0.08);
+  color: rgba(251,234,189,0.7);
+  border-color: rgba(180,120,60,0.2);
+}
+.dark .craft-filter-tag::before {
+  background: rgba(180,120,60,0.4);
+  border-color: rgba(180,120,60,0.3);
+}
+.dark .craft-filter-tag.active,
+.dark .craft-filter-tag[data-active="true"] {
+  background: rgba(180,120,60,0.18);
+  color: rgba(251,234,189,1);
+  border-color: rgba(180,120,60,0.4);
+}
+.dark .craft-filter-tag.active::before,
+.dark .craft-filter-tag[data-active="true"]::before {
+  background: #e85d4a;
+  border-color: #c04030;
+}
+.dark .craft-filter-tag:hover:not(.active):not([data-active="true"]) {
+  background: rgba(180,120,60,0.14);
+}

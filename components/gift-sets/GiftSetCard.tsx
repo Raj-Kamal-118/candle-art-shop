@@ -5,7 +5,6 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { GiftSet } from "@/lib/types";
 import { formatPrice } from "@/lib/utils";
-import Badge from "@/components/ui/Badge";
 
 interface GiftSetCardProps {
   set: GiftSet;
@@ -36,13 +35,23 @@ export default function GiftSetCard({ set }: GiftSetCardProps) {
         )}
         {/* Badges */}
         {set.saving > 0 && (
-          <div className="absolute top-3 right-3">
-            <Badge
-              variant="default"
-              className="text-[11px] sm:text-xs shadow-sm font-bold bg-amber-100 text-amber-800 border border-amber-200 dark:bg-amber-900/60 dark:text-amber-200 dark:border-amber-700/50"
+          <div className="absolute top-3 left-0 z-10">
+            <div
+              style={{
+                background: "var(--home-coral, #e85d4a)",
+                color: "white",
+                fontFamily: "var(--font-hand)",
+                fontSize: 18,
+                letterSpacing: "0.05em",
+                fontWeight: 700,
+                padding: "0px 12px 0px 8px",
+                clipPath:
+                  "polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%)",
+                boxShadow: "2px 2px 6px rgba(0,0,0,0.15)",
+              }}
             >
               Save {formatPrice(set.saving)}
-            </Badge>
+            </div>
           </div>
         )}
       </div>

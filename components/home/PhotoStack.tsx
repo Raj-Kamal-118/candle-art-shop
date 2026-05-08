@@ -23,9 +23,20 @@ const AlbumPage = React.forwardRef<
 
   // 6 Distinct Layouts & Dynamic Badges
   const layoutType = index % 7;
-  const showBadge10 = index % 6 === 1;
-  const showBadgeShipping = index % 6 === 3;
-  const showBadgeLimited = index % 6 === 5;
+
+  let offerBadge = (item as any).offerText;
+  let badgeClass = "bg-coral-600 text-white";
+  if (!offerBadge) {
+    if (index % 6 === 1) {
+      offerBadge = "10% OFF";
+    } else if (index % 6 === 3) {
+      offerBadge = "Free Shipping";
+      badgeClass = "bg-forest-800 text-amber-200";
+    } else if (index % 6 === 5) {
+      offerBadge = "Limited Edition";
+      badgeClass = "bg-amber-600 text-white";
+    }
+  }
 
   // Dynamic labels for layout 3
   const editorialLabels = [
@@ -35,6 +46,11 @@ const AlbumPage = React.forwardRef<
     "Just Arrived",
   ];
   const dynamicEditorialLabel = editorialLabels[index % editorialLabels.length];
+
+  const getKicker = (defaultKicker: string) =>
+    (item as any).kicker || defaultKicker;
+  const getButtonText = (defaultText: string) =>
+    (item as any).buttonText || defaultText;
 
   return (
     <div
@@ -57,25 +73,11 @@ const AlbumPage = React.forwardRef<
       />
 
       {/* Badges Overlay */}
-      {showBadge10 && (
+      {offerBadge && (
         <div
-          className={`absolute top-8 ${isLeft ? "left-0 rounded-r-md" : "right-0 rounded-l-md"} bg-coral-600 text-white text-[10px] font-bold px-3 py-1.5 shadow-md z-30 uppercase tracking-wider pointer-events-none`}
+          className={`absolute top-8 ${isLeft ? "left-0 rounded-r-md" : "right-0 rounded-l-md"} ${badgeClass} text-[10px] font-bold px-3 py-1.5 shadow-md z-30 uppercase tracking-wider pointer-events-none`}
         >
-          10% OFF
-        </div>
-      )}
-      {showBadgeShipping && (
-        <div
-          className={`absolute top-8 ${isLeft ? "left-0 rounded-r-md" : "right-0 rounded-l-md"} bg-forest-800 text-amber-200 text-[10px] font-bold px-3 py-1.5 shadow-md z-30 uppercase tracking-wider pointer-events-none`}
-        >
-          Free Shipping
-        </div>
-      )}
-      {showBadgeLimited && (
-        <div
-          className={`absolute top-8 ${isLeft ? "left-0 rounded-r-md" : "right-0 rounded-l-md"} bg-amber-600 text-white text-[10px] font-bold px-3 py-1.5 shadow-md z-30 uppercase tracking-wider pointer-events-none`}
-        >
-          Limited Edition
+          {offerBadge}
         </div>
       )}
 
@@ -101,7 +103,7 @@ const AlbumPage = React.forwardRef<
             </div>
             <div className="flex-1 flex flex-col justify-center items-center text-center">
               <span className="text-[9px] uppercase tracking-[0.3em] text-brown-500 dark:text-amber-100/50 mb-3 font-semibold">
-                Curated Piece
+                {getKicker("Curated Piece")}
               </span>
               {item.name && (
                 <h4 className="font-serif text-2xl sm:text-3xl font-bold text-brown-900 dark:text-amber-100 line-clamp-2 mb-4 leading-tight">
@@ -115,7 +117,7 @@ const AlbumPage = React.forwardRef<
                   onPointerDown={(e) => e.stopPropagation()}
                   className="inline-flex items-center justify-center gap-2 bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-700/30 text-forest-800 dark:text-amber-200 px-6 py-2.5 rounded-xl font-semibold text-xs hover:bg-cream-100 dark:hover:bg-amber-900/20 transition-all duration-200 shadow-lg hover:-translate-y-0.5 z-20"
                 >
-                  View details <ArrowRight size={14} />
+                  {getButtonText("View details")} <ArrowRight size={14} />
                 </Link>
               )}
             </div>
@@ -143,7 +145,7 @@ const AlbumPage = React.forwardRef<
               )}
               <div className="absolute bottom-8 left-6 right-6 z-20 flex flex-col items-start">
                 <span className="text-[9px] uppercase tracking-[0.3em] text-amber-200/90 mb-2 font-semibold">
-                  Editorial Pick
+                  {getKicker("Editorial Pick")}
                 </span>
                 {item.name && (
                   <h4 className="font-serif text-2xl sm:text-3xl font-bold text-white line-clamp-2 mb-5 leading-tight drop-shadow-md">
@@ -156,7 +158,7 @@ const AlbumPage = React.forwardRef<
                     onPointerDown={(e) => e.stopPropagation()}
                     className="inline-flex items-center justify-center gap-2 bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-700/30 text-forest-800 dark:text-amber-200 px-6 py-2.5 rounded-xl font-semibold text-xs hover:bg-cream-100 dark:hover:bg-amber-900/20 transition-all duration-200 shadow-lg hover:-translate-y-0.5 z-20"
                   >
-                    Shop this piece <ArrowRight size={14} />
+                    {getButtonText("Shop this piece")} <ArrowRight size={14} />
                   </Link>
                 )}
               </div>
@@ -168,7 +170,7 @@ const AlbumPage = React.forwardRef<
           <div className="w-full h-full flex flex-col p-6 sm:p-8 pb-14 bg-amber-50/40 dark:bg-amber-900/10">
             <div className="flex-[0.8] flex flex-col justify-start items-center text-center pt-2">
               <span className="text-[9px] uppercase tracking-[0.3em] text-amber-700 dark:text-amber-400 mb-3 font-semibold">
-                In Focus
+                {getKicker("In Focus")}
               </span>
               {item.name && (
                 <h4 className="font-serif text-3xl font-bold text-brown-900 dark:text-amber-100 line-clamp-3 mb-4 leading-tight italic">
@@ -181,7 +183,7 @@ const AlbumPage = React.forwardRef<
                   onPointerDown={(e) => e.stopPropagation()}
                   className="inline-flex items-center justify-center gap-2 bg-transparent text-amber-800 dark:text-amber-300 font-semibold text-xs hover:text-coral-600 transition-all z-20 uppercase tracking-widest border-b border-amber-800 dark:border-amber-300 pb-0.5"
                 >
-                  Discover <ArrowRight size={14} />
+                  {getButtonText("Discover")} <ArrowRight size={14} />
                 </Link>
               )}
             </div>
@@ -222,7 +224,7 @@ const AlbumPage = React.forwardRef<
             </div>
             <div className="w-full h-[35%] flex flex-col items-center justify-center px-8 text-center">
               <span className="text-[9px] uppercase tracking-[0.3em] text-brown-500 dark:text-amber-100/50 mb-3 font-semibold block">
-                {dynamicEditorialLabel}
+                {getKicker(dynamicEditorialLabel)}
               </span>
               {item.name && (
                 <h4 className="font-serif text-2xl font-bold text-brown-900 dark:text-amber-100 line-clamp-2 mb-4 leading-tight">
@@ -235,7 +237,7 @@ const AlbumPage = React.forwardRef<
                   onPointerDown={(e) => e.stopPropagation()}
                   className="inline-flex items-center justify-center gap-2 bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-700/30 text-forest-800 dark:text-amber-200 px-6 py-2.5 rounded-xl font-semibold text-xs hover:bg-cream-100 dark:hover:bg-amber-900/20 transition-all duration-200 shadow-lg hover:-translate-y-0.5 z-20"
                 >
-                  Explore <ArrowRight size={14} />
+                  {getButtonText("Explore")} <ArrowRight size={14} />
                 </Link>
               )}
             </div>
@@ -272,7 +274,7 @@ const AlbumPage = React.forwardRef<
                   onPointerDown={(e) => e.stopPropagation()}
                   className="inline-flex items-center gap-2 text-amber-800 dark:text-amber-300 font-bold text-xs uppercase tracking-widest hover:text-amber-900 dark:hover:text-amber-100 transition-colors mt-2"
                 >
-                  Shop Collection <ArrowRight size={14} />
+                  {getButtonText("Shop Collection")} <ArrowRight size={14} />
                 </Link>
               )}
             </div>
@@ -297,7 +299,7 @@ const AlbumPage = React.forwardRef<
               )}
             </div>
             <span className="text-[10px] uppercase tracking-[0.25em] text-brown-500 dark:text-amber-100/50 mb-3 font-semibold border-y border-brown-300/40 dark:border-amber-900/40 py-1 px-4">
-              Signature Edition
+              {getKicker("Signature Edition")}
             </span>
             {item.name && (
               <h4 className="font-serif text-2xl font-bold text-brown-900 dark:text-amber-100 line-clamp-2 mb-5 leading-tight">
@@ -310,7 +312,7 @@ const AlbumPage = React.forwardRef<
                 onPointerDown={(e) => e.stopPropagation()}
                 className="inline-flex items-center justify-center gap-2 bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-700/30 text-forest-800 dark:text-amber-200 px-6 py-2.5 rounded-xl font-semibold text-xs hover:bg-cream-100 dark:hover:bg-amber-900/20 transition-all duration-200 shadow-lg hover:-translate-y-0.5 z-20"
               >
-                View Details <ArrowRight size={14} />
+                {getButtonText("View Details")} <ArrowRight size={14} />
               </Link>
             )}
           </div>
@@ -320,7 +322,7 @@ const AlbumPage = React.forwardRef<
           // LAYOUT 6 (Right): Polaroid style
           <div className="w-full h-full flex flex-col p-8 pb-14 items-center justify-center">
             <span className="text-[9px] uppercase tracking-[0.3em] text-brown-500 dark:text-amber-100/50 mb-6 font-semibold">
-              {dynamicEditorialLabel}
+              {getKicker(dynamicEditorialLabel)}
             </span>
             <div className="w-full aspect-square bg-white dark:bg-[#1a1830] p-3 pb-12 rounded-sm shadow-md border border-cream-200 dark:border-amber-900/30 relative transform rotate-1">
               <div className="relative w-full h-full bg-cream-50 dark:bg-black/20">
@@ -352,8 +354,7 @@ const AlbumPage = React.forwardRef<
                 onPointerDown={(e) => e.stopPropagation()}
                 className="mt-8 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-700 hover:text-coral-600 transition-colors"
               >
-                {(item as any).buttonText || "Shop Collection"}{" "}
-                <ArrowRight size={14} />
+                {getButtonText("Shop Collection")} <ArrowRight size={14} />
               </Link>
             )}
           </div>

@@ -74,7 +74,7 @@ export default function AddressForm({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
         <div className="sm:col-span-2">
           <Input
             label="Full Name"
@@ -90,13 +90,18 @@ export default function AddressForm({
           error={errors.email?.message}
           {...register("email")}
         />
-        <Input
-          label="Phone Number"
-          type="tel"
-          placeholder="+91 98765 43210"
-          error={errors.phone?.message}
-          {...register("phone")}
-        />
+        <div>
+          <Input
+            label="Phone Number"
+            type="tel"
+            placeholder="+91 98765 43210"
+            error={errors.phone?.message}
+            {...register("phone")}
+          />
+          <p className="text-[11px] text-brown-500 dark:text-amber-100/50 mt-1.5 italic">
+            We'll only use this if the courier can't find you.
+          </p>
+        </div>
         <div className="sm:col-span-2">
           <Input
             label="Address Line 1"
@@ -117,6 +122,7 @@ export default function AddressForm({
             label="PIN Code"
             placeholder="400001"
             maxLength={6}
+            className="pr-20"
             error={errors.postalCode?.message}
             {...register("postalCode")}
           />
@@ -139,7 +145,7 @@ export default function AddressForm({
           {...register("state")}
         />
         <div>
-          <label className="block text-sm font-medium text-brown-800 mb-1.5">
+          <label className="block text-sm font-medium text-brown-800 dark:text-amber-100/90 mb-1.5">
             Country
           </label>
           <div className="relative">

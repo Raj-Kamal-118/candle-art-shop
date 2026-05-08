@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { HeroSettings, HeroButtonIcon } from "@/lib/types";
 import StickyNote from "@/components/ui/StickyNote";
+import PostageStamp from "@/components/craft/PostageStamp";
 
 const ICON_MAP: Record<HeroButtonIcon, React.ReactNode> = {
   "arrow-right": <ArrowRight size={18} />,
@@ -301,16 +302,20 @@ export default function HeroSection({ settings }: HeroSectionProps) {
 
             {/* Stats */}
             {showStats && stats.length > 0 && (
-              <div className="flex flex-wrap gap-8 mt-12 pt-8 border-t border-cream-200 dark:border-amber-900/20">
-                {stats.map((stat) => (
-                  <div key={stat.label}>
-                    <p className="text-2xl font-bold text-forest-900 dark:text-amber-300 font-serif dark:candle-text-glow">
-                      {stat.value}
-                    </p>
-                    <p className="text-sm text-forest-500 dark:text-amber-100/50">
-                      {stat.label}
-                    </p>
-                  </div>
+              <div className="flex flex-wrap gap-4 sm:gap-6 mt-12 pt-8 border-t border-cream-200 dark:border-amber-900/20">
+                {stats.map((stat, i) => (
+                  <PostageStamp
+                    key={stat.label}
+                    label={["✦", "❀", "✧"][i % 3] + " " + stat.value}
+                    denom={
+                      <span className="flex items-center justify-center gap-1.5 mt-0.5">
+                        <span>{stat.label}</span>
+                      </span>
+                    }
+                    kind={(["gold", "coral", "gold", "coral"] as const)[i % 4]}
+                    tilt="none"
+                    className="hover:scale-105 transition-transform duration-300 shadow-sm"
+                  />
                 ))}
               </div>
             )}

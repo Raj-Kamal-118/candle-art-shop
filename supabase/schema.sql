@@ -101,6 +101,12 @@ ALTER TABLE products ADD COLUMN IF NOT EXISTS upsell_message TEXT;
 ALTER TABLE products ADD COLUMN IF NOT EXISTS upsell_rules JSONB NOT NULL DEFAULT '{}';
 ALTER TABLE discounts ADD COLUMN IF NOT EXISTS one_use_per_customer BOOLEAN NOT NULL DEFAULT FALSE;
 
+-- Orders: add columns for user tracking and UPI payment proof
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS user_id TEXT;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS customer_phone TEXT;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_screenshot_url TEXT;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS is_test BOOLEAN NOT NULL DEFAULT FALSE;
+
 -- Service role bypasses RLS automatically, so no policies needed
 -- for the server-side Next.js app. Public (anon) access is blocked.
 

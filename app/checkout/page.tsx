@@ -23,6 +23,7 @@ import OrderSummary from "@/components/checkout/OrderSummary";
 import AuthModal from "@/components/auth/AuthModal";
 import Button from "@/components/ui/Button";
 import SecondaryHeader from "@/components/layout/SecondaryHeader";
+import StickyNote from "@/components/ui/StickyNote";
 import { supabase } from "@/lib/supabase";
 
 type Step = "address" | "payment" | "confirmation";
@@ -48,8 +49,8 @@ function CheckoutContent() {
   const [discountError, setDiscountError] = useState("");
   const [applyingDiscount, setApplyingDiscount] = useState(false);
   const [placingOrder, setPlacingOrder] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<"online" | "cod">(
-    "online",
+  const [paymentMethod, setPaymentMethod] = useState<"online" | "cod" | "upi">(
+    "upi",
   );
   const [paymentError, setPaymentError] = useState("");
   const [orderId, setOrderId] = useState<string | null>(null);
@@ -240,7 +241,10 @@ function CheckoutContent() {
     setAuthModalOpen(false);
   };
 
-  const handlePlaceOrder = async () => {
+  const handlePlaceOrder = async (paymentData?: {
+    transactionId?: string;
+    screenshot?: string;
+  }) => {
     if (!shippingAddress) return;
     setPlacingOrder(true);
     setPaymentError("");
@@ -269,6 +273,8 @@ function CheckoutContent() {
           shippingAddress,
           billingAddress: shippingAddress,
           paymentMethod,
+          paymentReference: paymentData?.transactionId,
+          paymentScreenshot: paymentData?.screenshot,
           userId: verifiedUser?.id,
           customerPhone: shippingAddress.phone,
           isGift: orderType === "gift",
@@ -353,28 +359,49 @@ function CheckoutContent() {
 
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-12">
         {/* Step indicator */}
-        <div className="flex items-center justify-center mb-12">
+        <div className="flex items-center justify-center mb-10">
           {steps.map((s, i) => {
             const Icon = s.icon;
             const isActive = s.id === step;
             const isPast = currentStepIndex > i;
             return (
               <div key={s.id} className="flex items-center">
-                <div
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors shadow-sm ${
-                    isActive
-                      ? "bg-coral-600 dark:bg-amber-600 text-white"
-                      : isPast
-                        ? "bg-forest-700 dark:bg-forest-600 text-white"
-                        : "bg-white dark:bg-[#1a1830] text-brown-500 dark:text-amber-100/50 border border-cream-200 dark:border-amber-900/30"
-                  }`}
-                >
-                  <Icon size={15} />
-                  <span className="hidden sm:inline">{s.label}</span>
+                <div className="flex flex-col items-center gap-1">
+                  <div
+                    className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 ${
+                      isActive
+                        ? "bg-coral-600 dark:bg-coral-500 text-white shadow-sm shadow-coral-200 dark:shadow-coral-900/30"
+                        : isPast
+                          ? "bg-forest-700/80 dark:bg-forest-600/80 text-white"
+                          : "bg-cream-100 dark:bg-[#1a1830] text-brown-300 dark:text-amber-100/30 border border-dashed border-brown-200 dark:border-amber-900/30"
+                    }`}
+                  >
+                    {isPast ? <Check size={13} /> : <Icon size={14} />}
+                  </div>
+                  <span
+                    className={`text-[9px] uppercase tracking-widest font-medium transition-colors ${
+                      isActive
+                        ? "text-coral-600 dark:text-coral-400"
+                        : isPast
+                          ? "text-forest-600 dark:text-forest-400"
+                          : "text-brown-300 dark:text-amber-100/30"
+                    }`}
+                    style={{
+                      fontFamily: "var(--font-serif)",
+                      letterSpacing: "0.12em",
+                    }}
+                  >
+                    {s.label}
+                  </span>
                 </div>
                 {i < steps.length - 1 && (
                   <div
-                    className={`w-8 sm:w-12 h-0.5 mx-2 rounded-full ${isPast ? "bg-forest-400 dark:bg-forest-500" : "bg-cream-300 dark:bg-amber-900/30"}`}
+                    className="w-12 sm:w-20 mb-4 mx-2 h-px border-t border-dashed transition-colors"
+                    style={{
+                      borderColor: isPast
+                        ? "rgba(55,110,60,0.5)"
+                        : "rgba(180,140,100,0.35)",
+                    }}
                   />
                 )}
               </div>
@@ -428,7 +455,7 @@ function CheckoutContent() {
               {verifiedUser && (
                 <button
                   onClick={() => router.push("/account")}
-                  className="inline-flex items-center justify-center gap-2 bg-white dark:bg-[#1a1830] dark:border dark:border-amber-700/30 text-forest-800 dark:text-amber-200 px-8 py-3.5 rounded-xl font-semibold hover:bg-cream-100 dark:hover:bg-amber-900/20 transition-all duration-200 shadow-md hover:shadow-lg border border-cream-200 text-sm"
+                  className="inline-flex items-center justify-center gap-2 bg-coral-600 dark:bg-coral-500 text-white px-8 py-3.5 rounded-xl font-semibold hover:bg-coral-700 dark:hover:bg-coral-600 transition-all duration-200 shadow-lg shadow-coral-200 dark:shadow-coral-900/30 hover:-translate-y-0.5 text-sm"
                 >
                   View My Orders
                 </button>
@@ -487,17 +514,22 @@ function CheckoutContent() {
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center justify-between mb-6">
-                        <h2 className="font-serif text-2xl font-bold text-brown-900 dark:text-amber-100">
+                      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 lg:gap-4 mb-6">
+                        <h2 className="font-serif text-2xl font-bold text-brown-900 dark:text-amber-100 whitespace-nowrap">
                           Shipping Address
                         </h2>
-                        <p className="text-xs text-brown-500 dark:text-amber-100/60 mt-1 flex items-center gap-1.5 bg-cream-100/50 dark:bg-amber-900/20 px-3 py-1.5 rounded-lg border border-cream-200 dark:border-amber-900/30">
-                          <Sparkles size={12} className="text-amber-500" />
-                          We'll send the invoice and tracking updates to{" "}
-                          <span className="font-semibold text-brown-700 dark:text-amber-100/90">
-                            {verifiedUser.email || "your registered email"}
+                        <p className="text-[11px] sm:text-xs text-brown-500 dark:text-amber-100/60 flex items-start sm:items-center gap-1.5 bg-cream-100/50 dark:bg-amber-900/20 px-3 py-2 sm:py-1.5 rounded-lg border border-cream-200 dark:border-amber-900/30 w-full lg:w-auto">
+                          <Sparkles
+                            size={14}
+                            className="text-amber-500 shrink-0 mt-0.5 sm:mt-0"
+                          />
+                          <span>
+                            We'll send the invoice and tracking updates to{" "}
+                            <span className="font-semibold text-brown-700 dark:text-amber-100/90 break-all">
+                              {verifiedUser.email || "your registered email"}
+                            </span>
+                            .
                           </span>
-                          .
                         </p>
                       </div>
 
@@ -691,7 +723,11 @@ function CheckoutContent() {
                             }`}
                           >
                             {saveAddress && (
-                              <Check size={12} strokeWidth={3} className="text-white" />
+                              <Check
+                                size={12}
+                                strokeWidth={3}
+                                className="text-white"
+                              />
                             )}
                           </div>
                         </div>
@@ -767,6 +803,22 @@ function CheckoutContent() {
                     <h2 className="font-serif text-2xl font-bold text-brown-900 dark:text-amber-100 mb-6">
                       Payment Method
                     </h2>
+                    {/* Phone number nudge: UPI needs a contact number for failed-payment follow-up */}
+                    {paymentMethod === "upi" && verifiedUser && !verifiedUser.phone && !shippingAddress?.phone && (
+                      <div className="mb-5 p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/40 rounded-xl flex items-start gap-3 text-sm text-amber-800 dark:text-amber-200">
+                        <ShieldCheck size={18} className="shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
+                        <p>
+                          <strong>Add a phone number to your account.</strong> We use it to contact you if UPI payment verification needs a follow-up. You can add it in{" "}
+                          <button
+                            onClick={() => router.push("/account")}
+                            className="underline underline-offset-2 font-semibold hover:text-amber-700 dark:hover:text-amber-100 transition-colors"
+                          >
+                            your account settings
+                          </button>
+                          , or fill in a phone number on your delivery address above.
+                        </p>
+                      </div>
+                    )}
                     {paymentError && (
                       <div
                         ref={errorRef}
@@ -785,6 +837,7 @@ function CheckoutContent() {
                       onMethodChange={setPaymentMethod}
                       onSubmit={handlePlaceOrder}
                       loading={placingOrder}
+                      email={verifiedUser?.email}
                     />
                   </div>
                 </>
@@ -794,43 +847,55 @@ function CheckoutContent() {
             {/* Order summary */}
             <div className="space-y-6">
               {step === "payment" && isVaranasi ? (
-                <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/30 rounded-3xl p-5 shadow-sm flex items-start gap-3">
-                  <Sparkles
-                    size={20}
-                    className="text-green-600 dark:text-green-400 shrink-0 mt-0.5 animate-pulse"
-                  />
-                  <p className="text-sm text-green-900 dark:text-green-100 leading-relaxed">
-                    <strong className="font-semibold block mb-1">
-                      Free Varanasi Studio Delivery Applied!
-                    </strong>
-                    Since your delivery address is in Varanasi (where our studio
-                    is located), your shipping is <strong>free</strong>. If your
-                    items are premade, we will pack and deliver them on the same
-                    day. If your items are made-to-order, you will receive
-                    delivery on the same day they are ready.
-                    <br />
-                    <span className="text-xs opacity-80 mt-1 block">
-                      *Your final payment total below reflects this free
-                      shipping.
-                    </span>
-                  </p>
-                </div>
+                <StickyNote
+                  isAbsolute={false}
+                  bgColor="#f0fdf4"
+                  pinColor="#16a34a"
+                >
+                  <div className="flex flex-col items-center text-center gap-2 p-2">
+                    <Sparkles
+                      size={20}
+                      className="text-green-600 dark:text-green-400 animate-pulse"
+                    />
+                    <p className="text-[15px] text-green-900 dark:text-green-50 leading-snug">
+                      <strong className="font-bold font-serif block mb-1 text-green-950 dark:text-green-100">
+                        Free Varanasi Delivery Applied!
+                      </strong>
+                      Since your delivery address is in Varanasi (where our
+                      studio is located), your shipping is <strong>free</strong>
+                      . If your items are premade, we will pack and deliver them
+                      on the same day. If your items are made-to-order, you will
+                      receive delivery on the same day they are ready.
+                      <br />
+                      <span className="text-xs opacity-80 mt-1 block">
+                        *Your final payment total below reflects this free
+                        shipping.
+                      </span>
+                    </p>
+                  </div>
+                </StickyNote>
               ) : step === "address" ? (
-                <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/30 rounded-3xl p-5 shadow-sm flex items-start gap-3">
-                  <MapPin
-                    size={20}
-                    className="text-amber-600 dark:text-amber-400 shrink-0 mt-0.5"
-                  />
-                  <p className="text-sm text-amber-900 dark:text-amber-100 leading-relaxed">
-                    <strong className="font-semibold block mb-1">
-                      Local to Varanasi?
-                    </strong>
-                    If you are ordering from Varanasi, we offer{" "}
-                    <strong>Free & Same-Day Delivery</strong>! Premade items are
-                    delivered the same day, and custom items are delivered the
-                    day they are ready.
-                  </p>
-                </div>
+                <StickyNote
+                  isAbsolute={false}
+                  bgColor="#fef3c7"
+                  pinColor="#d97706"
+                >
+                  <div className="flex flex-col items-center text-center gap-2 p-2">
+                    <MapPin
+                      size={20}
+                      className="text-amber-600 dark:text-amber-400"
+                    />
+                    <p className="text-[15px] text-brown-900 dark:text-amber-50 leading-snug">
+                      <strong className="font-semibold block mb-1">
+                        Local to Varanasi?
+                      </strong>
+                      If you are ordering from Varanasi, we offer{" "}
+                      <strong>Free & Same-Day Delivery</strong>! Premade items
+                      are delivered the same day, and custom items are delivered
+                      the day they are ready.
+                    </p>
+                  </div>
+                </StickyNote>
               ) : null}
 
               <OrderSummary
@@ -841,23 +906,57 @@ function CheckoutContent() {
                 shipping={shipping}
               />
 
-              {/* Discount code */}
-              <div className="bg-white dark:bg-[#1a1830] rounded-3xl p-6 shadow-[0_4px_12px_rgba(28,18,9,0.05)] border border-cream-200 dark:border-amber-900/30">
-                <h3 className="font-serif text-lg font-bold text-brown-900 dark:text-amber-100 mb-4 flex items-center gap-2">
+              {/* Discount code — crafty coupon style */}
+              <div className="craft-coupon bg-white dark:bg-[#1a1830] p-6 shadow-[0_4px_12px_rgba(67,44,26,0.08)] dark:shadow-none">
+                <h3
+                  className="font-bold text-brown-900 dark:text-amber-100 mb-1 flex items-center gap-2"
+                  style={{ fontFamily: "var(--font-serif)", fontSize: 20 }}
+                >
                   <Tag
                     size={16}
                     className="text-amber-600 dark:text-amber-400"
                   />
-                  Discount Code
+                  Got a{" "}
+                  <span
+                    className="text-coral-600 dark:text-amber-400"
+                    style={{ fontFamily: "var(--font-script)", fontSize: 25 }}
+                  >
+                    code?
+                  </span>
                 </h3>
+                <p
+                  className="text-brown-400 dark:text-amber-100/40 mb-4"
+                  style={{
+                    fontFamily: "var(--font-serif)",
+                    fontStyle: "italic",
+                    fontSize: 13,
+                  }}
+                >
+                  enter it below — we'll take it off your total straight away
+                </p>
+
                 {appliedDiscount ? (
-                  <div className="flex items-center justify-between bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-800/30 rounded-xl px-4 py-3 shadow-sm">
+                  <div className="flex items-center justify-between px-4 py-3 bg-coral-50 dark:bg-coral-900/10 border border-dashed border-coral-300 dark:border-coral-700/40 rounded-xl">
                     <div>
-                      <p className="text-sm font-bold text-green-800 dark:text-green-400">
+                      <p
+                        className="font-bold text-coral-800 dark:text-coral-300"
+                        style={{
+                          fontFamily: "var(--font-sans)",
+                          fontSize: 14,
+                          letterSpacing: "0.06em",
+                        }}
+                      >
                         {discountCode}
                       </p>
-                      <p className="text-xs font-medium text-green-600 dark:text-green-500 mt-0.5">
-                        -{formatPrice(discountAmount)} saved
+                      <p
+                        className="text-coral-600 dark:text-coral-400 mt-0.5"
+                        style={{
+                          fontFamily: "var(--font-serif)",
+                          fontStyle: "italic",
+                          fontSize: 13,
+                        }}
+                      >
+                        −{formatPrice(discountAmount)} saved ✓
                       </p>
                     </div>
                     <button
@@ -865,21 +964,22 @@ function CheckoutContent() {
                         setAppliedDiscount(null);
                         setDiscountCode("");
                       }}
-                      className="text-xs font-semibold text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 uppercase tracking-wider"
+                      className="text-coral-700 dark:text-coral-400 hover:text-coral-800 transition-colors text-xl leading-none ml-3"
+                      aria-label="Remove discount code"
                     >
-                      Remove
+                      ×
                     </button>
                   </div>
                 ) : (
-                  <div className="flex gap-3">
+                  <div className="flex gap-2">
                     <input
                       type="text"
                       value={discountInput}
                       onChange={(e) =>
                         setDiscountInput(e.target.value.toUpperCase())
                       }
-                      placeholder="Enter code"
-                      className="flex-1 px-4 py-2.5 text-base sm:text-sm border border-brown-300 dark:border-amber-900/40 rounded-xl bg-white dark:bg-[#151326] text-brown-900 dark:text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-400 dark:focus:ring-amber-500 placeholder:text-brown-400 dark:placeholder:text-amber-100/30"
+                      placeholder="your code here…"
+                      className="craft-code-input"
                       onKeyDown={(e) =>
                         e.key === "Enter" && handleApplyDiscount()
                       }
@@ -887,14 +987,22 @@ function CheckoutContent() {
                     <button
                       onClick={handleApplyDiscount}
                       disabled={applyingDiscount}
-                      className="inline-flex items-center justify-center px-5 py-2.5 bg-white dark:bg-[#1a1830] dark:border dark:border-amber-700/30 text-forest-800 dark:text-amber-200 rounded-xl font-semibold hover:bg-cream-100 dark:hover:bg-amber-900/20 transition-all duration-200 shadow-sm border border-cream-200 text-sm disabled:opacity-50"
+                      className="px-4 py-2 border border-dashed border-[rgba(122,80,40,0.4)] dark:border-amber-900/40 rounded-lg text-brown-800 dark:text-amber-200 hover:border-coral-500 dark:hover:border-amber-400 hover:text-coral-700 dark:hover:text-amber-400 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                      style={{ fontFamily: "var(--font-serif)", fontSize: 13 }}
                     >
-                      {applyingDiscount ? "..." : "Apply"}
+                      {applyingDiscount ? "…" : "apply"}
                     </button>
                   </div>
                 )}
                 {discountError && (
-                  <p className="mt-3 text-xs font-medium text-red-600 dark:text-red-400">
+                  <p
+                    className="mt-2 text-coral-600 dark:text-coral-400"
+                    style={{
+                      fontFamily: "var(--font-serif)",
+                      fontStyle: "italic",
+                      fontSize: 13,
+                    }}
+                  >
                     {discountError}
                   </p>
                 )}

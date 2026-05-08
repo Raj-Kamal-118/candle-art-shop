@@ -95,9 +95,10 @@ export default function OrderSuccessPage() {
   const orderTime = new Date(createdAt || new Date()).getTime();
   const diffHours = (new Date().getTime() - orderTime) / (1000 * 60 * 60);
   const isCancelled = order?.status === "cancelled";
+  const isPaymentVerification = order?.status === "payment_verification";
   const canCancel =
     diffHours < 1 &&
-    (order?.status === "pending" || !order?.status) &&
+    (order?.status === "pending" || order?.status === "payment_verification" || !order?.status) &&
     !isCancelled;
 
   const handleCancelOrder = async () => {
@@ -138,7 +139,7 @@ export default function OrderSuccessPage() {
       label: "Hand-poured in studio",
       date: "Next 1–2 days",
       done: false,
-      active: true,
+      active: !isPaymentVerification,
     },
     {
       Icon: Package,
@@ -220,8 +221,36 @@ export default function OrderSuccessPage() {
                 </div>
               </div>
 
+              {/* Payment Verification Pending Banner */}
+              {isPaymentVerification && (
+                <div className="bg-amber-50 dark:bg-amber-900/10 rounded-[20px] p-6 sm:p-8 border-2 border-amber-400 dark:border-amber-700/60 flex flex-col gap-4 text-left shadow-sm">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-amber-100 dark:bg-amber-900/40 rounded-full flex items-center justify-center shrink-0 mt-0.5">
+                      <AlertTriangle size={20} className="text-amber-600 dark:text-amber-400" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-serif text-xl font-bold text-amber-900 dark:text-amber-100 mb-1">
+                        Payment Verification Pending
+                      </h3>
+                      <p className="text-[15px] text-amber-800/80 dark:text-amber-100/70 leading-relaxed">
+                        We've received your UPI payment details and are manually verifying your transaction. Your order will move to processing as soon as we confirm the payment — usually within a few hours.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="ml-14 bg-white/60 dark:bg-black/20 rounded-xl p-4 border border-amber-200 dark:border-amber-800/40 text-sm space-y-1.5">
+                    <p className="text-amber-800 dark:text-amber-200 font-medium">What happens next:</p>
+                    <ul className="text-amber-700/80 dark:text-amber-100/60 space-y-1 list-disc list-inside">
+                      <li>We verify your UPI payment in our records</li>
+                      <li>You'll receive an order confirmation email once verified</li>
+                      <li>We start crafting your pieces after confirmation</li>
+                      <li>If there's an issue, we'll contact you via phone or WhatsApp</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
+
               {/* Crafty Status Banner */}
-              {order?.status && !isCancelled && (
+              {order?.status && !isCancelled && !isPaymentVerification && (
                 <div className="bg-amber-50 dark:bg-amber-900/10 rounded-[20px] p-6 sm:p-8 border border-amber-200 dark:border-amber-900/30 flex flex-col sm:flex-row items-center gap-6 text-left shadow-sm">
                   <div className="flex-1">
                     <h3 className="font-serif text-2xl font-bold text-amber-900 dark:text-amber-100 mb-2">

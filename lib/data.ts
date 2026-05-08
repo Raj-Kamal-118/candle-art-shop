@@ -96,12 +96,14 @@ function mapOrder(row: Record<string, unknown>): Order {
     discountCode: row.discount_code as string | undefined,
     shippingAddress: row.shipping_address as Order["shippingAddress"],
     billingAddress: row.billing_address as Order["billingAddress"],
-    paymentMethod: row.payment_method as "cod" | "qr",
+    paymentMethod: row.payment_method as Order["paymentMethod"],
     status: row.status as string,
     paymentReference: row.payment_reference as string | undefined,
+    paymentScreenshotUrl: row.payment_screenshot_url as string | undefined,
     createdAt: row.created_at as string,
     userId: row.user_id as string | undefined,
     customerPhone: row.customer_phone as string | undefined,
+    isTest: (row.is_test as boolean) || false,
   };
 }
 
@@ -589,6 +591,7 @@ export async function createOrder(order: Order): Promise<Order> {
       billing_address: order.billingAddress,
       payment_method: order.paymentMethod,
       payment_reference: order.paymentReference ?? null,
+      payment_screenshot_url: order.paymentScreenshotUrl ?? null,
       user_id: order.userId ?? null,
       customer_phone: order.customerPhone ?? null,
       created_at: order.createdAt,
@@ -607,6 +610,7 @@ export async function updateOrder(
   if (updates.status !== undefined) dbUpdates.status = updates.status;
   if (updates.items !== undefined) dbUpdates.items = updates.items;
   if (updates.paymentReference !== undefined) dbUpdates.payment_reference = updates.paymentReference;
+  if (updates.isTest !== undefined) dbUpdates.is_test = updates.isTest;
 
   const { data, error } = await supabase
     .from("orders")
@@ -739,11 +743,12 @@ export async function createUser(user: {
 
 export async function updateUser(
   id: string,
-  updates: { name?: string; email?: string; savedAddresses?: Address[] }
+  updates: { name?: string; email?: string; phone?: string; savedAddresses?: Address[] }
 ): Promise<User | null> {
   const dbUpdates: Record<string, unknown> = { updated_at: new Date().toISOString() };
   if (updates.name !== undefined) dbUpdates.name = updates.name;
   if (updates.email !== undefined) dbUpdates.email = updates.email;
+  if (updates.phone !== undefined) dbUpdates.phone = updates.phone;
   if (updates.savedAddresses !== undefined) dbUpdates.saved_addresses = updates.savedAddresses;
 
   const { data, error } = await supabase

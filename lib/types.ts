@@ -153,12 +153,14 @@ export interface Order {
   discountCode?: string;
   shippingAddress: Address;
   billingAddress: Address;
-  paymentMethod: "cod" | "qr";
+  paymentMethod: "cod" | "upi" | "online";
   status: string;
   paymentReference?: string;
+  paymentScreenshotUrl?: string;
   createdAt: string;
   userId?: string;
   customerPhone?: string;
+  isTest?: boolean;
   is_reviewed?: boolean;
   rating?: number;
   isGift?: boolean;
@@ -204,6 +206,7 @@ export interface CartGiftSetPick {
   name: string;
   image: string;
   price: number; // paise
+  customization?: Record<string, string>;
 }
 
 export interface CartGiftSet {

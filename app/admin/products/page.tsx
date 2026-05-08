@@ -347,10 +347,12 @@ export default function AdminProductsPage() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [showCustomization, setShowCustomization] = useState(false);
+  const [autoGenerateSlug, setAutoGenerateSlug] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState({
     name: "",
+    slug: "",
     description: "",
     price: "",
     compareAtPrice: "",
@@ -420,8 +422,10 @@ export default function AdminProductsPage() {
 
   const openAdd = () => {
     setEditProduct(null);
+    setAutoGenerateSlug(true);
     setForm({
       name: "",
+      slug: "",
       description: "",
       price: "",
       compareAtPrice: "",
@@ -456,8 +460,10 @@ export default function AdminProductsPage() {
 
   const openEdit = (product: Product) => {
     setEditProduct(product);
+    setAutoGenerateSlug(false);
     setForm({
       name: product.name,
+      slug: product.slug,
       description: product.description,
       price: product.price.toString(),
       compareAtPrice: product.compareAtPrice?.toString() || "",
@@ -497,6 +503,7 @@ export default function AdminProductsPage() {
     e.preventDefault();
     const payload = {
       name: form.name,
+      slug: form.slug,
       description: form.description,
       price: parseFloat(form.price),
       compareAtPrice: form.compareAtPrice
@@ -731,9 +738,58 @@ export default function AdminProductsPage() {
               <input
                 required
                 value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                onChange={(e) => {
+                  const newName = e.target.value;
+                  setForm((prev) => {
+                    const updates: any = { name: newName };
+                    if (autoGenerateSlug) {
+                      updates.slug = newName
+                        .toLowerCase()
+                        .replace(/[^a-z0-9]+/g, "-")
+                        .replace(/(^-|-$)+/g, "");
+                    }
+                    return { ...prev, ...updates };
+                  });
+                }}
                 className={inputCls}
               />
+            </div>
+            <div className="col-span-2">
+              <label className="block text-[13px] font-medium text-brown-800 dark:text-amber-100/80 mb-1.5">
+                Slug *
+              </label>
+              <input
+                required
+                value={form.slug}
+                onChange={(e) => {
+                  setForm({ ...form, slug: e.target.value });
+                  setAutoGenerateSlug(false);
+                }}
+                className={inputCls}
+              />
+              <label className="flex items-center gap-2 mt-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={autoGenerateSlug}
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    setAutoGenerateSlug(checked);
+                    if (checked) {
+                      setForm((prev) => ({
+                        ...prev,
+                        slug: prev.name
+                          .toLowerCase()
+                          .replace(/[^a-z0-9]+/g, "-")
+                          .replace(/(^-|-$)+/g, ""),
+                      }));
+                    }
+                  }}
+                  className="accent-amber-600 w-4 h-4"
+                />
+                <span className="text-xs text-brown-600 dark:text-amber-100/70">
+                  Update slug as per product name
+                </span>
+              </label>
             </div>
             <div className="col-span-2">
               <label className="block text-[13px] font-medium text-brown-800 dark:text-amber-100/80 mb-1.5">
