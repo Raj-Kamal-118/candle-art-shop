@@ -101,7 +101,7 @@ export default function CartSummary({
       {/* ── Progress bars ── */}
       <div className="space-y-3 mb-5">
         {/* Free shipping */}
-        <div className="p-3 rounded-lg border border-dashed border-forest-300/60 dark:border-forest-700/40 bg-forest-50/50 dark:bg-forest-900/10">
+        <div className="p-3 rounded-lg border border-forest-300/60 dark:border-forest-700/40 bg-forest-50/50 dark:bg-forest-900/10">
           <div className="flex items-center justify-between mb-1.5">
             <p
               className="text-forest-700 dark:text-forest-400"
@@ -137,7 +137,7 @@ export default function CartSummary({
         </div>
 
         {/* Free greeting card */}
-        <div className="p-3 rounded-lg border border-dashed border-amber-300/60 dark:border-amber-700/30 bg-amber-50/50 dark:bg-amber-900/10">
+        <div className="p-3 rounded-lg border  border-amber-300/60 dark:border-amber-700/30 bg-amber-50/50 dark:bg-amber-900/10">
           <div className="flex items-center justify-between mb-1.5">
             <p
               className="text-amber-700 dark:text-amber-400"
@@ -179,7 +179,7 @@ export default function CartSummary({
       </div>
 
       {/* ── Totals (dotted line style) ── */}
-      <div className="border-t border-b border-dashed border-[rgba(122,80,40,0.22)] dark:border-amber-900/20 py-4 space-y-2.5">
+      <div className=" py-4 space-y-2.5">
         <div
           className="flex items-baseline"
           style={{
@@ -345,7 +345,7 @@ export default function CartSummary({
       )}
 
       {/* Trust grid */}
-      <div className="mt-5 pt-5 border-t border-dashed border-[rgba(122,80,40,0.2)] dark:border-amber-900/20 grid grid-cols-2 gap-2.5">
+      <div className="mt-5 pt-5 border-t  border-[rgba(122,80,40,0.2)] dark:border-amber-900/20 grid grid-cols-2 gap-2.5">
         {[
           { icon: ShieldCheck, label: "Secure checkout · 256-bit" },
           { icon: RotateCcw, label: "30-day returns, no questions" },

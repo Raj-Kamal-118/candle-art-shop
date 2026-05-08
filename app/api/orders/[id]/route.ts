@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { requireAdmin } from "@/lib/auth-guard";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -7,7 +8,7 @@ const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY || process
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 export async function GET(
-  _request: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
@@ -19,6 +20,19 @@ export async function GET(
 
     if (error) throw error;
     if (!data) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+    // Admin can view any order.
+    // If the order belongs to a registered user, require a matching session.
+    // Guest orders (no user_id) are accessible by ID alone — the UUID is unguessable.
+    const adminToken = request.cookies.get("admin_token")?.value;
+    const isAdmin = adminToken === "authenticated";
+    if (!isAdmin && data.user_id) {
+      const userId = request.cookies.get("user_session")?.value;
+      if (!userId || userId !== data.user_id) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+    }
+
     return NextResponse.json(data);
   } catch (error: any) {
     return NextResponse.json({ error: error.message || "Failed to fetch order" }, { status: 500 });
@@ -26,9 +40,11 @@ export async function GET(
 }
 
 export async function PATCH(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const deny = requireAdmin(request);
+  if (deny) return deny;
   try {
     const body = await request.json();
     const { status, paymentReference, isTest } = body;

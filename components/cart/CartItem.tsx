@@ -35,7 +35,7 @@ export default function CartItemComponent({
   const totalPrice = unitPrice * item.quantity;
 
   return (
-    <div className="craft-perf flex gap-3 sm:gap-6 py-4 sm:py-6 pl-4 sm:pl-8 pr-4 sm:pr-6 border-b border-[rgba(122,80,40,0.18)] dark:border-amber-900/20 last:border-b-0 relative">
+    <div className="flex gap-3 sm:gap-6 py-4 sm:py-6 pl-4 sm:pl-8 pr-4 sm:pr-6 relative after:absolute after:bottom-0 after:left-8 sm:after:left-16 after:right-8 sm:after:right-16 after:h-px after:bg-gradient-to-r after:from-transparent after:via-[rgba(122,80,40,0.25)] dark:after:via-amber-900/30 after:to-transparent last:after:hidden">
       {/* ── Polaroid photo ── */}
       <div className="flex-shrink-0 self-start mt-1">
         <div
@@ -43,9 +43,7 @@ export default function CartItemComponent({
           style={{ transform: `rotate(${rotate}deg)` }}
         >
           <Link href={`/products/${item.product.slug}`}>
-            <div
-              className="relative z-0 bg-[#f5ecda] dark:bg-amber-950/60 overflow-hidden w-[74px] h-[74px] sm:w-[114px] sm:h-[114px]"
-            >
+            <div className="relative z-0 bg-[#f5ecda] dark:bg-amber-950/60 overflow-hidden w-[74px] h-[74px] sm:w-[114px] sm:h-[114px]">
               {item.product.images?.[0] ? (
                 <Image
                   src={item.product.images[0]}
@@ -123,7 +121,7 @@ export default function CartItemComponent({
         </div>
 
         {/* ── Footer: qty + actions ── */}
-        <div className="flex items-center justify-between mt-3 sm:mt-4 pt-3 border-t border-[rgba(122,80,40,0.12)] dark:border-amber-900/15">
+        <div className="flex items-center justify-between mt-3 sm:mt-4 pt-3  border-[rgba(122,80,40,0.12)] dark:border-amber-900/15">
           {/* Qty stepper */}
           {!isSaved ? (
             <div className="inline-flex items-center border border-[rgba(122,80,40,0.25)] dark:border-amber-900/40 rounded-xl bg-white dark:bg-[#12101e] shadow-sm">
@@ -179,8 +177,7 @@ export default function CartItemComponent({
                 }
                 className="flex items-center gap-1.5 text-sm font-medium text-brown-500 hover:text-coral-600 dark:text-amber-100/60 dark:hover:text-amber-400 transition-colors"
               >
-                <Bookmark size={14} />
-                <span className="hidden sm:inline">Save for later</span>
+                <Bookmark size={20} />
               </button>
             ) : (
               <button
@@ -189,7 +186,7 @@ export default function CartItemComponent({
                 }
                 className="flex items-center gap-1.5 text-sm font-medium text-coral-600 dark:text-amber-400 hover:text-coral-700 dark:hover:text-amber-300 transition-colors"
               >
-                <Bookmark size={14} />
+                <Bookmark size={20} />
                 Move to cart
               </button>
             )}
@@ -214,8 +211,7 @@ export default function CartItemComponent({
               className="flex items-center gap-1.5 text-sm font-medium text-brown-400 hover:text-red-500 dark:text-amber-100/50 dark:hover:text-red-400 transition-colors"
               aria-label="Remove item"
             >
-              <Trash2 size={14} />
-              Remove
+              <Trash2 size={20} />
             </button>
           </div>
         </div>

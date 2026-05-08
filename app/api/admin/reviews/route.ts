@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { requireAdmin } from "@/lib/auth-guard";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 // Securely use the Service Role Key on the server to bypass RLS
@@ -7,7 +8,9 @@ const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PU
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const deny = requireAdmin(request);
+  if (deny) return deny;
   try {
     const { data, error } = await supabase
       .from("reviews")
@@ -21,7 +24,9 @@ export async function GET() {
   }
 }
 
-export async function PATCH(request: Request) {
+export async function PATCH(request: NextRequest) {
+  const deny = requireAdmin(request);
+  if (deny) return deny;
   try {
     const body = await request.json();
     const { id, approved } = body;
@@ -38,7 +43,9 @@ export async function PATCH(request: Request) {
   }
 }
 
-export async function DELETE(request: Request) {
+export async function DELETE(request: NextRequest) {
+  const deny = requireAdmin(request);
+  if (deny) return deny;
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");

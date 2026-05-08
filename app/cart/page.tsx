@@ -121,7 +121,7 @@ function GiftSetCartItem({
   const rotate = index % 2 === 0 ? -2 : 2;
 
   return (
-    <div className="craft-perf py-4 sm:py-6 pl-4 sm:pl-8 pr-4 sm:pr-6 border-b border-[rgba(122,80,40,0.18)] dark:border-amber-900/20 last:border-b-0 relative">
+    <div className="py-4 sm:py-6 pl-4 sm:pl-8 pr-4 sm:pr-6 relative after:absolute after:bottom-0 after:left-8 sm:after:left-16 after:right-8 sm:after:right-16 after:h-px after:bg-gradient-to-r after:from-transparent after:via-[rgba(122,80,40,0.25)] dark:after:via-amber-900/30 after:to-transparent last:after:hidden">
       <div className="flex items-start gap-3 sm:gap-6">
         {/* Polaroid gift box */}
         <div className="flex-shrink-0 self-start mt-1">
@@ -129,9 +129,7 @@ function GiftSetCartItem({
             className="craft-polaroid w-[84px] sm:w-[124px]"
             style={{ transform: `rotate(${rotate}deg)` }}
           >
-            <div
-              className="relative z-0 bg-gradient-to-br from-amber-100 to-coral-100 dark:from-amber-900/60 dark:to-coral-900/30 overflow-hidden w-[74px] h-[74px] sm:w-[114px] sm:h-[114px]"
-            >
+            <div className="relative z-0 bg-gradient-to-br from-amber-100 to-coral-100 dark:from-amber-900/60 dark:to-coral-900/30 overflow-hidden w-[74px] h-[74px] sm:w-[114px] sm:h-[114px]">
               <Image
                 src="/images/misc/gift-box.png"
                 alt="Gift Box"
@@ -221,14 +219,16 @@ function GiftSetCartItem({
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-between mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-[rgba(122,80,40,0.12)] dark:border-amber-900/15">
+          <div className="flex items-center justify-between mt-3 sm:mt-4 pt-3 sm:pt-4  border-[rgba(122,80,40,0.12)] dark:border-amber-900/15">
             {picks.length > 0 ? (
               <button
                 onClick={() => setOpen((o) => !o)}
                 className="flex items-center gap-1.5 text-sm font-medium text-amber-700 hover:text-amber-800 dark:text-amber-500 dark:hover:text-amber-400 transition-colors"
               >
                 {open ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                <span className="hidden xs:inline">{open ? "Hide contents" : "View contents"}</span>
+                <span className="hidden xs:inline">
+                  {open ? "Hide contents" : "View contents"}
+                </span>
               </button>
             ) : (
               <div />
@@ -244,8 +244,7 @@ function GiftSetCartItem({
                 }
                 className="flex items-center gap-1.5 text-sm font-medium text-brown-500 hover:text-coral-600 dark:text-amber-100/60 dark:hover:text-amber-400 transition-colors"
               >
-                <Bookmark size={14} />
-                <span className="hidden sm:inline">Save for later</span>
+                <Bookmark size={20} />
               </button>
               <button
                 onClick={() => {
@@ -258,8 +257,7 @@ function GiftSetCartItem({
                 }}
                 className="flex items-center gap-1.5 text-sm font-medium text-brown-400 hover:text-red-500 dark:text-amber-100/50 dark:hover:text-red-400 transition-colors"
               >
-                <Trash2 size={14} />
-                Remove
+                <Trash2 size={20} />
               </button>
             </div>
           </div>
@@ -478,10 +476,10 @@ export default function CartPage() {
         {/* Left: order book */}
         <div className="lg:col-span-2 space-y-6 sm:space-y-8">
           {/* Order book */}
-          <div className="craft-order-book overflow-hidden">
+          <div className="craft-order-book craft-perf overflow-hidden relative border-r-[3px] border-dotted border-[rgba(122,80,40,0.25)] dark:border-amber-900/40">
             {/* Pad head */}
             <div
-              className="px-4 sm:px-8 py-4 sm:py-5 border-b border-dashed border-[rgba(122,80,40,0.22)] dark:border-amber-900/20 flex items-baseline justify-between gap-4 flex-wrap"
+              className="px-4 sm:px-8 py-4 sm:py-5  dark:border-amber-900/20 flex items-baseline justify-between gap-4 flex-wrap"
               style={{
                 background:
                   "linear-gradient(180deg,rgba(245,236,218,0.7) 0%,transparent 100%)",
@@ -511,16 +509,6 @@ export default function CartPage() {
                   we'll wrap them carefully before they leave the studio
                 </p>
               </div>
-              <span
-                className="text-brown-600 dark:text-amber-500 px-3 py-1.5 border border-dashed border-[rgba(122,80,40,0.35)] dark:border-amber-800/40 rounded-sm"
-                style={{
-                  fontFamily: "var(--font-sans)",
-                  fontSize: 11,
-                  letterSpacing: "0.12em",
-                }}
-              >
-                {totalQty} item{totalQty !== 1 ? "s" : ""}
-              </span>
             </div>
 
             {/* Line items */}
@@ -546,7 +534,7 @@ export default function CartPage() {
 
             {/* Pad foot */}
             <div
-              className="px-4 sm:px-8 py-4 sm:py-5 flex items-center justify-between flex-wrap gap-4 border-t border-dashed border-[rgba(122,80,40,0.22)] dark:border-amber-900/20"
+              className="px-4 sm:px-8 py-4 sm:py-5 flex items-center justify-between flex-wrap gap-4  border-[rgba(122,80,40,0.22)] dark:border-amber-900/20"
               style={{
                 background:
                   "linear-gradient(0deg,rgba(245,236,218,0.5) 0%,transparent 100%)",
@@ -600,7 +588,7 @@ export default function CartPage() {
                 </span>{" "}
                 bought together
               </h2>
-              <div className="craft-order-book p-4 sm:p-6 space-y-4">
+              <div className="craft-order-book craft-perf p-4 sm:p-6 space-y-4">
                 {eligibleUpsells.map((up) => {
                   const rules = up.upsellRules || {};
                   const isFree = Boolean(
@@ -755,7 +743,7 @@ export default function CartPage() {
             </h2>
 
             {savedForLaterItems.length > 0 ? (
-              <div className="craft-order-book">
+              <div className="craft-order-book craft-perf relative border-r-[3px] border-dotted border-[rgba(122,80,40,0.25)] dark:border-amber-900/40">
                 {savedForLaterItems.map((item, index) => (
                   <CartItemComponent
                     key={`${item.product.id}-${index}`}

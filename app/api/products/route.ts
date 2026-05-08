@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getProducts, createProduct } from "@/lib/data";
 import { generateId, slugify } from "@/lib/utils";
+import { requireAdmin } from "@/lib/auth-guard";
 
 export async function GET(request: NextRequest) {
   try {
@@ -39,6 +40,8 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const deny = requireAdmin(request);
+  if (deny) return deny;
   try {
     const body = await request.json();
     const product = await createProduct({

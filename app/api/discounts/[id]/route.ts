@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDiscountById, updateDiscount, deleteDiscount } from "@/lib/data";
+import { requireAdmin } from "@/lib/auth-guard";
 
 export async function GET(
   _request: NextRequest,
@@ -26,6 +27,8 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const deny = requireAdmin(request);
+  if (deny) return deny;
   try {
     const body = await request.json();
     const discount = await updateDiscount(params.id, body);
@@ -45,9 +48,11 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const deny = requireAdmin(request);
+  if (deny) return deny;
   try {
     const success = await deleteDiscount(params.id);
     if (!success) {

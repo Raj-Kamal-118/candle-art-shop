@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getGiftSetById, updateGiftSet, deleteGiftSet } from "@/lib/gift-data";
+import { requireAdmin } from "@/lib/auth-guard";
 
 export async function GET(
   _req: NextRequest,
@@ -19,6 +20,8 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const deny = requireAdmin(req);
+  if (deny) return deny;
   try {
     const { id } = await params;
     const body = await req.json();
@@ -31,9 +34,11 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const deny = requireAdmin(req);
+  if (deny) return deny;
   try {
     const { id } = await params;
     await deleteGiftSet(id);

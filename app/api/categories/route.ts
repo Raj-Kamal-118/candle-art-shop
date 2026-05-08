@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCategories, createCategory } from "@/lib/data";
 import { generateId, slugify } from "@/lib/utils";
+import { requireAdmin } from "@/lib/auth-guard";
 
 export async function GET() {
   try {
@@ -15,6 +16,8 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  const deny = requireAdmin(request);
+  if (deny) return deny;
   try {
     const body = await request.json();
     const category = await createCategory({

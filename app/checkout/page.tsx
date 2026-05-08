@@ -15,6 +15,7 @@ import {
   Check,
   ArrowLeft,
 } from "lucide-react";
+import { motion } from "framer-motion";
 import { useStore } from "@/lib/store";
 import { Address, DiscountCode, User } from "@/lib/types";
 import { formatPrice, getShippingCost, calculateDiscount } from "@/lib/utils";
@@ -533,12 +534,18 @@ function CheckoutContent() {
                       <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 lg:gap-4 mb-6">
                         <h2
                           className="font-bold text-brown-900 dark:text-amber-100 whitespace-nowrap"
-                          style={{ fontFamily: "var(--font-serif)", fontSize: 24 }}
+                          style={{
+                            fontFamily: "var(--font-serif)",
+                            fontSize: 24,
+                          }}
                         >
                           Shipping{" "}
                           <span
                             className="text-coral-600 dark:text-amber-400"
-                            style={{ fontFamily: "var(--font-script)", fontSize: 30 }}
+                            style={{
+                              fontFamily: "var(--font-script)",
+                              fontSize: 30,
+                            }}
                           >
                             Address
                           </span>
@@ -650,9 +657,14 @@ function CheckoutContent() {
                               /* Pre-filled pill — shown when a saved/default address is active */
                               <div className="flex items-center justify-between px-4 py-3 bg-forest-50 dark:bg-forest-900/10 border border-forest-200 dark:border-forest-800/40 rounded-xl">
                                 <div className="flex items-center gap-2 min-w-0">
-                                  <Check size={14} className="text-forest-600 dark:text-forest-400 shrink-0" />
+                                  <Check
+                                    size={14}
+                                    className="text-forest-600 dark:text-forest-400 shrink-0"
+                                  />
                                   <span className="text-sm font-medium text-forest-800 dark:text-forest-300 truncate">
-                                    {selectedSavedAddress.fullName} · {selectedSavedAddress.address1}, {selectedSavedAddress.city}
+                                    {selectedSavedAddress.fullName} ·{" "}
+                                    {selectedSavedAddress.address1},{" "}
+                                    {selectedSavedAddress.city}
                                   </span>
                                 </div>
                                 <button
@@ -700,14 +712,20 @@ function CheckoutContent() {
                                     <p className="font-semibold text-sm text-brown-900 dark:text-amber-100">
                                       {addr.fullName}
                                       {addr.isDefault && (
-                                        <span className="ml-2 text-[10px] font-bold text-forest-700 dark:text-forest-400 uppercase tracking-wide">Default</span>
+                                        <span className="ml-2 text-[10px] font-bold text-forest-700 dark:text-forest-400 uppercase tracking-wide">
+                                          Default
+                                        </span>
                                       )}
                                     </p>
                                     <p className="text-xs mt-1 text-brown-500 dark:text-amber-100/60">
-                                      {addr.address1}{addr.address2 ? `, ${addr.address2}` : ""}
+                                      {addr.address1}
+                                      {addr.address2
+                                        ? `, ${addr.address2}`
+                                        : ""}
                                     </p>
                                     <p className="text-xs text-brown-500 dark:text-amber-100/60">
-                                      {addr.city}, {addr.state} {addr.postalCode}
+                                      {addr.city}, {addr.state}{" "}
+                                      {addr.postalCode}
                                     </p>
                                   </div>
                                 ))}
@@ -809,13 +827,22 @@ function CheckoutContent() {
                     <div className="flex items-center justify-between mb-4">
                       <h3
                         className="font-bold text-brown-900 dark:text-amber-100 flex items-center gap-2"
-                        style={{ fontFamily: "var(--font-serif)", fontSize: 20 }}
+                        style={{
+                          fontFamily: "var(--font-serif)",
+                          fontSize: 20,
+                        }}
                       >
-                        <MapPin size={18} className="text-amber-600 dark:text-amber-400" />
+                        <MapPin
+                          size={18}
+                          className="text-amber-600 dark:text-amber-400"
+                        />
                         Shipping{" "}
                         <span
                           className="text-coral-600 dark:text-amber-400"
-                          style={{ fontFamily: "var(--font-script)", fontSize: 26 }}
+                          style={{
+                            fontFamily: "var(--font-script)",
+                            fontSize: 26,
+                          }}
                         >
                           to
                         </span>
@@ -875,27 +902,39 @@ function CheckoutContent() {
                       Payment{" "}
                       <span
                         className="text-coral-600 dark:text-amber-400"
-                        style={{ fontFamily: "var(--font-script)", fontSize: 30 }}
+                        style={{
+                          fontFamily: "var(--font-script)",
+                          fontSize: 30,
+                        }}
                       >
                         Method
                       </span>
                     </h2>
                     {/* Phone number nudge: UPI needs a contact number for failed-payment follow-up */}
-                    {paymentMethod === "upi" && verifiedUser && !verifiedUser.phone && !shippingAddress?.phone && (
-                      <div className="mb-5 p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/40 rounded-xl flex items-start gap-3 text-sm text-amber-800 dark:text-amber-200">
-                        <ShieldCheck size={18} className="shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
-                        <p>
-                          <strong>Add a phone number to your account.</strong> We use it to contact you if UPI payment verification needs a follow-up. You can add it in{" "}
-                          <button
-                            onClick={() => router.push("/account")}
-                            className="underline underline-offset-2 font-semibold hover:text-amber-700 dark:hover:text-amber-100 transition-colors"
-                          >
-                            your account settings
-                          </button>
-                          , or fill in a phone number on your delivery address above.
-                        </p>
-                      </div>
-                    )}
+                    {paymentMethod === "upi" &&
+                      verifiedUser &&
+                      !verifiedUser.phone &&
+                      !shippingAddress?.phone && (
+                        <div className="mb-5 p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/40 rounded-xl flex items-start gap-3 text-sm text-amber-800 dark:text-amber-200">
+                          <ShieldCheck
+                            size={18}
+                            className="shrink-0 mt-0.5 text-amber-600 dark:text-amber-400"
+                          />
+                          <p>
+                            <strong>Add a phone number to your account.</strong>{" "}
+                            We use it to contact you if UPI payment verification
+                            needs a follow-up. You can add it in{" "}
+                            <button
+                              onClick={() => router.push("/account")}
+                              className="underline underline-offset-2 font-semibold hover:text-amber-700 dark:hover:text-amber-100 transition-colors"
+                            >
+                              your account settings
+                            </button>
+                            , or fill in a phone number on your delivery address
+                            above.
+                          </p>
+                        </div>
+                      )}
                     {paymentError && (
                       <div
                         ref={errorRef}
@@ -924,55 +963,102 @@ function CheckoutContent() {
             {/* Order summary */}
             <div className="space-y-6">
               {step === "payment" && isVaranasi ? (
-                <StickyNote
-                  isAbsolute={false}
-                  bgColor="#f0fdf4"
-                  pinColor="#16a34a"
+                <motion.div
+                  initial={{ scale: 1.15, opacity: 0, rotate: -2 }}
+                  animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 15 }}
                 >
-                  <div className="flex flex-col items-center text-center gap-2 p-2">
-                    <Sparkles
-                      size={20}
-                      className="text-green-600 dark:text-green-400 animate-pulse"
-                    />
-                    <p className="text-[15px] text-green-900 dark:text-green-50 leading-snug">
-                      <strong className="font-bold font-serif block mb-1 text-green-950 dark:text-green-100">
-                        Free Varanasi Delivery Applied!
-                      </strong>
-                      Since your delivery address is in Varanasi (where our
-                      studio is located), your shipping is <strong>free</strong>
-                      . If your items are premade, we will pack and deliver them
-                      on the same day. If your items are made-to-order, you will
-                      receive delivery on the same day they are ready.
-                      <br />
-                      <span className="text-xs opacity-80 mt-1 block">
-                        *Your final payment total below reflects this free
-                        shipping.
-                      </span>
-                    </p>
-                  </div>
-                </StickyNote>
+                  <StickyNote
+                    isAbsolute={false}
+                    bgColor="#f0fdf4"
+                    pinColor="#16a34a"
+                  >
+                    <div className="flex flex-col items-center text-center gap-2 p-2">
+                      <Sparkles
+                        size={20}
+                        className="text-green-600 dark:text-green-400 animate-pulse"
+                      />
+                      <div
+                        className="text-green-900 dark:text-green-50 leading-snug"
+                        style={{ fontFamily: "var(--font-hand)", fontSize: 20 }}
+                      >
+                        <span className="relative inline-block mb-2 mt-1">
+                          <span className="absolute inset-0 bg-green-200 dark:bg-green-800/60 transform rotate-1 rounded-sm"></span>
+                          <span
+                            className="relative font-bold px-2 text-green-950 dark:text-green-100"
+                            style={{ fontSize: 22 }}
+                          >
+                            Free Varanasi Delivery Applied!
+                          </span>
+                        </span>
+                        <br />
+                        Since your delivery address is in Varanasi (where our
+                        studio is located), your shipping is{" "}
+                        <span className="relative inline-block mx-0.5">
+                          <span className="absolute inset-x-0 bottom-0.5 h-3 bg-green-200/80 dark:bg-green-800/60 transform -skew-x-12 -rotate-1 rounded-sm"></span>
+                          <span className="relative font-bold text-green-950 dark:text-green-100">
+                            free
+                          </span>
+                        </span>
+                        . If your items are premade, we will pack and deliver
+                        them on the same day. If your items are made-to-order,
+                        you will receive delivery on the same day they are
+                        ready.
+                        <br />
+                        <span
+                          className="opacity-80 mt-2 block"
+                          style={{ fontSize: 16 }}
+                        >
+                          *Your final payment total below reflects this free
+                          shipping.
+                        </span>
+                      </div>
+                    </div>
+                  </StickyNote>
+                </motion.div>
               ) : step === "address" ? (
-                <StickyNote
-                  isAbsolute={false}
-                  bgColor="#fef3c7"
-                  pinColor="#d97706"
+                <motion.div
+                  initial={{ scale: 1.15, opacity: 0, rotate: 2 }}
+                  animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 15 }}
                 >
-                  <div className="flex flex-col items-center text-center gap-2 p-2">
-                    <MapPin
-                      size={20}
-                      className="text-amber-600 dark:text-amber-400"
-                    />
-                    <p className="text-[15px] text-brown-900 dark:text-amber-50 leading-snug">
-                      <strong className="font-semibold block mb-1">
-                        Local to Varanasi?
-                      </strong>
-                      If you are ordering from Varanasi, we offer{" "}
-                      <strong>Free & Same-Day Delivery</strong>! Premade items
-                      are delivered the same day, and custom items are delivered
-                      the day they are ready.
-                    </p>
-                  </div>
-                </StickyNote>
+                  <StickyNote
+                    isAbsolute={false}
+                    bgColor="#fef3c7"
+                    pinColor="#d97706"
+                  >
+                    <div className="flex flex-col items-center text-center gap-2 p-2">
+                      <MapPin
+                        size={20}
+                        className="text-amber-600 dark:text-amber-400"
+                      />
+                      <div
+                        className="text-brown-900 dark:text-amber-50 leading-snug"
+                        style={{ fontFamily: "var(--font-hand)", fontSize: 20 }}
+                      >
+                        <span className="relative inline-block mb-2 mt-1">
+                          <span className="absolute inset-0 bg-amber-200 dark:bg-amber-700/50 transform -rotate-1 rounded-sm"></span>
+                          <span
+                            className="relative font-bold px-2 text-brown-950 dark:text-amber-100"
+                            style={{ fontSize: 22 }}
+                          >
+                            Local to Varanasi?
+                          </span>
+                        </span>
+                        <br />
+                        If you are ordering from Varanasi, we offer{" "}
+                        <span className="relative inline-block mx-0.5">
+                          <span className="absolute inset-x-0 bottom-0.5 h-3 bg-amber-200/80 dark:bg-amber-700/50 transform -skew-x-12 -rotate-1 rounded-sm"></span>
+                          <span className="relative font-bold text-brown-950 dark:text-amber-100">
+                            Free &amp; Same-Day Delivery
+                          </span>
+                        </span>
+                        ! Premade items are delivered the same day, and custom
+                        items are delivered the day they are ready.
+                      </div>
+                    </div>
+                  </StickyNote>
+                </motion.div>
               ) : null}
 
               <OrderSummary

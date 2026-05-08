@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getHeroSettings, updateHeroSettings } from "@/lib/data";
+import { requireAdmin } from "@/lib/auth-guard";
 
 export async function GET() {
   try {
@@ -14,6 +15,8 @@ export async function GET() {
 }
 
 export async function PUT(request: NextRequest) {
+  const deny = requireAdmin(request);
+  if (deny) return deny;
   try {
     const body = await request.json();
     const updated = await updateHeroSettings(body);

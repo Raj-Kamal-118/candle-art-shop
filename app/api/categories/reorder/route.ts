@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { reorderCategories } from "@/lib/data";
+import { requireAdmin } from "@/lib/auth-guard";
 
 export async function PATCH(request: NextRequest) {
+  const deny = requireAdmin(request);
+  if (deny) return deny;
   try {
     const body: { id: string; sortOrder: number }[] = await request.json();
     if (!Array.isArray(body)) {

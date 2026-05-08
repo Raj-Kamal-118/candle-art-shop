@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getGiftSets, createGiftSet } from "@/lib/gift-data";
 import { generateId, slugify } from "@/lib/utils";
+import { requireAdmin } from "@/lib/auth-guard";
 
 export async function GET(req: NextRequest) {
   try {
@@ -13,6 +14,8 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const deny = requireAdmin(req);
+  if (deny) return deny;
   try {
     const body = await req.json();
     const set = await createGiftSet({

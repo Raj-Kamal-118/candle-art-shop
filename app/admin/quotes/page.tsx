@@ -1,12 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
 import { X, Eye } from "lucide-react";
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY!;
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 const SHAPES = [
   { id: "Square", aspect: "1/1", radius: "0px" },
@@ -42,20 +37,21 @@ export default function AdminQuotesPage() {
   }, []);
 
   const fetchQuotes = async () => {
-    const { data, error } = await supabase
-      .from("quotes")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (!error && data) {
-      setQuotes(data);
+    try {
+      const res = await fetch("/api/quotes");
+      if (res.ok) setQuotes(await res.json());
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const updateStatus = async (id: string, status: string) => {
-    await supabase.from("quotes").update({ status }).eq("id", id);
-    fetchQuotes(); // Refresh list
+    await fetch(`/api/quotes/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    });
+    fetchQuotes();
   };
 
   if (loading) return <div className="p-8 text-center">Loading Quotes...</div>;

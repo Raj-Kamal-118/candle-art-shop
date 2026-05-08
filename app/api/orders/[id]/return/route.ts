@@ -23,6 +23,10 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
+    if (order.user_id !== userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     let items = order.items || [];
     let allReturned = true;
 

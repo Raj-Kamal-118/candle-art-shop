@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDiscounts, createDiscount } from "@/lib/data";
 import { generateId } from "@/lib/utils";
+import { requireAdmin } from "@/lib/auth-guard";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const deny = requireAdmin(request);
+  if (deny) return deny;
   try {
     const discounts = await getDiscounts();
     return NextResponse.json(discounts);
@@ -15,6 +18,8 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  const deny = requireAdmin(request);
+  if (deny) return deny;
   try {
     const body = await request.json();
     const discount = await createDiscount({
