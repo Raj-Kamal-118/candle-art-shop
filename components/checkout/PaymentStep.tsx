@@ -43,10 +43,6 @@ export default function PaymentStep({
 
   return (
     <div className="space-y-6">
-      <h3 className="font-serif text-xl font-bold text-brown-900 dark:text-amber-100">
-        Select Payment Method
-      </h3>
-
       {/* Payment options */}
       <div className="space-y-3">
         {/* Disabled Online Payment */}

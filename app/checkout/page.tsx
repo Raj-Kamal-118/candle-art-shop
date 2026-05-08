@@ -13,6 +13,7 @@ import {
   Gift,
   Pencil,
   Check,
+  ArrowLeft,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { Address, DiscountCode, User } from "@/lib/types";
@@ -57,6 +58,7 @@ function CheckoutContent() {
   const [paymentRef, setPaymentRef] = useState<string | null>(null);
   const [redirecting, setRedirecting] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [showSavedAddresses, setShowSavedAddresses] = useState(false);
   const [verifiedUser, setVerifiedUser] = useState<User | null>(currentUser);
   const [expectedSubtotal, setExpectedSubtotal] = useState<number | null>(null);
   const errorRef = useRef<HTMLDivElement>(null);
@@ -276,7 +278,8 @@ function CheckoutContent() {
           paymentReference: paymentData?.transactionId,
           paymentScreenshot: paymentData?.screenshot,
           userId: verifiedUser?.id,
-          customerPhone: shippingAddress.phone,
+          customerEmail: verifiedUser?.email,
+          customerPhone: verifiedUser?.phone || shippingAddress.phone,
           isGift: orderType === "gift",
           giftMessage: orderType === "gift" ? giftMessage : undefined,
           saveAddress: saveAddress,
@@ -409,6 +412,19 @@ function CheckoutContent() {
           })}
         </div>
 
+        {step !== "confirmation" && (
+          <div className="mb-6">
+            <button
+              onClick={() => router.push("/cart")}
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-brown-500 dark:text-amber-100/50 hover:text-coral-600 dark:hover:text-amber-400 transition-colors"
+              style={{ fontFamily: "var(--font-serif)" }}
+            >
+              <ArrowLeft size={14} />
+              Back to basket
+            </button>
+          </div>
+        )}
+
         {step === "confirmation" ? (
           <div className="max-w-xl mx-auto text-center py-16 px-4 bg-white dark:bg-[#1a1830] rounded-3xl shadow-[0_12px_32px_rgba(28,18,9,0.06)] border border-cream-200 dark:border-amber-900/30">
             <div className="w-24 h-24 bg-cream-100 dark:bg-amber-900/20 border border-cream-200 dark:border-amber-900/30 rounded-full flex items-center justify-center mx-auto mb-8 shadow-sm">
@@ -515,8 +531,17 @@ function CheckoutContent() {
                         </div>
                       </div>
                       <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 lg:gap-4 mb-6">
-                        <h2 className="font-serif text-2xl font-bold text-brown-900 dark:text-amber-100 whitespace-nowrap">
-                          Shipping Address
+                        <h2
+                          className="font-bold text-brown-900 dark:text-amber-100 whitespace-nowrap"
+                          style={{ fontFamily: "var(--font-serif)", fontSize: 24 }}
+                        >
+                          Shipping{" "}
+                          <span
+                            className="text-coral-600 dark:text-amber-400"
+                            style={{ fontFamily: "var(--font-script)", fontSize: 30 }}
+                          >
+                            Address
+                          </span>
                         </h2>
                         <p className="text-[11px] sm:text-xs text-brown-500 dark:text-amber-100/60 flex items-start sm:items-center gap-1.5 bg-cream-100/50 dark:bg-amber-900/20 px-3 py-2 sm:py-1.5 rounded-lg border border-cream-200 dark:border-amber-900/30 w-full lg:w-auto">
                           <Sparkles
@@ -620,49 +645,86 @@ function CheckoutContent() {
                       {/* Saved Addresses Selection */}
                       {savedAddresses.length > 0 && (
                         <div className="mb-8">
-                          <h3 className="text-sm font-semibold text-brown-800 dark:text-amber-200 mb-3 uppercase tracking-wider">
-                            Your Saved Addresses
-                          </h3>
-                          <div className="grid gap-4 sm:grid-cols-2 mb-4">
-                            {savedAddresses.map((addr, idx) => {
-                              const isSelected = selectedSavedAddress === addr;
-                              return (
-                                <div
-                                  key={idx}
-                                  onClick={() => {
-                                    setSelectedSavedAddress(addr);
-                                    setPaymentError("");
-                                  }}
-                                  className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                                    isSelected
-                                      ? "border-coral-500 bg-coral-50 dark:border-amber-500 dark:bg-amber-900/30"
-                                      : "border-cream-200 bg-white dark:bg-[#151326] dark:border-amber-900/20 hover:border-coral-300"
-                                  }`}
-                                >
-                                  <p className="font-semibold text-sm text-brown-900 dark:text-amber-100">
-                                    {addr.fullName}
-                                  </p>
-                                  <p className="text-xs mt-1 text-brown-600 dark:text-amber-100/70">
-                                    {addr.address1}
-                                    {addr.address2 ? `, ${addr.address2}` : ""}
-                                  </p>
-                                  <p className="text-xs text-brown-600 dark:text-amber-100/70">
-                                    {addr.city}, {addr.state} {addr.postalCode}
-                                  </p>
+                          {!showSavedAddresses ? (
+                            selectedSavedAddress ? (
+                              /* Pre-filled pill — shown when a saved/default address is active */
+                              <div className="flex items-center justify-between px-4 py-3 bg-forest-50 dark:bg-forest-900/10 border border-forest-200 dark:border-forest-800/40 rounded-xl">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <Check size={14} className="text-forest-600 dark:text-forest-400 shrink-0" />
+                                  <span className="text-sm font-medium text-forest-800 dark:text-forest-300 truncate">
+                                    {selectedSavedAddress.fullName} · {selectedSavedAddress.address1}, {selectedSavedAddress.city}
+                                  </span>
                                 </div>
-                              );
-                            })}
-                          </div>
-                          {selectedSavedAddress && (
-                            <button
-                              onClick={() => {
-                                setSelectedSavedAddress(null);
-                                setSaveAddress(true);
-                              }}
-                              className="text-xs text-coral-600 dark:text-amber-400 font-semibold uppercase tracking-wide hover:underline"
-                            >
-                              + Use a different address
-                            </button>
+                                <button
+                                  onClick={() => setShowSavedAddresses(true)}
+                                  className="text-xs text-coral-600 dark:text-amber-400 font-semibold uppercase tracking-wide hover:underline shrink-0 ml-3"
+                                >
+                                  Change
+                                </button>
+                              </div>
+                            ) : (
+                              /* No address selected yet — show trigger button */
+                              <button
+                                onClick={() => setShowSavedAddresses(true)}
+                                className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-brown-300 dark:border-amber-900/40 rounded-xl text-sm font-medium text-brown-600 dark:text-amber-100/60 hover:border-coral-400 hover:text-coral-600 dark:hover:border-amber-600 dark:hover:text-amber-400 transition-colors"
+                                style={{ fontFamily: "var(--font-serif)" }}
+                              >
+                                Use a saved address
+                              </button>
+                            )
+                          ) : (
+                            /* Expanded panel */
+                            <div className="border border-cream-200 dark:border-amber-900/30 rounded-2xl overflow-hidden">
+                              <div className="px-4 py-3 bg-cream-50 dark:bg-[#12101e] border-b border-cream-200 dark:border-amber-900/30 flex items-center justify-between">
+                                <span className="text-xs font-semibold text-brown-500 dark:text-amber-100/60 uppercase tracking-wider">
+                                  Your saved addresses
+                                </span>
+                                <button
+                                  onClick={() => setShowSavedAddresses(false)}
+                                  className="text-xs text-brown-400 dark:text-amber-100/40 hover:text-brown-600 dark:hover:text-amber-100/70 transition-colors"
+                                >
+                                  ✕ Close
+                                </button>
+                              </div>
+                              <div className="p-3 grid gap-2 sm:grid-cols-2">
+                                {savedAddresses.map((addr, idx) => (
+                                  <div
+                                    key={idx}
+                                    onClick={() => {
+                                      setSelectedSavedAddress(addr);
+                                      setShowSavedAddresses(false);
+                                      setPaymentError("");
+                                    }}
+                                    className="p-3 rounded-xl border-2 border-cream-200 dark:border-amber-900/20 bg-white dark:bg-[#1a1830] cursor-pointer hover:border-coral-400 dark:hover:border-amber-600 transition-all"
+                                  >
+                                    <p className="font-semibold text-sm text-brown-900 dark:text-amber-100">
+                                      {addr.fullName}
+                                      {addr.isDefault && (
+                                        <span className="ml-2 text-[10px] font-bold text-forest-700 dark:text-forest-400 uppercase tracking-wide">Default</span>
+                                      )}
+                                    </p>
+                                    <p className="text-xs mt-1 text-brown-500 dark:text-amber-100/60">
+                                      {addr.address1}{addr.address2 ? `, ${addr.address2}` : ""}
+                                    </p>
+                                    <p className="text-xs text-brown-500 dark:text-amber-100/60">
+                                      {addr.city}, {addr.state} {addr.postalCode}
+                                    </p>
+                                  </div>
+                                ))}
+                              </div>
+                              <div className="px-4 py-3 border-t border-cream-200 dark:border-amber-900/30">
+                                <button
+                                  onClick={() => {
+                                    setSelectedSavedAddress(null);
+                                    setShowSavedAddresses(false);
+                                    setSaveAddress(true);
+                                  }}
+                                  className="text-xs text-coral-600 dark:text-amber-400 font-semibold uppercase tracking-wide hover:underline"
+                                >
+                                  + Enter a new address
+                                </button>
+                              </div>
+                            </div>
                           )}
                         </div>
                       )}
@@ -745,12 +807,18 @@ function CheckoutContent() {
                   {/* Address & verification summary */}
                   <div className="bg-white dark:bg-[#1a1830] rounded-3xl p-6 shadow-[0_4px_12px_rgba(28,18,9,0.05)] border border-cream-200 dark:border-amber-900/30 mb-6">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-serif text-lg font-bold text-brown-900 dark:text-amber-100 flex items-center gap-2">
-                        <MapPin
-                          size={18}
-                          className="text-amber-600 dark:text-amber-400"
-                        />
-                        Shipping to
+                      <h3
+                        className="font-bold text-brown-900 dark:text-amber-100 flex items-center gap-2"
+                        style={{ fontFamily: "var(--font-serif)", fontSize: 20 }}
+                      >
+                        <MapPin size={18} className="text-amber-600 dark:text-amber-400" />
+                        Shipping{" "}
+                        <span
+                          className="text-coral-600 dark:text-amber-400"
+                          style={{ fontFamily: "var(--font-script)", fontSize: 26 }}
+                        >
+                          to
+                        </span>
                       </h3>
                       <button
                         onClick={() => setStep("address")}
@@ -800,8 +868,17 @@ function CheckoutContent() {
                   </div>
 
                   <div className="bg-white dark:bg-[#1a1830] rounded-3xl p-6 sm:p-8 shadow-[0_4px_12px_rgba(28,18,9,0.05)] border border-cream-200 dark:border-amber-900/30">
-                    <h2 className="font-serif text-2xl font-bold text-brown-900 dark:text-amber-100 mb-6">
-                      Payment Method
+                    <h2
+                      className="font-bold text-brown-900 dark:text-amber-100 mb-6"
+                      style={{ fontFamily: "var(--font-serif)", fontSize: 24 }}
+                    >
+                      Payment{" "}
+                      <span
+                        className="text-coral-600 dark:text-amber-400"
+                        style={{ fontFamily: "var(--font-script)", fontSize: 30 }}
+                      >
+                        Method
+                      </span>
                     </h2>
                     {/* Phone number nudge: UPI needs a contact number for failed-payment follow-up */}
                     {paymentMethod === "upi" && verifiedUser && !verifiedUser.phone && !shippingAddress?.phone && (

@@ -369,6 +369,16 @@ export default function AdminOrdersPage() {
                                         ? `${item.giftSet.picks.reduce((s, p) => s + p.qty, 0)} products inside`
                                         : `₹${item.price.toFixed(0)} each`}
                                     </p>
+                                    {!item.giftSet && item.customizations && Object.keys(item.customizations).length > 0 && (
+                                      <div className="flex flex-wrap gap-1 mt-1.5">
+                                        {Object.entries(item.customizations).map(([k, v]) => (
+                                          <span key={k} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-50 dark:bg-amber-900/20 text-brown-600 dark:text-amber-100/70 border border-amber-200 dark:border-amber-900/30">
+                                            <span className="opacity-60">{k}:</span>
+                                            <span className="text-coral-700 dark:text-amber-400 italic">{v}</span>
+                                          </span>
+                                        ))}
+                                      </div>
+                                    )}
                                   </div>
                                   <p className="text-sm font-semibold text-brown-900 dark:text-amber-100 flex-shrink-0">
                                     ₹{(item.price * item.quantity).toFixed(0)}

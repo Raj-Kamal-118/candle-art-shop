@@ -31,10 +31,16 @@ export async function POST(request: NextRequest) {
     // Pull userId from session cookie (if logged in) or body fallback
     const userId = request.cookies.get("user_session")?.value || body.userId || undefined;
 
-    // Derive customerPhone from shipping address or explicit field
+    // Prefer user's registered phone over shipping address phone
     const customerPhone =
       body.customerPhone ||
       body.shippingAddress?.phone ||
+      undefined;
+
+    // Prefer user's registered email (from verifiedUser) over shipping address email
+    const customerEmail =
+      body.customerEmail ||
+      body.shippingAddress?.email ||
       undefined;
 
     const codFee = body.codFee || 0;
@@ -229,7 +235,7 @@ export async function POST(request: NextRequest) {
                     </tr>
                     <tr>
                       <td style="padding: 8px 0; color: #8c6a50;">Email</td>
-                      <td style="padding: 8px 0; text-align: right; font-weight: 600;"><a href="mailto:${body.shippingAddress?.email}" style="color: #D76E60; text-decoration: none;">${body.shippingAddress?.email}</a></td>
+                      <td style="padding: 8px 0; text-align: right; font-weight: 600;"><a href="mailto:${customerEmail}" style="color: #D76E60; text-decoration: none;">${customerEmail}</a></td>
                     </tr>
                     <tr>
                       <td style="padding: 8px 0; color: #8c6a50;">Payment Method</td>
@@ -308,7 +314,7 @@ export async function POST(request: NextRequest) {
 
         // Send Customer Confirmation Email
         // UPI orders: do NOT send confirmation yet — wait for admin payment verification
-        if (!isUpiOrder && body.shippingAddress?.email) {
+        if (!isUpiOrder && customerEmail) {
           const customerEmailRes = await fetch("https://api.resend.com/emails", {
             method: "POST",
             headers: {
@@ -317,7 +323,7 @@ export async function POST(request: NextRequest) {
             },
             body: JSON.stringify({
               from: `Artisan House <${process.env.STORE_EMAIL || "orders@artisanhouse.in"}>`,
-              to: [body.shippingAddress.email],
+              to: [customerEmail],
               subject: `Order Confirmed: #${order.id} | Artisan House`,
               html: `
                 <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #fdfbf9; padding: 40px 20px; color: #4a3320;">
@@ -390,7 +396,7 @@ export async function POST(request: NextRequest) {
           if (!customerEmailRes.ok) {
             console.error("[Resend Error]: Customer email failed", await customerEmailRes.text());
           } else {
-            console.log("[Resend Success]: Customer email sent to", body.shippingAddress.email);
+            console.log("[Resend Success]: Customer email sent to", customerEmail);
           }
         }
       } catch (emailErr) {

@@ -24,28 +24,10 @@ export default function OrderSummary({
 
   return (
     <div
-      className="bg-white dark:bg-[#1a1830] rounded-3xl border border-[rgba(122,80,40,0.18)] dark:border-amber-900/20 overflow-hidden shadow-[0_14px_30px_rgba(67,44,26,0.10),0_2px_6px_rgba(0,0,0,0.04)] dark:shadow-[0_14px_30px_rgba(0,0,0,0.25)] relative"
+      className="bg-white dark:bg-[#1a1830] rounded-3xl border border-[rgba(122,80,40,0.18)] dark:border-amber-900/20 overflow-hidden shadow-[0_14px_30px_rgba(67,44,26,0.10),0_2px_6px_rgba(0,0,0,0.04)] dark:shadow-[0_14px_30px_rgba(0,0,0,0.25)]"
     >
-      {/* Watermark logo */}
-      <div
-        className="pointer-events-none absolute inset-0 flex items-center justify-center z-0 select-none"
-        aria-hidden
-      >
-        <span
-          className="text-brown-900/[0.04] dark:text-amber-100/[0.03] leading-none"
-          style={{
-            fontFamily: "var(--font-script)",
-            fontSize: 120,
-            transform: "rotate(-18deg)",
-            userSelect: "none",
-          }}
-        >
-          A·H
-        </span>
-      </div>
-
       {/* Head */}
-      <div className="relative z-10 pt-5 pb-3 px-5 border-b border-dashed border-[rgba(122,80,40,0.22)] dark:border-amber-900/20">
+      <div className="pt-5 pb-3 px-5 border-b border-dashed border-[rgba(122,80,40,0.22)] dark:border-amber-900/20">
         <h3
           className="font-bold text-brown-900 dark:text-amber-50"
           style={{ fontFamily: "var(--font-serif)", fontSize: 20 }}
@@ -67,7 +49,7 @@ export default function OrderSummary({
       </div>
 
       {/* Item list */}
-      <div className="relative z-10 py-3 px-5 border-b border-dashed border-[rgba(122,80,40,0.22)] dark:border-amber-900/20 space-y-3">
+      <div className="py-3 px-5 border-b border-dashed border-[rgba(122,80,40,0.22)] dark:border-amber-900/20 space-y-3">
         {items.map((item) => {
           const image = item.product.images?.[0];
           return (
@@ -125,7 +107,7 @@ export default function OrderSummary({
       </div>
 
       {/* Totals */}
-      <div className="relative z-10 pt-3 pb-1 px-5 space-y-2">
+      <div className="pt-3 pb-1 px-5 space-y-2">
         <div className="flex items-baseline" style={{ fontFamily: "var(--font-serif)", fontSize: 14 }}>
           <span className="text-brown-600 dark:text-amber-100/60">Subtotal</span>
           <span className="craft-dot-line" />
@@ -165,7 +147,7 @@ export default function OrderSummary({
       </div>
 
       {/* Grand total */}
-      <div className="relative z-10 flex items-baseline justify-between px-5 pt-3 pb-5 border-t-2 border-brown-900/20 dark:border-amber-100/10 mt-2">
+      <div className="flex items-baseline justify-between px-5 pt-3 pb-5 border-t-2 border-brown-900/20 dark:border-amber-100/10 mt-2">
         <span
           className="text-gold-600 dark:text-amber-500 font-bold uppercase tracking-widest"
           style={{ fontFamily: "var(--font-sans)", fontSize: 11, letterSpacing: "0.2em" }}
