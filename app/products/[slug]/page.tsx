@@ -23,7 +23,6 @@ import {
   Sun,
   Moon,
   Home,
-  ChevronDown,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Product } from "@/lib/types";
@@ -73,8 +72,11 @@ export default function ProductDetailPage() {
       return Object.keys(defaults).length ? { ...defaults, ...prev } : prev;
     });
   }, [product]);
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [addedToCart, setAddedToCart] = useState(false);
+
+  // SVG highlighter with zigzag left/right edges — mimics a real marker stroke
+  const markerHighlight =
+    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 32' preserveAspectRatio='none'%3E%3Cpath d='M7,0 L0,4 L6,8 L0,13 L6,18 L0,23 L6,28 L7,32 L93,32 L94,28 L100,23 L94,18 L100,13 L94,8 L100,4 L93,0 Z' fill='rgba(255,221,0,0.58)'/%3E%3C/svg%3E\")";
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -460,269 +462,210 @@ export default function ProductDetailPage() {
               )}
             </div>
 
-            {/* ── Notebook Page Description ── */}
-            <div className="relative my-8 bg-[#fdfbf7] dark:bg-[#1c1710] rounded-lg shadow-lg border border-cream-200 dark:border-amber-900/30 overflow-hidden">
+            {/* ── Single Combined Notebook ── */}
+            <div className="relative my-8 mt-10 z-20">
               <div
-                className="notebook-page-container relative p-8 pl-12 sm:p-10 sm:pl-16"
-                style={
-                  {
-                    // Ruled lines
-                    backgroundImage:
-                      "repeating-linear-gradient(to bottom, transparent 0, transparent 27px, rgba(147, 197, 253, 0.2) 28px)",
-                    backgroundSize: "100% 28px",
-                    "--notebook-hole-color": "rgba(0,0,0,0.08)",
-                  } as React.CSSProperties
-                }
+                className="relative bg-[#fdfbf7] dark:bg-[#1c1710] rounded-lg shadow-lg border border-cream-200 dark:border-amber-900/30 overflow-hidden"
+                style={{
+                  backgroundImage:
+                    "repeating-linear-gradient(to bottom, transparent 0, transparent 27px, rgba(147,197,253,0.18) 28px)",
+                  backgroundSize: "100% 28px",
+                }}
               >
-                {/* Dark mode adjustments for hole color */}
-                <style>{`.dark .notebook-page-container { --notebook-hole-color: rgba(255,255,255,0.08); }`}</style>
-
                 {/* Red margin line */}
                 <div className="absolute top-0 left-10 bottom-0 w-px bg-red-200/70 dark:bg-red-500/20" />
-
                 {/* Spiral holes */}
                 <div
                   className="absolute top-0 left-4 bottom-0 w-2 bg-repeat-y"
                   style={{
                     backgroundImage:
-                      "radial-gradient(circle at center, transparent 2px, var(--notebook-hole-color) 2px, var(--notebook-hole-color) 3px, transparent 3px)",
+                      "radial-gradient(circle at center, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 3px, transparent 3px)",
                     backgroundSize: "100% 28px",
                     backgroundPosition: "0px 14px",
                   }}
                 />
 
-                {/* Content */}
-                <div
-                  dangerouslySetInnerHTML={{ __html: product.description }}
-                  className="prose dark:prose-invert max-w-none text-brown-800 dark:text-amber-100/80 [&>p]:mt-0 [&>p]:mb-[28px]"
-                  style={{
-                    fontFamily: "var(--font-hand)",
-                    fontSize: "26px",
-                    lineHeight: "32px", // Match the ruled lines
-                  }}
-                />
-
-                {/* ── Characteristics — sticky notes on page ── */}
-                {chars.length > 0 && (
-                  <div className="mt-10 flex flex-wrap gap-4 sm:gap-6 justify-start relative z-10">
-                    {chars.map((c, idx) => {
-                      const Icon =
-                        (c.icon && ICONS[c.icon.toLowerCase()]) || Flame;
-
-                      const noteStyles = [
-                        { bg: "#fef3c7" },
-                        { bg: "#e0f2fe" },
-                        { bg: "#dcfce7" },
-                        { bg: "#fee2e2" },
-                        { bg: "#f3e8ff" },
-                        { bg: "#ffedd5" },
-                      ];
-                      const { bg: bgColor } =
-                        noteStyles[idx % noteStyles.length];
-
-                      return (
-                        <div
-                          key={c.id}
-                          className="w-[45%] sm:w-40 flex-shrink-0"
-                        >
-                          <StickyNote
-                            type={c.label}
-                            text={c.value}
-                            isAbsolute={false}
-                            showPin={false}
-                            bgColor={bgColor}
-                            icon={
-                              <Icon
-                                size={16}
-                                className="text-coral-600 shrink-0 drop-shadow-sm"
-                              />
-                            }
-                            positionClass="w-full h-full"
-                          />
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* ── Customization Options (Visible Elevated Card) ── */}
-            {/* ── Order Configuration (Customizations + Qty) ── */}
-            <div className="relative mb-10 mt-12 z-20">
-              {/* Tape pinning the card */}
-              <Tape
-                color="coral"
-                width={130}
-                height={32}
-                rotate={-4}
-                className="absolute -top-4 left-8 z-20"
-              />
-              <Tape
-                color="amber"
-                width={110}
-                height={30}
-                rotate={3}
-                className="absolute -top-4 right-10 z-20"
-              />
-
-              <div className="order-config-card relative rounded-2xl p-6 sm:p-8">
-                {/* Inner stitch */}
-                <div className="absolute inset-2.5 rounded-xl border border-dashed border-[rgba(232,93,74,0.15)] dark:border-amber-900/20 pointer-events-none" />
-
-                {/* Header */}
-                <div className="relative z-10 flex items-center gap-4 mb-7 pb-6 border-b border-dashed border-[rgba(232,93,74,0.2)] dark:border-amber-900/30">
+                <div className="relative z-10 p-8 pl-12 sm:p-10 sm:pl-16">
+                  {/* ── Description ── */}
                   <div
-                    className="w-14 h-14 rounded-full flex items-center justify-center text-white shrink-0 shadow-md"
+                    dangerouslySetInnerHTML={{ __html: product.description }}
+                    className="prose dark:prose-invert max-w-none text-brown-800 dark:text-amber-100/80 [&>p]:mt-0 [&>p]:mb-[28px]"
                     style={{
-                      background:
-                        "linear-gradient(135deg, #e85d4a 0%, #c94535 100%)",
-                      boxShadow:
-                        "0 6px 16px rgba(232,93,74,0.4), inset 0 1px 0 rgba(255,255,255,0.25)",
+                      fontFamily: "var(--font-hand)",
+                      fontSize: "26px",
+                      lineHeight: "28px",
                     }}
-                  >
-                    {product.customizable &&
-                    product.customizationOptions &&
-                    product.customizationOptions.length > 0 ? (
-                      <Sparkles size={22} />
-                    ) : (
-                      <Package size={22} />
-                    )}
+                  />
+
+                  {/* Characteristics */}
+                  {chars.length > 0 && (
+                    <div className="mt-10 flex flex-wrap gap-4 sm:gap-6 justify-start relative z-10">
+                      {chars.map((c, idx) => {
+                        const Icon =
+                          (c.icon && ICONS[c.icon.toLowerCase()]) || Flame;
+                        const noteStyles = [
+                          { bg: "#fef3c7" },
+                          { bg: "#e0f2fe" },
+                          { bg: "#dcfce7" },
+                          { bg: "#fee2e2" },
+                          { bg: "#f3e8ff" },
+                          { bg: "#ffedd5" },
+                        ];
+                        return (
+                          <div
+                            key={c.id}
+                            className="w-[45%] sm:w-40 flex-shrink-0"
+                          >
+                            <StickyNote
+                              type={c.label}
+                              text={c.value}
+                              isAbsolute={false}
+                              showPin={false}
+                              bgColor={noteStyles[idx % noteStyles.length].bg}
+                              icon={
+                                <Icon
+                                  size={16}
+                                  className="text-coral-600 shrink-0 drop-shadow-sm"
+                                />
+                              }
+                              positionClass="w-full h-full"
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* ── Section divider ── */}
+                  <div className="my-10 relative">
+                    <div className="h-px bg-red-300/55 dark:bg-red-700/35" />
+                    <div className="h-px bg-red-200/35 dark:bg-red-600/20 mt-[3px]" />
+                    <span className="absolute -top-[11px] right-0 bg-[#fdfbf7] dark:bg-[#1c1710] pl-3 font-serif italic text-[11px] text-red-400/55 dark:text-red-600/40">
+                      ✦ your order
+                    </span>
                   </div>
-                  <div>
-                    <h3
-                      className="text-brown-900 dark:text-amber-100 leading-tight"
+
+                  {/* ── Order section heading ── */}
+                  <div className="flex items-start gap-3 mb-8">
+                    <div
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-white shrink-0 shadow-md mt-1"
                       style={{
-                        fontFamily: "var(--font-hand)",
-                        fontSize: 34,
-                        lineHeight: 1.1,
+                        background:
+                          "linear-gradient(135deg,#e85d4a 0%,#c94535 100%)",
                       }}
                     >
                       {product.customizable &&
-                      product.customizationOptions &&
-                      product.customizationOptions.length > 0
-                        ? "Make it Yours"
-                        : "Your Order"}
-                    </h3>
-                    <p className="text-sm text-brown-500 dark:text-amber-100/60 font-serif italic mt-1">
-                      {product.customizable &&
-                      product.customizationOptions &&
-                      product.customizationOptions.length > 0
-                        ? "Select your preferences below before adding to basket."
-                        : "Select your quantity below."}
-                    </p>
+                      product.customizationOptions?.length ? (
+                        <Sparkles size={14} />
+                      ) : (
+                        <Package size={14} />
+                      )}
+                    </div>
+                    <div>
+                      <h3
+                        style={{
+                          fontFamily: "var(--font-hand)",
+                          fontSize: 30,
+                          lineHeight: 1.1,
+                          color: "var(--home-text)",
+                        }}
+                      >
+                        {product.customizable &&
+                        product.customizationOptions?.length
+                          ? "Make it Yours"
+                          : "Your Order"}
+                      </h3>
+                      <p
+                        className="mt-1 text-brown-400 dark:text-amber-100/40"
+                        style={{ fontFamily: "var(--font-hand)", fontSize: 19 }}
+                      >
+                        {product.customizable &&
+                        product.customizationOptions?.length
+                          ? "Customise this piece to your liking — pick a fragrance, choose a size, and set your quantity below."
+                          : "Select how many you'd like and add to your basket."}
+                      </p>
+                    </div>
                   </div>
-                </div>
 
-                <div className="relative z-10 space-y-4">
+                  {/* ── Customization options ── */}
                   {product.customizable &&
                     product.customizationOptions?.map((opt) => (
-                      <div
-                        key={opt.label}
-                        className="order-config-row relative p-4 sm:p-5 rounded-xl border border-[rgba(232,93,74,0.15)] dark:border-amber-900/40 shadow-sm transition-all hover:border-coral-300 dark:hover:border-amber-800/60 hover:shadow-md"
-                      >
-                        <label className="block text-sm font-bold uppercase tracking-[0.15em] text-brown-800 dark:text-amber-100 mb-3 flex items-center gap-2.5 font-serif">
-                          <span className="text-coral-500 dark:text-amber-400 text-[18px] leading-none -mt-0.5">
-                            ✦
-                          </span>
+                      <div key={opt.label} className="mb-8">
+                        {/* Label badge — looks like a teacher annotation tab */}
+                        <span
+                          className="inline-block mb-3 px-2.5 py-0.5 rounded text-white text-[13px] font-bold uppercase tracking-wider"
+                          style={{
+                            background: "#e85d4a",
+                            fontFamily: "var(--font-serif)",
+                          }}
+                        >
                           {opt.label}
-                        </label>
+                        </span>
 
                         {opt.type === "select" && opt.options ? (
-                          <div className="relative">
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setOpenDropdown(
-                                  openDropdown === opt.label ? null : opt.label,
-                                )
-                              }
-                              className={`w-full flex items-center justify-between px-4 py-3 bg-white dark:bg-[#1a1612] border-2 ${customizations[opt.label] ? "border-coral-300 dark:border-amber-600/70 shadow-sm" : "border-cream-200 dark:border-amber-900/40"} rounded-xl text-left focus:outline-none focus:ring-2 focus:ring-coral-200 dark:focus:ring-amber-900/50 group transition-all`}
-                            >
-                              <span
-                                className={`${customizations[opt.label] ? "text-coral-700 dark:text-amber-400" : "text-brown-400 dark:text-amber-100/40 italic font-serif text-base"}`}
-                                style={
-                                  customizations[opt.label]
-                                    ? {
-                                        fontFamily: "var(--font-hand)",
-                                        fontSize: 26,
-                                        lineHeight: 1,
-                                      }
-                                    : {}
-                                }
-                              >
-                                {customizations[opt.label] ||
-                                  `Select an option...`}
-                              </span>
-                              <ChevronDown
-                                size={18}
-                                className={`text-brown-400 transition-transform duration-300 ${openDropdown === opt.label ? "rotate-180 text-coral-500" : "group-hover:text-coral-500"}`}
-                              />
-                            </button>
-                            {openDropdown === opt.label && (
-                              <>
-                                <div
-                                  className="fixed inset-0 z-40"
-                                  onClick={() => setOpenDropdown(null)}
-                                />
-                                <div className="absolute z-50 w-full mt-2 py-2 bg-white dark:bg-[#1a1830] border border-brown-200 dark:border-amber-900/40 shadow-xl rounded-xl max-h-60 overflow-y-auto">
-                                  {opt.options.map((o) => (
-                                    <button
-                                      key={o}
-                                      type="button"
-                                      className="w-full text-left px-5 py-3 hover:bg-cream-50 dark:hover:bg-amber-900/30 text-brown-800 dark:text-amber-100 transition-colors font-serif text-base"
-                                      onClick={() => {
-                                        setCustomizations((p) => ({
-                                          ...p,
-                                          [opt.label]: o,
-                                        }));
-                                        setOpenDropdown(null);
-                                      }}
-                                    >
-                                      {o}
-                                    </button>
-                                  ))}
-                                </div>
-                              </>
-                            )}
+                          <div className="flex flex-wrap gap-x-3 gap-y-2 pl-1">
+                            {opt.options.map((o) => {
+                              const sel = customizations[opt.label] === o;
+                              return (
+                                <button
+                                  key={o}
+                                  type="button"
+                                  onClick={() =>
+                                    setCustomizations((p) => ({
+                                      ...p,
+                                      [opt.label]: o,
+                                    }))
+                                  }
+                                  style={{
+                                    fontFamily: "var(--font-hand)",
+                                    fontSize: 26,
+                                    lineHeight: 1.5,
+                                    padding: "0 5px",
+                                    borderRadius: 1,
+                                    color: sel
+                                      ? "#78350f"
+                                      : "rgba(92,64,40,0.48)",
+                                    fontWeight: sel ? 700 : 400,
+                                    background: sel
+                                      ? markerHighlight
+                                      : "transparent",
+                                    backgroundSize: "100% 100%",
+                                    transition: "all 0.14s ease",
+                                  }}
+                                >
+                                  {o}
+                                </button>
+                              );
+                            })}
                           </div>
                         ) : opt.type === "text" ? (
-                          <input
-                            type="text"
+                          <textarea
                             placeholder="Scribble your message here..."
-                            className={`w-full px-4 py-3 bg-white dark:bg-[#1a1612] border-2 ${customizations[opt.label] ? "border-coral-300 dark:border-amber-600/70 shadow-sm text-coral-700 dark:text-amber-400" : "border-cream-200 dark:border-amber-900/40 text-brown-900 dark:text-amber-100"} rounded-xl font-serif text-base placeholder:text-brown-400 dark:placeholder:text-amber-100/40 placeholder:italic focus:outline-none focus:border-coral-500 dark:focus:border-amber-400 focus:ring-4 focus:ring-coral-500/10 dark:focus:ring-amber-500/10 transition-all`}
-                            style={
-                              customizations[opt.label]
-                                ? {
-                                    fontFamily: "var(--font-hand)",
-                                    fontSize: 24,
-                                  }
-                                : {}
-                            }
+                            rows={2}
+                            className="w-full bg-transparent border-b-2 border-dashed border-amber-200 dark:border-amber-900/40 focus:outline-none focus:border-coral-400 dark:focus:border-amber-500 text-brown-900 dark:text-amber-100 placeholder:text-brown-300/50 dark:placeholder:text-amber-100/25 placeholder:italic placeholder:font-serif resize-none overflow-hidden"
+                            style={{
+                              fontFamily: "var(--font-hand)",
+                              fontSize: 26,
+                              paddingBottom: 4,
+                              lineHeight: "32px",
+                            }}
                             value={customizations[opt.label] || ""}
-                            onChange={(e) =>
+                            onChange={(e) => {
+                              e.target.style.height = "auto";
+                              e.target.style.height =
+                                e.target.scrollHeight + "px";
                               setCustomizations((p) => ({
                                 ...p,
                                 [opt.label]: e.target.value,
-                              }))
-                            }
+                              }));
+                            }}
                           />
                         ) : (
-                          <div className="flex items-center gap-4 bg-white dark:bg-[#1a1612] border-2 border-cream-200 dark:border-amber-900/40 rounded-xl p-2 pl-4 shadow-sm">
-                            <span
-                              className="text-coral-700 dark:text-amber-400 flex-1 truncate"
-                              style={{
-                                fontFamily: "var(--font-hand)",
-                                fontSize: 24,
-                                lineHeight: 1,
-                              }}
-                            >
-                              {customizations[opt.label] || "Choose a color:"}
-                            </span>
-                            <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-brown-200 dark:border-amber-900/40 shadow-inner shrink-0">
+                          <div className="flex items-center gap-3 pl-1">
+                            <div className="relative w-9 h-9 rounded-lg overflow-hidden border-2 border-amber-200 dark:border-amber-900/40 shadow-inner shrink-0">
                               <input
                                 type="color"
-                                className="absolute -top-2 -left-2 w-16 h-16 cursor-pointer"
+                                className="absolute -top-2 -left-2 w-14 h-14 cursor-pointer"
                                 value={customizations[opt.label] || "#d97706"}
                                 onChange={(e) =>
                                   setCustomizations((p) => ({
@@ -732,56 +675,89 @@ export default function ProductDetailPage() {
                                 }
                               />
                             </div>
+                            <span
+                              style={{
+                                fontFamily: "var(--font-hand)",
+                                fontSize: 24,
+                                color: "#78350f",
+                                background: customizations[opt.label]
+                                  ? markerHighlight
+                                  : "transparent",
+                                backgroundSize: "100% 100%",
+                                padding: "0 5px",
+                              }}
+                            >
+                              {customizations[opt.label] ||
+                                "tap swatch to pick"}
+                            </span>
                           </div>
                         )}
                       </div>
                     ))}
 
-                  {/* Quantity */}
-                  <div className="order-config-row flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-xl border border-[rgba(232,93,74,0.15)] dark:border-amber-900/40 shadow-sm transition-all hover:border-coral-300 dark:hover:border-amber-800/60 hover:shadow-md">
-                    <label className="block text-sm font-bold uppercase tracking-[0.15em] text-brown-800 dark:text-amber-100 flex items-center gap-2.5 font-serif">
-                      <span className="text-forest-600 dark:text-amber-400 text-[18px] leading-none -mt-0.5">
-                        ✦
-                      </span>
+                  {/* ── Quantity stepper ── */}
+                  <div className="mt-2 pt-6 border-t border-dashed border-red-200/50 dark:border-red-700/20">
+                    <span
+                      className="inline-block mb-4 px-2.5 py-0.5 rounded text-white text-[13px] font-bold uppercase tracking-wider"
+                      style={{
+                        background: "#16a34a",
+                        fontFamily: "var(--font-serif)",
+                      }}
+                    >
                       Quantity
-                    </label>
-                    <div className="flex items-center gap-4">
-                      <div className="inline-flex items-center border border-[rgba(122,80,40,0.25)] dark:border-amber-900/40 rounded-xl bg-white dark:bg-[#1a1612] shadow-sm">
-                        <button
-                          onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                          className="w-11 h-11 flex items-center justify-center text-brown-600 dark:text-amber-100/70 hover:text-coral-600 dark:hover:text-amber-400 hover:bg-cream-100/50 dark:hover:bg-amber-900/20 rounded-l-xl transition-all"
-                          aria-label="Decrease quantity"
-                        >
-                          −
-                        </button>
-                        <span
-                          className="w-12 text-center font-bold text-brown-900 dark:text-amber-100 select-none"
-                          style={{
-                            fontFamily: "var(--font-hand)",
-                            fontSize: 28,
-                            marginTop: -4,
-                          }}
-                        >
-                          {quantity}
-                        </span>
-                        <button
-                          onClick={() =>
-                            setQuantity(
-                              Math.min(product.stockCount, quantity + 1),
-                            )
-                          }
-                          className="w-11 h-11 flex items-center justify-center text-brown-600 dark:text-amber-100/70 hover:text-coral-600 dark:hover:text-amber-400 hover:bg-cream-100/50 dark:hover:bg-amber-900/20 rounded-r-xl transition-all"
-                          aria-label="Increase quantity"
-                        >
-                          +
-                        </button>
-                      </div>
+                    </span>
+                    <div className="flex items-center gap-4 pl-1">
+                      <button
+                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                        className="w-9 h-9 rounded-full border-2 border-brown-300/50 dark:border-amber-900/60 flex items-center justify-center text-brown-600 dark:text-amber-100/60 hover:border-coral-400 hover:text-coral-600 dark:hover:text-amber-400 transition-all"
+                        style={{
+                          fontFamily: "var(--font-hand)",
+                          fontSize: 22,
+                          lineHeight: 1,
+                        }}
+                        aria-label="Decrease quantity"
+                      >
+                        −
+                      </button>
+                      <span
+                        style={{
+                          fontFamily: "var(--font-hand)",
+                          fontSize: 34,
+                          lineHeight: 1.5,
+                          color: "#78350f",
+                          background: markerHighlight,
+                          backgroundSize: "100% 100%",
+                          padding: "0 14px",
+                          borderRadius: 1,
+                          minWidth: 56,
+                          textAlign: "center",
+                          display: "inline-block",
+                        }}
+                      >
+                        {quantity}
+                      </span>
+                      <button
+                        onClick={() =>
+                          setQuantity(
+                            Math.min(product.stockCount, quantity + 1),
+                          )
+                        }
+                        className="w-9 h-9 rounded-full border-2 border-brown-300/50 dark:border-amber-900/60 flex items-center justify-center text-brown-600 dark:text-amber-100/60 hover:border-coral-400 hover:text-coral-600 dark:hover:text-amber-400 transition-all"
+                        style={{
+                          fontFamily: "var(--font-hand)",
+                          fontSize: 22,
+                          lineHeight: 1,
+                        }}
+                        aria-label="Increase quantity"
+                      >
+                        +
+                      </button>
                       {product.stockCount < 10 && product.inStock && (
                         <span
-                          className="text-amber-700 dark:text-amber-400 whitespace-nowrap"
+                          className="text-amber-700 dark:text-amber-400"
                           style={{
                             fontFamily: "var(--font-hand)",
-                            fontSize: 16,
+                            fontSize: 20,
                           }}
                         >
                           only {product.stockCount} left!
