@@ -121,23 +121,22 @@ function GiftSetCartItem({
   const rotate = index % 2 === 0 ? -2 : 2;
 
   return (
-    <div className="craft-perf py-6 pl-8 pr-4 sm:pr-6 border-b border-[rgba(122,80,40,0.18)] dark:border-amber-900/20 last:border-b-0 relative">
-      <div className="flex items-start gap-4 sm:gap-6">
+    <div className="craft-perf py-4 sm:py-6 pl-4 sm:pl-8 pr-4 sm:pr-6 border-b border-[rgba(122,80,40,0.18)] dark:border-amber-900/20 last:border-b-0 relative">
+      <div className="flex items-start gap-3 sm:gap-6">
         {/* Polaroid gift box */}
         <div className="flex-shrink-0 self-start mt-1">
           <div
-            className="craft-polaroid"
-            style={{ transform: `rotate(${rotate}deg)`, width: 124 }}
+            className="craft-polaroid w-[84px] sm:w-[124px]"
+            style={{ transform: `rotate(${rotate}deg)` }}
           >
             <div
-              className="relative z-0 bg-gradient-to-br from-amber-100 to-coral-100 dark:from-amber-900/60 dark:to-coral-900/30 overflow-hidden"
-              style={{ width: 114, height: 114 }}
+              className="relative z-0 bg-gradient-to-br from-amber-100 to-coral-100 dark:from-amber-900/60 dark:to-coral-900/30 overflow-hidden w-[74px] h-[74px] sm:w-[114px] sm:h-[114px]"
             >
               <Image
                 src="/images/misc/gift-box.png"
                 alt="Gift Box"
                 fill
-                sizes="114px"
+                sizes="(max-width: 640px) 74px, 114px"
                 className="object-contain scale-110 p-1 drop-shadow-sm"
               />
             </div>
@@ -222,19 +221,19 @@ function GiftSetCartItem({
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-between mt-4 pt-4 border-t border-[rgba(122,80,40,0.12)] dark:border-amber-900/15">
+          <div className="flex items-center justify-between mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-[rgba(122,80,40,0.12)] dark:border-amber-900/15">
             {picks.length > 0 ? (
               <button
                 onClick={() => setOpen((o) => !o)}
                 className="flex items-center gap-1.5 text-sm font-medium text-amber-700 hover:text-amber-800 dark:text-amber-500 dark:hover:text-amber-400 transition-colors"
               >
                 {open ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                {open ? "Hide contents" : "View contents"}
+                <span className="hidden xs:inline">{open ? "Hide contents" : "View contents"}</span>
               </button>
             ) : (
               <div />
             )}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 sm:gap-4">
               <button
                 onClick={() =>
                   saveForLater(
@@ -246,7 +245,7 @@ function GiftSetCartItem({
                 className="flex items-center gap-1.5 text-sm font-medium text-brown-500 hover:text-coral-600 dark:text-amber-100/60 dark:hover:text-amber-400 transition-colors"
               >
                 <Bookmark size={14} />
-                Save for later
+                <span className="hidden sm:inline">Save for later</span>
               </button>
               <button
                 onClick={() => {
@@ -475,14 +474,14 @@ export default function CartPage() {
       />
 
       {/* ── Main grid ── */}
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-10 grid lg:grid-cols-3 gap-8 lg:gap-10">
+      <div className="max-w-[1440px] mx-auto px-3 sm:px-6 py-6 sm:py-10 grid lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
         {/* Left: order book */}
-        <div className="lg:col-span-2 space-y-8">
+        <div className="lg:col-span-2 space-y-6 sm:space-y-8">
           {/* Order book */}
-          <div className="craft-order-book">
+          <div className="craft-order-book overflow-hidden">
             {/* Pad head */}
             <div
-              className="px-8 py-5 border-b border-dashed border-[rgba(122,80,40,0.22)] dark:border-amber-900/20 flex items-baseline justify-between gap-4 flex-wrap"
+              className="px-4 sm:px-8 py-4 sm:py-5 border-b border-dashed border-[rgba(122,80,40,0.22)] dark:border-amber-900/20 flex items-baseline justify-between gap-4 flex-wrap"
               style={{
                 background:
                   "linear-gradient(180deg,rgba(245,236,218,0.7) 0%,transparent 100%)",
@@ -547,7 +546,7 @@ export default function CartPage() {
 
             {/* Pad foot */}
             <div
-              className="px-8 py-5 flex items-center justify-between flex-wrap gap-4 border-t border-dashed border-[rgba(122,80,40,0.22)] dark:border-amber-900/20"
+              className="px-4 sm:px-8 py-4 sm:py-5 flex items-center justify-between flex-wrap gap-4 border-t border-dashed border-[rgba(122,80,40,0.22)] dark:border-amber-900/20"
               style={{
                 background:
                   "linear-gradient(0deg,rgba(245,236,218,0.5) 0%,transparent 100%)",
@@ -601,7 +600,7 @@ export default function CartPage() {
                 </span>{" "}
                 bought together
               </h2>
-              <div className="craft-order-book p-6 space-y-4">
+              <div className="craft-order-book p-4 sm:p-6 space-y-4">
                 {eligibleUpsells.map((up) => {
                   const rules = up.upsellRules || {};
                   const isFree = Boolean(
@@ -612,20 +611,20 @@ export default function CartPage() {
                   return (
                     <div
                       key={up.id}
-                      className={`flex gap-4 p-4 rounded-xl border transition-all duration-300 ${
+                      className={`flex gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl border transition-all duration-300 ${
                         isFree
                           ? "border-green-300 dark:border-green-800 bg-green-50/50 dark:bg-green-900/10"
                           : "border-[rgba(122,80,40,0.18)] dark:border-amber-900/30 bg-white dark:bg-[#151326]"
                       }`}
                     >
                       <Link href={`/products/${up.slug}`} className="shrink-0">
-                        <div className="relative w-32 h-32 rounded-xl overflow-hidden border border-[rgba(122,80,40,0.15)] dark:border-amber-900/30">
+                        <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-xl overflow-hidden border border-[rgba(122,80,40,0.15)] dark:border-amber-900/30">
                           {up.images?.[0] ? (
                             <Image
                               src={up.images[0]}
                               alt={up.name}
                               fill
-                              sizes="128px"
+                              sizes="(max-width: 640px) 96px, 128px"
                               className="object-cover hover:scale-105 transition-transform duration-300"
                             />
                           ) : (

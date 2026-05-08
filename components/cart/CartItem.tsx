@@ -35,27 +35,23 @@ export default function CartItemComponent({
   const totalPrice = unitPrice * item.quantity;
 
   return (
-    <div className="craft-perf flex gap-4 sm:gap-6 py-6 pl-8 pr-4 sm:pr-6 border-b border-[rgba(122,80,40,0.18)] dark:border-amber-900/20 last:border-b-0 relative">
+    <div className="craft-perf flex gap-3 sm:gap-6 py-4 sm:py-6 pl-4 sm:pl-8 pr-4 sm:pr-6 border-b border-[rgba(122,80,40,0.18)] dark:border-amber-900/20 last:border-b-0 relative">
       {/* ── Polaroid photo ── */}
       <div className="flex-shrink-0 self-start mt-1">
         <div
-          className="craft-polaroid"
-          style={{
-            transform: `rotate(${rotate}deg)`,
-            width: 124,
-          }}
+          className="craft-polaroid w-[84px] sm:w-[124px]"
+          style={{ transform: `rotate(${rotate}deg)` }}
         >
           <Link href={`/products/${item.product.slug}`}>
             <div
-              className="relative z-0 bg-[#f5ecda] dark:bg-amber-950/60 overflow-hidden"
-              style={{ width: 114, height: 114 }}
+              className="relative z-0 bg-[#f5ecda] dark:bg-amber-950/60 overflow-hidden w-[74px] h-[74px] sm:w-[114px] sm:h-[114px]"
             >
               {item.product.images?.[0] ? (
                 <Image
                   src={item.product.images[0]}
                   alt={item.product.name}
                   fill
-                  sizes="114px"
+                  sizes="(max-width: 640px) 74px, 114px"
                   className="object-cover hover:scale-105 transition-transform duration-300"
                 />
               ) : (
@@ -127,7 +123,7 @@ export default function CartItemComponent({
         </div>
 
         {/* ── Footer: qty + actions ── */}
-        <div className="flex items-center justify-between mt-4 pt-3 border-t border-[rgba(122,80,40,0.12)] dark:border-amber-900/15">
+        <div className="flex items-center justify-between mt-3 sm:mt-4 pt-3 border-t border-[rgba(122,80,40,0.12)] dark:border-amber-900/15">
           {/* Qty stepper */}
           {!isSaved ? (
             <div className="inline-flex items-center border border-[rgba(122,80,40,0.25)] dark:border-amber-900/40 rounded-xl bg-white dark:bg-[#12101e] shadow-sm">
