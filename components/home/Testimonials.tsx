@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import StickyNote from "@/components/ui/StickyNote";
+import PrimarySectionHeader from "@/components/ui/PrimarySectionHeader";
 
 interface Review {
   id: string;
@@ -68,80 +69,14 @@ export default function Testimonials({ reviews = [] }: { reviews?: Review[] }) {
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
         >
-          <p
-            style={{
-              fontSize: 11,
-              letterSpacing: ".24em",
-              textTransform: "uppercase",
-              color: "var(--home-amber)",
-              fontWeight: 600,
-              marginBottom: 12,
-            }}
-          >
-            ✦ Letters, notes, thank-yous ✦
-          </p>
-          <h2
-            style={{
-              fontFamily: "var(--font-serif)",
-              fontSize: "clamp(36px, 5vw, 60px)",
-              fontWeight: 900,
-              color: "var(--home-text)",
-              margin: "0 0 14px",
-              lineHeight: 1,
-            }}
-          >
-            Stories of{" "}
-            <span style={{ position: "relative", display: "inline-block" }}>
-              <span
-                className="dark:candle-text-glow"
-                style={{
-                  fontFamily: "var(--font-script)",
-                  fontStyle: "normal",
-                  color: "var(--home-coral)",
-                  fontWeight: 700,
-                  fontSize: "1.08em",
-                }}
-              >
-                warmth
-              </span>
-              <svg
-                aria-hidden="true"
-                style={{
-                  position: "absolute",
-                  left: 0,
-                  bottom: -4,
-                  width: "100%",
-                  height: 12,
-                  overflow: "visible",
-                }}
-                viewBox="0 0 200 12"
-                preserveAspectRatio="none"
-              >
-                <path
-                  d="M0,6 C30,0 60,12 100,6 C140,0 170,12 200,6"
-                  fill="none"
-                  stroke="var(--home-coral)"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </span>
-          </h2>
-          <p
-            style={{
-              fontFamily: "var(--font-serif)",
-              fontStyle: "italic",
-              fontSize: 17,
-              color: "var(--home-muted)",
-              maxWidth: 520,
-              margin: "0 auto",
-            }}
-          >
-            From the people who let us into their homes, their mornings, and
-            their Tuesdays.
-          </p>
+          <PrimarySectionHeader
+            eyebrow="✦ Letters, notes, thank-yous ✦"
+            titlePrefix="Stories of"
+            titleHighlighted="warmth"
+            description="From the people who let us into their homes, their mornings, and their Tuesdays."
+            className="mb-16"
+          />
         </motion.div>
 
         {/* Pinned wall grid */}
@@ -196,13 +131,8 @@ export default function Testimonials({ reviews = [] }: { reviews?: Review[] }) {
                     />
 
                     <p
-                      style={{
-                        fontFamily: "var(--font-hand)",
-                        fontSize: 22,
-                        color: "#2d1f14",
-                        lineHeight: 1.35,
-                        marginBottom: 18,
-                      }}
+                      className="text-[22px] text-[#2d1f14] leading-[1.35] mb-[18px]"
+                      style={{ fontFamily: "var(--font-hand)" }}
                     >
                       &ldquo;{review.text}&rdquo;
                     </p>
@@ -213,12 +143,7 @@ export default function Testimonials({ reviews = [] }: { reviews?: Review[] }) {
                         marginBottom: 16,
                       }}
                     />
-                    <p
-                      style={{
-                        fontSize: 13,
-                        lineHeight: 1.4,
-                      }}
-                    >
+                    <p className="text-[13px] leading-[1.4]">
                       <span style={{ fontWeight: 700, color: "#92400e" }}>
                         {review.customer_name}
                       </span>

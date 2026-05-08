@@ -14,6 +14,7 @@ import {
 import { HeroSettings, HeroButtonIcon } from "@/lib/types";
 import StickyNote from "@/components/ui/StickyNote";
 import PostageStamp from "@/components/craft/PostageStamp";
+import PrimarySectionHeader from "@/components/ui/PrimarySectionHeader";
 
 const ICON_MAP: Record<HeroButtonIcon, React.ReactNode> = {
   "arrow-right": <ArrowRight size={18} />,
@@ -228,57 +229,15 @@ export default function HeroSection({ settings }: HeroSectionProps) {
               {badgeText}
             </div>
 
-            <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-bold text-forest-900 dark:text-amber-50 leading-tight mb-6">
-              {h1Text}{" "}
-              <span style={{ position: "relative", display: "inline-block" }}>
-                <span
-                  className="dark:candle-text-glow"
-                  style={{
-                    fontFamily: "var(--font-script)",
-                    fontStyle: "normal",
-                    fontWeight: 700,
-                    fontSize: "1.08em",
-                    color: h1TextColor || "var(--home-coral)",
-                  }}
-                >
-                  {h1HighlightedText}
-                </span>
-                <svg
-                  aria-hidden="true"
-                  style={{
-                    position: "absolute",
-                    left: 0,
-                    bottom: -4,
-                    width: "100%",
-                    height: 12,
-                    overflow: "visible",
-                  }}
-                  viewBox="0 0 200 12"
-                  preserveAspectRatio="none"
-                >
-                  <path
-                    d="M0,6 C30,0 60,12 100,6 C140,0 170,12 200,6"
-                    fill="none"
-                    stroke={h1TextColor || "var(--home-coral)"}
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </span>
-            </h1>
-
-            <p
-              style={{
-                fontFamily: "var(--font-serif)",
-                fontStyle: "italic",
-                fontSize: 17,
-                color: "var(--home-muted)",
-                marginBottom: 24,
-                maxWidth: 420,
-              }}
-            >
-              {description}
-            </p>
+            <PrimarySectionHeader
+              as="h1"
+              align="left"
+              titlePrefix={h1Text}
+              titleHighlighted={h1HighlightedText}
+              highlightColor={h1TextColor || "var(--home-coral, #d76e60)"}
+              description={description}
+              className="mb-6"
+            />
 
             {/* Buttons — 2 per row */}
             {buttons.length > 0 && (

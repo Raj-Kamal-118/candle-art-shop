@@ -7,7 +7,7 @@ import {
   ShieldCheck,
   Clock,
 } from "lucide-react";
-import SecondaryHeader from "@/components/layout/SecondaryHeader";
+import InformationalLayout from "@/components/layout/InformationalLayout";
 
 export const metadata: Metadata = {
   title: "Refund & Cancellation Policy",
@@ -55,42 +55,13 @@ export default function RefundPolicyPage() {
   });
 
   return (
-    <main className="min-h-screen bg-[var(--home-bg-alt)] dark:bg-[#1a1612] pb-20">
-      <SecondaryHeader
-        eyebrow="✦ Refund Policy ✦"
-        titlePrefix="Fair and"
-        titleHighlighted="transparent"
-        titleSuffix="."
-        description="Everything you need to know about processing cancellations, refunds, and timelines."
-      />
-
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-12">
-        <div className="text-[13px] text-brown-500 dark:text-amber-100/50 mb-6 text-center md:text-left">
-          Last updated · {lastUpdated}
-        </div>
-
-        <div className="space-y-4">
-          {sections.map(({ Icon, heading, body }) => (
-            <div
-              key={heading}
-              className="bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-900/30 rounded-2xl p-6 md:p-7"
-            >
-              <div className="flex items-start gap-4 mb-3">
-                <div className="w-10 h-10 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 flex items-center justify-center flex-none">
-                  <Icon size={18} />
-                </div>
-                <h2 className="font-serif text-xl md:text-2xl font-bold text-brown-900 dark:text-amber-100 leading-snug pt-1.5">
-                  {heading}
-                </h2>
-              </div>
-              <div
-                className="text-[15px] leading-[1.7] text-brown-700 dark:text-amber-100/70 [&>p]:mb-4 [&>p:last-child]:mb-0"
-                dangerouslySetInnerHTML={{ __html: body }}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-    </main>
+    <InformationalLayout
+      eyebrow="✦ Refund Policy ✦"
+      titlePrefix="Fair and"
+      titleHighlighted="transparent"
+      description="Everything you need to know about processing cancellations, refunds, and timelines."
+      lastUpdated={lastUpdated}
+      sections={sections}
+    />
   );
 }

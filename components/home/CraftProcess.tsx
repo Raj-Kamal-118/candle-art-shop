@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
+import PrimarySectionHeader from "@/components/ui/PrimarySectionHeader";
 
 const STEPS = [
   {
@@ -75,79 +76,14 @@ export default function CraftProcess() {
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
         >
-          <p
-            style={{
-              fontSize: 11,
-              letterSpacing: ".24em",
-              textTransform: "uppercase",
-              color: "var(--home-amber)",
-              fontWeight: 600,
-              marginBottom: 12,
-            }}
-          >
-            ✦ In the studio ✦
-          </p>
-          <h2
-            style={{
-              fontFamily: "var(--font-serif)",
-              fontSize: "clamp(36px, 5vw, 60px)",
-              fontWeight: 900,
-              color: "var(--home-text)",
-              margin: "0 0 14px",
-              lineHeight: 1,
-            }}
-          >
-            How it{" "}
-            <span style={{ position: "relative", display: "inline-block" }}>
-              <span
-                className="dark:candle-text-glow"
-                style={{
-                  fontFamily: "var(--font-script)",
-                  fontStyle: "normal",
-                  color: "var(--home-coral)",
-                  fontWeight: 700,
-                  fontSize: "1.08em",
-                }}
-              >
-                actually gets made
-              </span>
-              <svg
-                aria-hidden="true"
-                style={{
-                  position: "absolute",
-                  left: 0,
-                  bottom: -4,
-                  width: "100%",
-                  height: 12,
-                  overflow: "visible",
-                }}
-                viewBox="0 0 200 12"
-                preserveAspectRatio="none"
-              >
-                <path
-                  d="M0,6 C30,0 60,12 100,6 C140,0 170,12 200,6"
-                  fill="none"
-                  stroke="var(--home-coral)"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </span>
-          </h2>
-          <p
-            style={{
-              fontFamily: "var(--font-serif)",
-              fontStyle: "italic",
-              fontSize: 17,
-              color: "var(--home-muted)",
-              maxWidth: 520,
-              margin: "0 auto",
-            }}
-          >
-            A Tuesday in the Artisan House studio. Wax at 62°C. Tea on the side.
-          </p>
+          <PrimarySectionHeader
+            eyebrow="✦ In the studio ✦"
+            titlePrefix="How it"
+            titleHighlighted="actually gets made"
+            description="A Tuesday in the Artisan House studio. Wax at 62°C. Tea on the side."
+            className="mb-16"
+          />
         </motion.div>
 
         {/* Journey Grid Container */}
@@ -506,39 +442,13 @@ export default function CraftProcess() {
 
                 {/* Label block */}
                 <div className="text-center w-full">
-                  <p
-                    style={{
-                      fontFamily: "var(--font-serif)",
-                      fontSize: 48,
-                      color: "var(--home-coral)",
-                      lineHeight: 1,
-                      marginBottom: 6,
-                      fontWeight: 700,
-                    }}
-                  >
+                  <p className="font-serif text-[48px] font-bold text-coral-600 dark:text-coral-500 leading-none mb-1.5">
                     {step.num}
                   </p>
-                  <p
-                    style={{
-                      fontFamily: "var(--font-serif)",
-                      fontSize: 22,
-                      fontWeight: 600,
-                      color: "var(--home-text)",
-                      marginBottom: 4,
-                      lineHeight: 1.2,
-                    }}
-                  >
+                  <p className="font-serif text-[22px] font-semibold text-brown-900 dark:text-amber-50 mb-1 leading-[1.2]">
                     {step.title}
                   </p>
-                  <p
-                    style={{
-                      fontFamily: "var(--font-serif)",
-                      fontStyle: "italic",
-                      fontSize: 14,
-                      color: "var(--home-muted)",
-                      lineHeight: 1.4,
-                    }}
-                  >
+                  <p className="font-serif italic text-[14px] text-brown-500 dark:text-amber-100/60 leading-[1.4]">
                     {step.note}
                   </p>
                 </div>

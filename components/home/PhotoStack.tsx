@@ -342,7 +342,10 @@ const AlbumPage = React.forwardRef<
               </div>
               {item.name && (
                 <div className="absolute bottom-4 left-0 right-0 text-center px-4">
-                  <span className="font-script text-2xl text-brown-800 dark:text-amber-200 line-clamp-1">
+                  <span
+                    className="text-2xl text-brown-800 dark:text-amber-200 line-clamp-1"
+                    style={{ fontFamily: "var(--font-script)" }}
+                  >
                     {item.name}
                   </span>
                 </div>

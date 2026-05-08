@@ -5,13 +5,9 @@ import Image from "next/image";
 import {
   ArrowRight,
   Gift,
-  ChevronDown,
-  ChevronUp,
   Sparkles,
   ShoppingCart,
   ArrowLeft,
-  Bookmark,
-  Trash2,
   MapPin,
   MessageCircle,
   Mail,
@@ -20,11 +16,13 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useStore } from "@/lib/store";
 import CartItemComponent from "@/components/cart/CartItem";
+import GiftSetCartItem from "@/components/cart/GiftSetCartItem";
 import CartSummary from "@/components/cart/CartSummary";
 import { formatPrice } from "@/lib/utils";
-import { GS_BOXES, GS_RIBBONS } from "@/lib/stores/giftBuilderStore";
 import { CartItem } from "@/lib/types";
 import SecondaryHeader from "@/components/layout/SecondaryHeader";
+import { SITE_CONFIG } from "@/lib/config";
+import Button from "@/components/ui/Button";
 
 // ── Step indicator ──────────────────────────────────────────────
 function CheckoutSteps({
@@ -45,15 +43,14 @@ function CheckoutSteps({
         return (
           <div key={s.id} className="flex items-center">
             <div
-              className="flex items-center gap-2 px-3 py-1.5"
-              style={{
-                fontFamily: "var(--font-serif)",
-                fontSize: 14,
-                color: isHere ? "#362821" : "#8e6a4e",
-              }}
+              className={`font-serif flex items-center gap-2 px-3 py-1.5 text-[14px] ${
+                isHere
+                  ? "text-[#362821] dark:text-amber-50"
+                  : "text-[#8e6a4e] dark:text-amber-100/40"
+              }`}
             >
               <span
-                className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
+                className="font-sans text-[11px] w-6 h-6 rounded-full flex items-center justify-center font-bold"
                 style={{
                   background: isDone
                     ? "#3d8a72"
@@ -64,8 +61,6 @@ function CheckoutSteps({
                   boxShadow: isHere
                     ? "0 0 0 4px rgba(232,93,74,0.18)"
                     : undefined,
-                  fontFamily: "var(--font-sans)",
-                  fontSize: 11,
                 }}
               >
                 {isDone ? "✓" : s.num}
@@ -98,264 +93,6 @@ function CheckoutSteps({
   );
 }
 
-// ── Gift-set cart row ───────────────────────────────────────────
-function GiftSetCartItem({
-  item,
-  index,
-  onRemoved,
-}: {
-  item: CartItem;
-  index: number;
-  onRemoved?: (item: CartItem) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const removeFromCart = useStore((s) => s.removeFromCart);
-  const saveForLater = useStore((s) => s.saveForLater);
-  const price = item.price ?? item.product.price;
-  const gs = item.giftSet;
-  const picks = gs?.picks ?? [];
-  const ribbonLabel =
-    GS_RIBBONS.find((r) => r.id === gs?.ribbon)?.label ?? gs?.ribbon ?? "";
-  const boxLabel =
-    GS_BOXES.find((b) => b.id === gs?.box)?.label ?? gs?.box ?? "";
-  const rotate = index % 2 === 0 ? -2 : 2;
-
-  return (
-    <div className="py-4 sm:py-6 pl-4 sm:pl-8 pr-4 sm:pr-6 relative after:absolute after:bottom-0 after:left-8 sm:after:left-16 after:right-8 sm:after:right-16 after:h-px after:bg-gradient-to-r after:from-transparent after:via-[rgba(122,80,40,0.25)] dark:after:via-amber-900/30 after:to-transparent last:after:hidden">
-      <div className="flex items-start gap-3 sm:gap-6">
-        {/* Polaroid gift box */}
-        <div className="flex-shrink-0 self-start mt-1">
-          <div
-            className="craft-polaroid w-[84px] sm:w-[124px]"
-            style={{ transform: `rotate(${rotate}deg)` }}
-          >
-            <div className="relative z-0 bg-gradient-to-br from-amber-100 to-coral-100 dark:from-amber-900/60 dark:to-coral-900/30 overflow-hidden w-[74px] h-[74px] sm:w-[114px] sm:h-[114px]">
-              <Image
-                src="/images/misc/gift-box.png"
-                alt="Gift Box"
-                fill
-                sizes="(max-width: 640px) 74px, 114px"
-                className="object-contain scale-110 p-1 drop-shadow-sm"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="flex-1 min-w-0 flex flex-col">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <div
-                className="font-bold uppercase tracking-widest text-amber-700 dark:text-amber-500 mb-1"
-                style={{
-                  fontFamily: "var(--font-sans)",
-                  fontSize: 10,
-                  letterSpacing: "0.18em",
-                }}
-              >
-                {gs?.kind === "custom" ? "Custom Gift Set" : "Gift Set"}
-              </div>
-              <Link
-                href="/custom/gift-set"
-                className="font-bold leading-tight text-brown-900 dark:text-amber-50 hover:text-coral-600 dark:hover:text-amber-400 transition-colors"
-                style={{ fontFamily: "var(--font-serif)", fontSize: 16 }}
-              >
-                {item.product.name}
-              </Link>
-              {gs?.card.recipient && (
-                <p
-                  className="mt-1 text-brown-500 dark:text-amber-100/50"
-                  style={{
-                    fontFamily: "var(--font-serif)",
-                    fontStyle: "italic",
-                    fontSize: 12,
-                  }}
-                >
-                  For <span className="font-medium">{gs.card.recipient}</span>
-                </p>
-              )}
-
-              {gs && (ribbonLabel || boxLabel) && (
-                <div className="flex gap-1.5 mt-2 flex-wrap">
-                  {boxLabel && (
-                    <span
-                      className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[rgba(122,80,40,0.07)] dark:bg-amber-900/20 text-brown-700 dark:text-amber-100/70 border border-[rgba(122,80,40,0.18)] dark:border-amber-900/30"
-                      style={{ fontFamily: "var(--font-serif)" }}
-                    >
-                      📦 {boxLabel}
-                    </span>
-                  )}
-                  {ribbonLabel && (
-                    <span
-                      className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[rgba(122,80,40,0.07)] dark:bg-amber-900/20 text-brown-700 dark:text-amber-100/70 border border-[rgba(122,80,40,0.18)] dark:border-amber-900/30"
-                      style={{ fontFamily: "var(--font-serif)" }}
-                    >
-                      🎀 {ribbonLabel}
-                    </span>
-                  )}
-                </div>
-              )}
-            </div>
-
-            <div className="text-right shrink-0">
-              <div
-                className="font-black text-brown-900 dark:text-amber-100 leading-none"
-                style={{ fontFamily: "var(--font-serif)", fontSize: 20 }}
-              >
-                {formatPrice(price)}
-              </div>
-              {picks.length > 0 && (
-                <div
-                  className="text-brown-400 dark:text-amber-100/40 mt-1"
-                  style={{
-                    fontFamily: "var(--font-serif)",
-                    fontStyle: "italic",
-                    fontSize: 11,
-                  }}
-                >
-                  {picks.reduce((s, p) => s + p.qty, 0)} items
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center justify-between mt-3 sm:mt-4 pt-3 sm:pt-4  border-[rgba(122,80,40,0.12)] dark:border-amber-900/15">
-            {picks.length > 0 ? (
-              <button
-                onClick={() => setOpen((o) => !o)}
-                className="flex items-center gap-1.5 text-sm font-medium text-amber-700 hover:text-amber-800 dark:text-amber-500 dark:hover:text-amber-400 transition-colors"
-              >
-                {open ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                <span className="hidden xs:inline">
-                  {open ? "Hide contents" : "View contents"}
-                </span>
-              </button>
-            ) : (
-              <div />
-            )}
-            <div className="flex items-center gap-3 sm:gap-4">
-              <button
-                onClick={() =>
-                  saveForLater(
-                    item.product.id,
-                    item.customizations,
-                    item.giftSet,
-                  )
-                }
-                className="flex items-center gap-1.5 text-sm font-medium text-brown-500 hover:text-coral-600 dark:text-amber-100/60 dark:hover:text-amber-400 transition-colors"
-              >
-                <Bookmark size={20} />
-              </button>
-              <button
-                onClick={() => {
-                  removeFromCart(
-                    item.product.id,
-                    item.customizations,
-                    item.giftSet,
-                  );
-                  onRemoved?.(item);
-                }}
-                className="flex items-center gap-1.5 text-sm font-medium text-brown-400 hover:text-red-500 dark:text-amber-100/50 dark:hover:text-red-400 transition-colors"
-              >
-                <Trash2 size={20} />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Expanded pick list */}
-      {open && picks.length > 0 && (
-        <div className="mt-5 ml-0 sm:ml-[116px] rounded-xl border border-[rgba(122,80,40,0.18)] dark:border-amber-900/30 overflow-hidden bg-cream-50 dark:bg-[#0f0e1c]">
-          {picks.map((pick, i) => (
-            <div
-              key={`${pick.id}-${i}`}
-              className="flex items-start sm:items-center gap-3 px-3 sm:px-4 py-3 border-b border-[rgba(122,80,40,0.10)] dark:border-amber-900/15 last:border-b-0"
-            >
-              {pick.image ? (
-                <div className="relative w-10 h-10 mt-0.5 sm:mt-0 rounded-lg flex-shrink-0 border border-black/5 dark:border-white/5 overflow-hidden">
-                  <Image
-                    src={pick.image}
-                    alt={pick.name}
-                    fill
-                    sizes="40px"
-                    className="object-cover"
-                  />
-                </div>
-              ) : (
-                <div className="w-10 h-10 mt-0.5 sm:mt-0 rounded-lg bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center text-lg flex-shrink-0">
-                  🎁
-                </div>
-              )}
-              <div className="flex-1 min-w-0">
-                <div
-                  className="font-bold text-brown-900 dark:text-amber-100 leading-snug pr-2"
-                  style={{ fontFamily: "var(--font-serif)", fontSize: 13 }}
-                >
-                  {pick.name}
-                  {pick.qty > 1 && (
-                    <span className="text-brown-400 dark:text-amber-100/50 font-medium ml-1.5">
-                      × {pick.qty}
-                    </span>
-                  )}
-                </div>
-                {(pick as any).customization &&
-                  Object.keys((pick as any).customization).length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mt-2">
-                      {Object.entries((pick as any).customization).map(
-                        ([k, v]) => (
-                          <span
-                            key={k}
-                            className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[rgba(122,80,40,0.07)] dark:bg-amber-900/20 text-brown-700 dark:text-amber-100/70 border border-[rgba(122,80,40,0.18)] dark:border-amber-900/30"
-                            style={{ fontFamily: "var(--font-serif)" }}
-                          >
-                            <span className="opacity-60">{k}:</span>{" "}
-                            <span
-                              className="text-coral-700 dark:text-amber-400"
-                              style={{ fontStyle: "italic" }}
-                            >
-                              {String(v)}
-                            </span>
-                          </span>
-                        ),
-                      )}
-                    </div>
-                  )}
-                <div
-                  className="text-brown-400 dark:text-amber-100/50 mt-0.5"
-                  style={{
-                    fontFamily: "var(--font-serif)",
-                    fontStyle: "italic",
-                    fontSize: 11,
-                  }}
-                >
-                  {formatPrice(pick.price)}
-                </div>
-              </div>
-              <div
-                className="font-bold text-brown-900 dark:text-amber-100 shrink-0 mt-0.5 sm:mt-0"
-                style={{ fontFamily: "var(--font-serif)", fontSize: 13 }}
-              >
-                {formatPrice(pick.price * pick.qty)}
-              </div>
-            </div>
-          ))}
-          {gs?.card.note && (
-            <div className="px-5 py-4 bg-amber-50/80 dark:bg-[#1a1830] border-t border-amber-100 dark:border-amber-900/40">
-              <div
-                className="text-amber-900 dark:text-amber-200/90 leading-relaxed"
-                style={{ fontFamily: "var(--font-hand)", fontSize: 18 }}
-              >
-                &ldquo;{gs.card.note}&rdquo;
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
 // ── Main page ───────────────────────────────────────────────────
 export default function CartPage() {
   const { cartItems, savedForLaterItems, addToCart } = useStore();
@@ -383,44 +120,29 @@ export default function CartPage() {
       <main className="min-h-screen bg-[var(--home-bg-alt)] dark:bg-[#1a1612] flex flex-col items-center justify-center pb-20 pt-16">
         <div className="max-w-lg mx-auto px-6 py-20 text-center">
           <div className="text-7xl mb-6">🛒</div>
-          <h1
-            className="font-bold text-brown-900 dark:text-amber-50 mb-4 leading-tight"
-            style={{
-              fontFamily: "var(--font-serif)",
-              fontSize: "clamp(32px,5vw,48px)",
-            }}
-          >
+          <h1 className="ah-display-lg leading-tight mb-4">
             Your{" "}
             <span
-              className="text-coral-600 dark:text-amber-400"
+              className="text-coral-600 dark:text-amber-400 text-2xl"
               style={{ fontFamily: "var(--font-script)" }}
             >
               basket
             </span>{" "}
             is empty
           </h1>
-          <p
-            className="text-brown-500 dark:text-amber-100/50 mb-10 leading-relaxed mx-auto max-w-xs"
-            style={{
-              fontFamily: "var(--font-serif)",
-              fontStyle: "italic",
-              fontSize: 16,
-            }}
-          >
+          <p className="font-serif italic text-[16px] text-brown-500 dark:text-amber-100/50 mb-10 leading-relaxed mx-auto max-w-xs">
             Discover our handcrafted candles and artwork to fill it up.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              href="/products"
-              className="inline-flex items-center justify-center gap-2 bg-coral-600 text-white px-8 py-3.5 rounded-xl font-semibold hover:bg-coral-700 transition-all duration-200 shadow-lg shadow-coral-200/50 hover:-translate-y-0.5 text-sm w-full sm:w-auto"
-            >
-              Shop Now <ArrowRight size={16} />
+            <Link href="/products">
+              <Button variant="primary" className="w-full sm:w-auto">
+                Shop Now <ArrowRight size={16} />
+              </Button>
             </Link>
-            <Link
-              href="/custom"
-              className="inline-flex items-center justify-center gap-2 bg-white dark:bg-[#1a1830] text-brown-800 dark:text-amber-200 px-8 py-3.5 rounded-xl font-semibold hover:bg-cream-100 dark:hover:bg-amber-900/20 transition-all duration-200 shadow-md border border-cream-200 dark:border-amber-900/30 text-sm w-full sm:w-auto"
-            >
-              Explore Bespoke Creations
+            <Link href="/custom">
+              <Button variant="secondary" className="w-full sm:w-auto">
+                Explore Bespoke Creations
+              </Button>
             </Link>
           </div>
         </div>
@@ -542,12 +264,7 @@ export default function CartPage() {
             >
               <Link
                 href="/products"
-                className="inline-flex items-center gap-2 text-brown-500 dark:text-amber-100/40 hover:text-coral-600 dark:hover:text-amber-400 transition-colors"
-                style={{
-                  fontFamily: "var(--font-serif)",
-                  fontStyle: "italic",
-                  fontSize: 14,
-                }}
+                className="inline-flex items-center gap-2 font-serif italic text-[14px] text-brown-500 dark:text-amber-100/40 hover:text-coral-600 dark:hover:text-amber-400 transition-colors"
               >
                 <ArrowLeft size={13} />
                 keep looking around the shop
@@ -576,13 +293,10 @@ export default function CartPage() {
           {/* Upsell */}
           {eligibleUpsells.length > 0 && (
             <div>
-              <h2
-                className="font-bold text-brown-900 dark:text-amber-50 mb-4"
-                style={{ fontFamily: "var(--font-serif)", fontSize: 20 }}
-              >
+              <h2 className="ah-display-md text-xl mb-4">
                 <span
-                  className="text-coral-600 dark:text-amber-400"
-                  style={{ fontFamily: "var(--font-script)", fontSize: 26 }}
+                  className="text-coral-600 dark:text-amber-400 text-2xl"
+                  style={{ fontFamily: "var(--font-script)" }}
                 >
                   Frequently
                 </span>{" "}
@@ -625,39 +339,17 @@ export default function CartPage() {
 
                       <div className="flex-1 min-w-0">
                         {isFree && (
-                          <div
-                            className="text-green-600 dark:text-green-400 mb-1 flex items-center gap-1.5"
-                            style={{
-                              fontFamily: "var(--font-sans)",
-                              fontSize: 10,
-                              fontWeight: 700,
-                              letterSpacing: "0.14em",
-                              textTransform: "uppercase",
-                            }}
-                          >
+                          <div className="ah-eyebrow text-green-600 dark:text-green-400 mb-1 flex items-center gap-1.5 text-[10px]">
                             <Sparkles size={11} /> Free Gift Unlocked
                           </div>
                         )}
                         <Link href={`/products/${up.slug}`}>
-                          <h4
-                            className="font-bold text-brown-900 dark:text-amber-100 hover:text-coral-600 dark:hover:text-amber-400 transition-colors leading-tight"
-                            style={{
-                              fontFamily: "var(--font-serif)",
-                              fontSize: 15,
-                            }}
-                          >
+                          <h4 className="ah-body font-serif font-bold text-[15px] hover:text-coral-600 dark:hover:text-amber-400 transition-colors leading-tight">
                             {up.name}
                           </h4>
                         </Link>
                         {up.upsellMessage && (
-                          <p
-                            className="text-brown-500 dark:text-amber-100/60 mt-1"
-                            style={{
-                              fontFamily: "var(--font-serif)",
-                              fontStyle: "italic",
-                              fontSize: 12,
-                            }}
-                          >
+                          <p className="font-serif italic text-[12px] mt-1 text-brown-500 dark:text-amber-100/60">
                             {up.upsellMessage}
                           </p>
                         )}
@@ -729,13 +421,10 @@ export default function CartPage() {
 
           {/* Saved for later */}
           <div>
-            <h2
-              className="font-bold text-brown-900 dark:text-amber-50 mb-4"
-              style={{ fontFamily: "var(--font-serif)", fontSize: 20 }}
-            >
+            <h2 className="ah-display-md text-xl mb-4">
               <span
-                className="text-coral-600 dark:text-amber-400"
-                style={{ fontFamily: "var(--font-script)", fontSize: 24 }}
+                className="text-coral-600 dark:text-amber-400 text-2xl"
+                style={{ fontFamily: "var(--font-script)" }}
               >
                 Saved
               </span>{" "}
@@ -756,19 +445,12 @@ export default function CartPage() {
             ) : (
               <div className="rounded-xl p-8 border border-dashed border-[rgba(122,80,40,0.22)] dark:border-amber-900/20 flex flex-col items-center justify-center text-center bg-white dark:bg-[#1a1830]">
                 <div
-                  className="text-brown-300 dark:text-amber-100/20 mb-1"
-                  style={{ fontFamily: "var(--font-script)", fontSize: 36 }}
+                  className="text-[36px] text-brown-300 dark:text-amber-100/20 mb-1 leading-none"
+                  style={{ fontFamily: "var(--font-script)" }}
                 >
                   nothing yet
                 </div>
-                <p
-                  className="text-brown-400 dark:text-amber-100/40"
-                  style={{
-                    fontFamily: "var(--font-serif)",
-                    fontStyle: "italic",
-                    fontSize: 13,
-                  }}
-                >
+                <p className="font-serif italic text-[13px] text-brown-400 dark:text-amber-100/40">
                   tap "save for later" on any item to keep it here.
                 </p>
               </div>
@@ -803,39 +485,27 @@ export default function CartPage() {
               </p>
               <div className="space-y-2">
                 <a
-                  href="https://wa.me/919519486785"
+                  href={SITE_CONFIG.contact.whatsappUrl}
                   className="flex items-center gap-2 text-brown-600 dark:text-amber-100/60 hover:text-coral-600 dark:hover:text-amber-400 transition-colors group"
                 >
                   <MessageCircle
                     size={15}
                     className="group-hover:scale-110 transition-transform"
                   />
-                  <span
-                    style={{
-                      fontFamily: "var(--font-serif)",
-                      fontSize: 13,
-                      fontStyle: "italic",
-                    }}
-                  >
-                    +91 95194 86785
+                  <span className="font-serif italic text-[13px] text-brown-600 dark:text-amber-100/60">
+                    {SITE_CONFIG.contact.phone}
                   </span>
                 </a>
                 <a
-                  href="mailto:hi@artisanhouse.in"
+                  href={`mailto:${SITE_CONFIG.contact.email}`}
                   className="flex items-center gap-2 text-brown-600 dark:text-amber-100/60 hover:text-coral-600 dark:hover:text-amber-400 transition-colors group"
                 >
                   <Mail
                     size={15}
                     className="group-hover:scale-110 transition-transform"
                   />
-                  <span
-                    style={{
-                      fontFamily: "var(--font-serif)",
-                      fontSize: 13,
-                      fontStyle: "italic",
-                    }}
-                  >
-                    hi@artisanhouse.in
+                  <span className="font-serif italic text-[13px] text-brown-600 dark:text-amber-100/60">
+                    {SITE_CONFIG.contact.email}
                   </span>
                 </a>
               </div>

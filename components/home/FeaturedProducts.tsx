@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Product } from "@/lib/types";
+import PrimarySectionHeader from "@/components/ui/PrimarySectionHeader";
 
 function formatPrice(price: number): string {
   return `₹${price.toLocaleString("en-IN")}`;
@@ -32,67 +33,13 @@ export default function FeaturedProducts({
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
         >
-          <p
-            style={{
-              fontSize: 11,
-              letterSpacing: ".26em",
-              textTransform: "uppercase",
-              color: "var(--home-amber)",
-              fontWeight: 600,
-              marginBottom: 12,
-            }}
-          >
-            ✦ Our Bestsellers ✦
-          </p>
-          <h2
-            style={{
-              fontFamily: "var(--font-serif)",
-              fontSize: "clamp(36px, 5vw, 60px)",
-              fontWeight: 900,
-              color: "var(--home-text)",
-              margin: "0 0 16px",
-              lineHeight: 1,
-            }}
-          >
-            Featured{" "}
-            <span style={{ position: "relative", display: "inline-block" }}>
-              <span
-                className="dark:candle-text-glow"
-                style={{
-                  fontFamily: "var(--font-script)",
-                  fontStyle: "normal",
-                  color: "var(--home-coral)",
-                  fontWeight: 700,
-                  fontSize: "1.08em",
-                }}
-              >
-                collection
-              </span>
-              <svg
-                aria-hidden="true"
-                style={{
-                  position: "absolute",
-                  left: 0,
-                  bottom: -2,
-                  width: "100%",
-                  height: 10,
-                  overflow: "visible",
-                }}
-                viewBox="0 0 200 10"
-                preserveAspectRatio="none"
-              >
-                <path
-                  d="M0,5 C40,0 80,10 120,5 C160,0 190,10 200,5"
-                  fill="none"
-                  stroke="var(--home-coral)"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </span>
-          </h2>
+          <PrimarySectionHeader
+            eyebrow="✦ Our Bestsellers ✦"
+            titlePrefix="Featured"
+            titleHighlighted="collection"
+            className="mb-16"
+          />
         </motion.div>
 
         {/* Editorial grid */}

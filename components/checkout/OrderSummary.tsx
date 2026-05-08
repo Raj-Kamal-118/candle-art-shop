@@ -26,26 +26,16 @@ export default function OrderSummary({
     <div className="bg-white dark:bg-[#1a1830] rounded-3xl border border-[rgba(122,80,40,0.18)] dark:border-amber-900/20 overflow-hidden shadow-[0_14px_30px_rgba(67,44,26,0.10),0_2px_6px_rgba(0,0,0,0.04)] dark:shadow-[0_14px_30px_rgba(0,0,0,0.25)]">
       {/* Head */}
       <div className="pt-5 pb-3 px-5">
-        <h3
-          className="font-bold text-brown-900 dark:text-amber-50"
-          style={{ fontFamily: "var(--font-serif)", fontSize: 20 }}
-        >
+        <h3 className="ah-display-md text-[20px] font-bold text-brown-900 dark:text-amber-50">
           Your{" "}
           <span
-            className="text-coral-600 dark:text-amber-400"
-            style={{ fontFamily: "var(--font-script)", fontSize: 27 }}
+            className="italic text-[27px] text-coral-600 dark:text-amber-400"
+            style={{ fontFamily: "var(--font-script)" }}
           >
             parcel
           </span>
         </h3>
-        <p
-          className="text-brown-400 dark:text-amber-100/40 mt-0.5"
-          style={{
-            fontFamily: "var(--font-serif)",
-            fontStyle: "italic",
-            fontSize: 13,
-          }}
-        >
+        <p className="font-serif italic text-[13px] text-brown-400 dark:text-amber-100/40 mt-0.5">
           {items.reduce((s, i) => s + i.quantity, 0)} item
           {items.reduce((s, i) => s + i.quantity, 0) !== 1 ? "s" : ""} · poured
           with care
@@ -80,39 +70,19 @@ export default function OrderSummary({
                   )}
                 </div>
                 {/* qty bubble */}
-                <div
-                  className="absolute -top-2 -right-2 w-4 h-4 rounded-full bg-coral-600 text-white flex items-center justify-center"
-                  style={{
-                    fontFamily: "var(--font-sans)",
-                    fontSize: 9,
-                    fontWeight: 700,
-                  }}
-                >
+                <div className="font-sans text-[9px] font-bold absolute -top-2 -right-2 w-4 h-4 rounded-full bg-coral-600 text-white flex items-center justify-center">
                   {item.quantity}
                 </div>
               </div>
               <div className="flex-1 min-w-0">
-                <p
-                  className="font-bold text-brown-900 dark:text-amber-100 line-clamp-1"
-                  style={{ fontFamily: "var(--font-serif)", fontSize: 14 }}
-                >
+                <p className="ah-body font-serif text-[14px] font-bold text-brown-900 dark:text-amber-100 line-clamp-1">
                   {item.product.name}
                 </p>
-                <p
-                  className="text-brown-400 dark:text-amber-100/40 mt-0.5"
-                  style={{
-                    fontFamily: "var(--font-serif)",
-                    fontStyle: "italic",
-                    fontSize: 12,
-                  }}
-                >
+                <p className="font-serif italic text-[12px] text-brown-400 dark:text-amber-100/40 mt-0.5">
                   qty: {item.quantity}
                 </p>
               </div>
-              <p
-                className="font-bold text-brown-900 dark:text-amber-100 shrink-0"
-                style={{ fontFamily: "var(--font-serif)", fontSize: 14 }}
-              >
+              <p className="ah-body font-serif text-[14px] font-bold text-brown-900 dark:text-amber-100 shrink-0">
                 {formatPrice(
                   (item.price ?? item.product.price) * item.quantity,
                 )}
@@ -124,10 +94,7 @@ export default function OrderSummary({
 
       {/* Totals */}
       <div className="pt-3 pb-1 px-5 space-y-2">
-        <div
-          className="flex items-baseline"
-          style={{ fontFamily: "var(--font-serif)", fontSize: 14 }}
-        >
+        <div className="font-serif text-[14px] flex items-baseline">
           <span className="text-brown-600 dark:text-amber-100/60">
             Subtotal
           </span>
@@ -137,13 +104,9 @@ export default function OrderSummary({
           </span>
         </div>
         {discount > 0 && (
-          <div
-            className="flex items-baseline"
-            style={{ fontFamily: "var(--font-serif)", fontSize: 14 }}
-          >
+          <div className="font-serif text-[14px] flex items-baseline">
             <span className="text-coral-700 dark:text-coral-400">
-              {discountCode}{" "}
-              <span style={{ fontStyle: "italic", fontSize: 11 }}>off</span>
+              {discountCode} <span className="italic text-[11px]">off</span>
             </span>
             <span
               className="craft-dot-line"
@@ -154,18 +117,15 @@ export default function OrderSummary({
             </span>
           </div>
         )}
-        <div
-          className="flex items-baseline"
-          style={{ fontFamily: "var(--font-serif)", fontSize: 14 }}
-        >
+        <div className="font-serif text-[14px] flex items-baseline">
           <span className="text-brown-600 dark:text-amber-100/60">
             Shipping
           </span>
           <span className="craft-dot-line" />
           {shipping === 0 ? (
             <span
-              className="font-semibold text-forest-600 dark:text-forest-400"
-              style={{ fontFamily: "var(--font-hand)", fontSize: 15 }}
+              className="text-[15px] font-semibold text-forest-600 dark:text-forest-400"
+              style={{ fontFamily: "var(--font-hand)" }}
             >
               free!
             </span>
@@ -176,10 +136,7 @@ export default function OrderSummary({
           )}
         </div>
         {codFee > 0 && (
-          <div
-            className="flex items-baseline"
-            style={{ fontFamily: "var(--font-serif)", fontSize: 14 }}
-          >
+          <div className="font-serif text-[14px] flex items-baseline">
             <span className="text-brown-600 dark:text-amber-100/60">
               Cash on Delivery
             </span>
@@ -193,20 +150,10 @@ export default function OrderSummary({
 
       {/* Grand total */}
       <div className="flex items-baseline justify-between px-5 pt-3 pb-5 border-t border-brown-900/20 dark:border-amber-100/10 mt-2">
-        <span
-          className="text-gold-600 dark:text-amber-500 font-bold uppercase tracking-widest"
-          style={{
-            fontFamily: "var(--font-sans)",
-            fontSize: 11,
-            letterSpacing: "0.2em",
-          }}
-        >
+        <span className="font-sans text-[11px] tracking-[0.2em] text-gold-600 dark:text-amber-500 font-bold uppercase">
           total · INR
         </span>
-        <span
-          className="font-black text-brown-900 dark:text-amber-50 leading-none"
-          style={{ fontFamily: "var(--font-serif)", fontSize: 30 }}
-        >
+        <span className="ah-display-lg text-[30px] font-black text-brown-900 dark:text-amber-50 leading-none">
           {formatPrice(total)}
         </span>
       </div>

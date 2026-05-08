@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Category, Product, MagazineItem } from "@/lib/types";
 import PhotoStack from "./PhotoStack";
+import PrimarySectionHeader from "@/components/ui/PrimarySectionHeader";
 
 interface CategoryZigZagProps {
   categories: Category[];
@@ -32,79 +33,14 @@ export default function CategoryZigZag({
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-10"
         >
-          <p
-            style={{
-              fontSize: 11,
-              letterSpacing: ".26em",
-              textTransform: "uppercase",
-              color: "var(--home-amber)",
-              fontWeight: 600,
-              marginBottom: 16,
-            }}
-          >
-            ✦ What we make ✦
-          </p>
-          <h2
-            style={{
-              fontFamily: "var(--font-serif)",
-              fontSize: "clamp(44px, 7vw, 60px)",
-              fontWeight: 900,
-              color: "var(--home-text)",
-              margin: "0 0 16px",
-              lineHeight: 1.0,
-            }}
-          >
-            Everything we{" "}
-            <span style={{ position: "relative", display: "inline-block" }}>
-              <span
-                className="dark:candle-text-glow leading"
-                style={{
-                  fontFamily: "var(--font-script)",
-                  fontStyle: "normal",
-                  color: "var(--home-coral)",
-                  fontWeight: 700,
-                  fontSize: "1.08em",
-                }}
-              >
-                love making
-              </span>
-              <svg
-                aria-hidden="true"
-                style={{
-                  position: "absolute",
-                  left: 0,
-                  bottom: -4,
-                  width: "100%",
-                  height: 12,
-                  overflow: "visible",
-                }}
-                viewBox="0 0 200 12"
-                preserveAspectRatio="none"
-              >
-                <path
-                  d="M0,6 C30,0 60,12 100,6 C140,0 170,12 200,6"
-                  fill="none"
-                  stroke="var(--home-coral)"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </span>
-          </h2>
-          <p
-            style={{
-              fontFamily: "var(--font-serif)",
-              fontStyle: "italic",
-              fontSize: 17,
-              color: "var(--home-muted)",
-              maxWidth: 480,
-              margin: "0 auto",
-            }}
-          >
-            Each made in small batches. When a batch sells out, we make another.
-          </p>
+          <PrimarySectionHeader
+            eyebrow="✦ What we make ✦"
+            titlePrefix="Everything we"
+            titleHighlighted="love making"
+            description="Each made in small batches. When a batch sells out, we make another."
+            className="mb-10"
+          />
         </motion.div>
 
         {/* Zig-zag rows */}
@@ -174,59 +110,20 @@ export default function CategoryZigZag({
                     </div>
 
                     <div style={{ position: "relative", zIndex: 1 }}>
-                      <p
-                        style={{
-                          fontSize: 11,
-                          letterSpacing: ".24em",
-                          textTransform: "uppercase",
-                          color: "var(--home-amber)",
-                          fontWeight: 600,
-                          marginBottom: 12,
-                        }}
-                      >
+                      <p className="ah-eyebrow text-[11px] mb-3 text-amber-700 dark:text-amber-500">
                         {cat.name}
                       </p>
-                      <h3
-                        style={{
-                          fontFamily: "var(--font-serif)",
-                          fontSize: "clamp(32px, 4vw, 48px)",
-                          fontWeight: 800,
-                          color: "var(--home-text)",
-                          lineHeight: 1.1,
-                          marginBottom: 16,
-                          letterSpacing: "normal",
-                        }}
-                      >
+                      <h3 className="font-serif text-[clamp(32px,4vw,48px)] font-extrabold text-brown-900 dark:text-amber-50 leading-[1.1] mb-4">
                         {cat.bannerTitle || cat.name}
                       </h3>
                       {cat.description && (
-                        <p
-                          style={{
-                            fontFamily: "var(--font-serif)",
-                            fontStyle: "italic",
-                            fontSize: 17,
-                            color: "var(--home-muted)",
-                            marginBottom: 24,
-                            maxWidth: 420,
-                          }}
-                        >
+                        <p className="font-serif italic text-[17px] text-brown-500 dark:text-amber-100/60 mb-6 max-w-[420px]">
                           {cat.description}
                         </p>
                       )}
 
                       <div className="flex flex-col items-start gap-5">
-                        <span
-                          style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            background: "var(--home-accent)",
-                            color: "var(--home-muted)",
-                            borderRadius: 999,
-                            padding: "7px 16px",
-                            fontSize: 13,
-                            fontWeight: 500,
-                          }}
-                        >
+                        <span className="inline-flex items-center bg-cream-100 dark:bg-amber-900/20 text-brown-500 dark:text-amber-100/60 rounded-full px-4 py-[7px] text-[13px] font-medium">
                           {catProducts.length} product
                           {catProducts.length !== 1 ? "s" : ""}
                         </span>

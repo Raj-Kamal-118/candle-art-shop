@@ -67,10 +67,7 @@ export default function CartItemComponent({
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <Link href={`/products/${item.product.slug}`}>
-              <h3
-                className="font-bold leading-snug text-brown-900 dark:text-amber-50 hover:text-coral-600 dark:hover:text-amber-400 transition-colors line-clamp-2"
-                style={{ fontFamily: "var(--font-serif)", fontSize: 16 }}
-              >
+              <h3 className="font-serif text-base font-bold leading-snug text-brown-900 dark:text-amber-50 hover:text-coral-600 dark:hover:text-amber-400 transition-colors line-clamp-2">
                 {item.product.name}
               </h3>
             </Link>
@@ -81,14 +78,10 @@ export default function CartItemComponent({
                 {Object.entries(customizations).map(([k, v]) => (
                   <span
                     key={k}
-                    className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[rgba(122,80,40,0.07)] dark:bg-amber-900/20 text-brown-700 dark:text-amber-100/70 border border-[rgba(122,80,40,0.18)] dark:border-amber-900/30"
-                    style={{ fontFamily: "var(--font-serif)" }}
+                    className="font-serif inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[rgba(122,80,40,0.07)] dark:bg-amber-900/20 text-brown-700 dark:text-amber-100/70 border border-[rgba(122,80,40,0.18)] dark:border-amber-900/30"
                   >
                     <span className="opacity-60">{k}:</span>{" "}
-                    <span
-                      className="text-coral-700 dark:text-amber-400"
-                      style={{ fontStyle: "italic" }}
-                    >
+                    <span className="text-coral-700 dark:text-amber-400 italic">
                       {v}
                     </span>
                   </span>
@@ -99,21 +92,11 @@ export default function CartItemComponent({
 
           {/* Price stack */}
           <div className="text-right shrink-0">
-            <div
-              className="font-black text-brown-900 dark:text-amber-100 leading-none"
-              style={{ fontFamily: "var(--font-serif)", fontSize: 20 }}
-            >
+            <div className="ah-display-md text-[20px] font-black text-brown-900 dark:text-amber-100 leading-none">
               {formatPrice(totalPrice)}
             </div>
             {item.quantity > 1 && (
-              <div
-                className="text-brown-400 dark:text-amber-100/40 mt-1"
-                style={{
-                  fontFamily: "var(--font-serif)",
-                  fontStyle: "italic",
-                  fontSize: 11,
-                }}
-              >
+              <div className="font-serif italic text-[11px] text-brown-400 dark:text-amber-100/40 mt-1">
                 {formatPrice(unitPrice)} each
               </div>
             )}
@@ -139,10 +122,7 @@ export default function CartItemComponent({
               >
                 <Minus size={12} />
               </button>
-              <span
-                className="w-8 text-center font-bold text-brown-900 dark:text-amber-100 select-none"
-                style={{ fontFamily: "var(--font-serif)", fontSize: 14 }}
-              >
+              <span className="font-serif w-8 text-[14px] text-center font-bold text-brown-900 dark:text-amber-100 select-none">
                 {item.quantity}
               </span>
               <button

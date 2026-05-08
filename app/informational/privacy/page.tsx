@@ -10,7 +10,8 @@ import {
   RefreshCw,
   Scale,
 } from "lucide-react";
-import SecondaryHeader from "@/components/layout/SecondaryHeader";
+import InformationalLayout from "@/components/layout/InformationalLayout";
+import { SITE_CONFIG } from "@/lib/config";
 
 const sections = [
   {
@@ -56,7 +57,7 @@ const sections = [
   {
     Icon: Scale,
     heading: "Grievance Officer",
-    body: '<p><b>Name:</b> Grievance Officer<br><b>Designation:</b> Support Lead<br><b>Company:</b> Artisan House<br><b>Address:</b> Varanasi, Uttar Pradesh, India<br><b>Contact us:</b> <a href="mailto:artisanhouse.in@gmail.com" class="text-coral-700 dark:text-coral-400 font-semibold hover:underline">artisanhouse.in@gmail.com</a><br><b>Phone:</b> <a href="tel:+919519486785" class="text-coral-700 dark:text-coral-400 font-semibold hover:underline">+91 95194 86785</a><br><b>Time:</b> Monday - Friday (9:00 - 18:00)</p>',
+    body: `<p><b>Name:</b> Grievance Officer<br><b>Designation:</b> Support Lead<br><b>Company:</b> Artisan House<br><b>Address:</b> Varanasi, Uttar Pradesh, India<br><b>Contact us:</b> <a href="mailto:${SITE_CONFIG.contact.email}" class="text-coral-700 dark:text-coral-400 font-semibold hover:underline">${SITE_CONFIG.contact.email}</a><br><b>Phone:</b> <a href="${SITE_CONFIG.contact.whatsappUrl}" class="text-coral-700 dark:text-coral-400 font-semibold hover:underline">${SITE_CONFIG.contact.phone}</a><br><b>Time:</b> Monday - Friday (9:00 - 18:00)</p>`,
   },
 ];
 
@@ -73,61 +74,14 @@ export default function PrivacyPage() {
   });
 
   return (
-    <main className="min-h-screen bg-[var(--home-bg-alt)] dark:bg-[#1a1612] pb-20">
-      <SecondaryHeader
-        eyebrow="✦ Privacy Policy ✦"
-        titlePrefix="Handled with"
-        titleHighlighted="care"
-        titleSuffix="."
-        description="Your data, plainly — what we collect, why we collect it, and what you can do about it."
-      />
-
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-12">
-        <div className="text-[13px] text-brown-500 dark:text-amber-100/50 mb-6 text-center md:text-left">
-          Last updated · {lastUpdated}
-        </div>
-
-        <div className="space-y-4">
-          {sections.map(({ Icon, heading, body }) => (
-            <div
-              key={heading}
-              className="bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-900/30 rounded-2xl p-6 md:p-7"
-            >
-              <div className="flex items-start gap-4 mb-3">
-                <div className="w-10 h-10 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 flex items-center justify-center flex-none">
-                  <Icon size={18} />
-                </div>
-                <h2 className="font-serif text-xl md:text-2xl font-bold text-brown-900 dark:text-amber-100 leading-snug pt-1.5">
-                  {heading}
-                </h2>
-              </div>
-              <div
-                className="text-[15px] leading-[1.7] text-brown-700 dark:text-amber-100/70 [&>p]:mb-4 [&>p:last-child]:mb-0"
-                dangerouslySetInnerHTML={{ __html: body }}
-              />
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-8 bg-forest-50 dark:bg-forest-900/30 border border-forest-100 dark:border-forest-800 rounded-2xl p-6 text-[14px] leading-[1.7] text-brown-800 dark:text-amber-100/80">
-          <b className="text-brown-900 dark:text-amber-100">Questions?</b>{" "}
-          We&apos;d rather answer them than have you guess. WhatsApp us on{" "}
-          <a
-            href="https://wa.me/919519486785"
-            className="text-coral-700 dark:text-coral-400 font-semibold hover:underline"
-          >
-            +91 95194 86785
-          </a>{" "}
-          or email{" "}
-          <a
-            href="mailto:artisanhouse.in@gmail.com"
-            className="text-coral-700 dark:text-coral-400 font-semibold hover:underline"
-          >
-            artisanhouse.in@gmail.com
-          </a>
-          .
-        </div>
-      </div>
-    </main>
+    <InformationalLayout
+      eyebrow="✦ Privacy Policy ✦"
+      titlePrefix="Handled with"
+      titleHighlighted="care"
+      description="Your data, plainly — what we collect, why we collect it, and what you can do about it."
+      lastUpdated={lastUpdated}
+      sections={sections}
+      showContactFooter={true}
+    />
   );
 }

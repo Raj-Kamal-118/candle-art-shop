@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import PrimarySectionHeader from "@/components/ui/PrimarySectionHeader";
 
 const CARDS = [
   {
@@ -78,81 +79,14 @@ export default function CustomTrio() {
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
         >
-          <p
-            style={{
-              fontSize: 11,
-              letterSpacing: ".26em",
-              textTransform: "uppercase",
-              color: "var(--home-amber)",
-              fontWeight: 600,
-              marginBottom: 16,
-            }}
-          >
-            ✦ Made to order ✦
-          </p>
-          <h2
-            style={{
-              fontFamily: "var(--font-serif)",
-              fontSize: "clamp(40px, 6vw, 60px)",
-              fontWeight: 900,
-              color: "var(--home-text)",
-              margin: "0 0 16px",
-              lineHeight: 1,
-            }}
-          >
-            {"We'll make it "}
-            <span style={{ position: "relative", display: "inline-block" }}>
-              <span
-                className="dark:candle-text-glow"
-                style={{
-                  fontFamily: "var(--font-script)",
-                  fontStyle: "normal",
-                  color: "var(--home-coral)",
-                  fontWeight: 700,
-                  fontSize: "1.08em",
-                }}
-              >
-                just for you.
-              </span>
-              <svg
-                aria-hidden="true"
-                style={{
-                  position: "absolute",
-                  left: 0,
-                  bottom: -4,
-                  width: "100%",
-                  height: 12,
-                  overflow: "visible",
-                }}
-                viewBox="0 0 200 12"
-                preserveAspectRatio="none"
-              >
-                <path
-                  d="M0,6 C30,0 60,12 100,6 C140,0 170,12 200,6"
-                  fill="none"
-                  stroke="var(--home-coral)"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </span>
-          </h2>
-          <p
-            style={{
-              fontFamily: "var(--font-serif)",
-              fontStyle: "italic",
-              fontSize: 17,
-              color: "var(--home-muted)",
-              maxWidth: 480,
-              margin: "0 auto",
-              lineHeight: 1.6,
-            }}
-          >
-            Every piece begins with a conversation. Tell us what you need — we
-            do the rest.
-          </p>
+          <PrimarySectionHeader
+            eyebrow="✦ Made to order ✦"
+            titlePrefix="We'll make it"
+            titleHighlighted="just for you."
+            description="Every piece begins with a conversation. Tell us what you need — we do the rest."
+            className="mb-16"
+          />
         </motion.div>
 
         {/* Cards grid */}
@@ -213,27 +147,10 @@ export default function CustomTrio() {
                   style={{ padding: "24px 28px 28px" }}
                   className="flex flex-col flex-1"
                 >
-                  <h3
-                    style={{
-                      fontFamily: "var(--font-serif)",
-                      fontSize: 26,
-                      fontWeight: 700,
-                      color: "var(--home-text)",
-                      marginBottom: 10,
-                      lineHeight: 1.2,
-                    }}
-                  >
+                  <h3 className="font-serif text-[26px] font-bold text-brown-900 dark:text-amber-50 mb-2.5 leading-[1.2]">
                     {card.title}
                   </h3>
-                  <p
-                    style={{
-                      fontSize: 14,
-                      color: "var(--home-muted)",
-                      lineHeight: 1.65,
-                      marginBottom: 28,
-                      flex: 1,
-                    }}
-                  >
+                  <p className="text-[14px] text-brown-500 dark:text-amber-100/60 leading-[1.65] mb-7 flex-1">
                     {card.desc}
                   </p>
                   <Link

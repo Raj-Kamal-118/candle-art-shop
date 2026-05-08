@@ -75,26 +75,16 @@ export default function CartSummary({
     /* Summary card */
     <div className="bg-white dark:bg-[#1a1830] rounded-lg shadow-[0_14px_30px_rgba(67,44,26,0.12),0_2px_6px_rgba(0,0,0,0.04)] dark:shadow-[0_14px_30px_rgba(0,0,0,0.3)] border border-[rgba(122,80,40,0.15)] dark:border-amber-900/20 relative pt-8 pb-6 px-6">
       {/* Heading */}
-      <h3
-        className="text-brown-900 dark:text-amber-50 font-bold mb-1"
-        style={{ fontFamily: "var(--font-serif)", fontSize: 20 }}
-      >
+      <h3 className="ah-display-md text-[20px] text-brown-900 dark:text-amber-50 font-bold mb-1">
         The{" "}
         <span
-          className="text-coral-600 dark:text-amber-400"
-          style={{ fontFamily: "var(--font-script)", fontSize: 26 }}
+          className="text-[26px] text-coral-600 dark:text-amber-400"
+          style={{ fontFamily: "var(--font-script)" }}
         >
           total
         </span>
       </h3>
-      <p
-        className="text-brown-400 dark:text-amber-100/40 mb-5"
-        style={{
-          fontFamily: "var(--font-serif)",
-          fontStyle: "italic",
-          fontSize: 13,
-        }}
-      >
+      <p className="font-serif italic text-[13px] text-brown-400 dark:text-amber-100/40 mb-5">
         all in, including any applicable tax
       </p>
 
@@ -103,10 +93,7 @@ export default function CartSummary({
         {/* Free shipping */}
         <div className="p-3 rounded-lg border border-forest-300/60 dark:border-forest-700/40 bg-forest-50/50 dark:bg-forest-900/10">
           <div className="flex items-center justify-between mb-1.5">
-            <p
-              className="text-forest-700 dark:text-forest-400"
-              style={{ fontFamily: "var(--font-serif)", fontSize: 12 }}
-            >
+            <p className="font-serif text-[12px] text-forest-700 dark:text-forest-400">
               {shippingUnlocked ? (
                 <span className="font-bold">✓ Free shipping unlocked!</span>
               ) : (
@@ -121,8 +108,8 @@ export default function CartSummary({
             </p>
             {shippingUnlocked && (
               <span
-                className="text-forest-600 dark:text-forest-400"
-                style={{ fontFamily: "var(--font-hand)", fontSize: 15 }}
+                className="text-[15px] text-forest-600 dark:text-forest-400"
+                style={{ fontFamily: "var(--font-hand)" }}
               >
                 free!
               </span>
@@ -139,10 +126,7 @@ export default function CartSummary({
         {/* Free greeting card */}
         <div className="p-3 rounded-lg border  border-amber-300/60 dark:border-amber-700/30 bg-amber-50/50 dark:bg-amber-900/10">
           <div className="flex items-center justify-between mb-1.5">
-            <p
-              className="text-amber-700 dark:text-amber-400"
-              style={{ fontFamily: "var(--font-serif)", fontSize: 12 }}
-            >
+            <p className="font-serif text-[12px] text-amber-700 dark:text-amber-400">
               {cardUnlocked ? (
                 <span className="font-bold">
                   ✓ Free handwritten card included!
@@ -159,8 +143,8 @@ export default function CartSummary({
             </p>
             {cardUnlocked && (
               <span
-                className="text-amber-600 dark:text-amber-400"
-                style={{ fontFamily: "var(--font-hand)", fontSize: 15 }}
+                className="text-[15px] text-amber-600 dark:text-amber-400"
+                style={{ fontFamily: "var(--font-hand)" }}
               >
                 🎴 free!
               </span>
@@ -180,16 +164,9 @@ export default function CartSummary({
 
       {/* ── Totals (dotted line style) ── */}
       <div className=" py-4 space-y-2.5">
-        <div
-          className="flex items-baseline"
-          style={{
-            fontFamily: "var(--font-serif)",
-            fontSize: 14,
-            color: "var(--brown-800)",
-          }}
-        >
+        <div className="font-serif text-[14px] text-brown-800 flex items-baseline">
           <span className="text-brown-700 dark:text-amber-100/70">
-            Subtotal · <span style={{ fontStyle: "italic" }}>items</span>
+            Subtotal · <span className="italic">items</span>
           </span>
           <span className="craft-dot-line" />
           <span className="font-bold text-brown-900 dark:text-amber-100">
@@ -198,13 +175,9 @@ export default function CartSummary({
         </div>
 
         {discountAmount > 0 && (
-          <div
-            className="flex items-baseline"
-            style={{ fontFamily: "var(--font-serif)", fontSize: 14 }}
-          >
+          <div className="font-serif text-[14px] flex items-baseline">
             <span className="text-coral-700 dark:text-coral-400">
-              {appliedCode}{" "}
-              <span style={{ fontStyle: "italic", fontSize: 12 }}>applied</span>
+              {appliedCode} <span className="italic text-[12px]">applied</span>
             </span>
             <span
               className="craft-dot-line"
@@ -216,18 +189,15 @@ export default function CartSummary({
           </div>
         )}
 
-        <div
-          className="flex items-baseline"
-          style={{ fontFamily: "var(--font-serif)", fontSize: 14 }}
-        >
+        <div className="font-serif text-[14px] flex items-baseline">
           <span className="text-brown-700 dark:text-amber-100/70">
             Shipping
           </span>
           <span className="craft-dot-line" />
           {shipping === 0 ? (
             <span
-              className="text-forest-600 dark:text-forest-400 font-semibold"
-              style={{ fontFamily: "var(--font-hand)", fontSize: 16 }}
+              className="text-[16px] text-forest-600 dark:text-forest-400 font-semibold"
+              style={{ fontFamily: "var(--font-hand)" }}
             >
               free!
             </span>
@@ -279,14 +249,11 @@ export default function CartSummary({
       <div className="mt-4">
         {appliedCode ? (
           <div className="flex items-center justify-between px-4 py-2.5 bg-coral-50 dark:bg-coral-900/10 border border-dashed border-coral-300 dark:border-coral-700/40 rounded-full">
-            <span style={{ fontFamily: "var(--font-serif)", fontSize: 13 }}>
+            <span className="font-serif text-[13px]">
               <strong className="font-mono text-coral-800 dark:text-coral-300">
                 {appliedCode}
               </strong>
-              <span
-                className="text-coral-700 dark:text-coral-400 ml-2"
-                style={{ fontStyle: "italic" }}
-              >
+              <span className="italic text-coral-700 dark:text-coral-400 ml-2">
                 · {formatPrice(discountAmount)} saved
               </span>
             </span>
@@ -332,12 +299,7 @@ export default function CartSummary({
       {showCheckoutButton && (
         <Link
           href="/checkout"
-          className="mt-5 flex items-center justify-center gap-3 w-full py-4 rounded-xl font-bold text-white bg-coral-600 hover:bg-coral-700 transition-all duration-200 shadow-[0_10px_24px_rgba(232,93,74,0.35),inset_0_1px_0_rgba(255,255,255,0.2)] hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(232,93,74,0.45)]"
-          style={{
-            fontFamily: "var(--font-sans)",
-            fontSize: 15,
-            letterSpacing: "0.03em",
-          }}
+          className="font-sans text-[15px] tracking-[0.03em] mt-5 flex items-center justify-center gap-3 w-full py-4 rounded-xl font-bold text-white bg-coral-600 hover:bg-coral-700 transition-all duration-200 shadow-[0_10px_24px_rgba(232,93,74,0.35),inset_0_1px_0_rgba(255,255,255,0.2)] hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(232,93,74,0.45)]"
         >
           Take me to checkout
           <ArrowRight size={16} />
@@ -354,13 +316,7 @@ export default function CartSummary({
         ].map(({ icon: Icon, label }) => (
           <div
             key={label}
-            className="flex items-start gap-1.5 text-brown-500 dark:text-amber-100/40"
-            style={{
-              fontFamily: "var(--font-serif)",
-              fontStyle: "italic",
-              fontSize: 11,
-              lineHeight: 1.4,
-            }}
+            className="font-serif italic text-[11px] leading-[1.4] flex items-start gap-1.5 text-brown-500 dark:text-amber-100/40"
           >
             {Icon && (
               <Icon

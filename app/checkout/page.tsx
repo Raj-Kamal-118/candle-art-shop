@@ -27,6 +27,7 @@ import Button from "@/components/ui/Button";
 import SecondaryHeader from "@/components/layout/SecondaryHeader";
 import StickyNote from "@/components/ui/StickyNote";
 import { supabase } from "@/lib/supabase";
+import SavedAddressList from "@/components/checkout/SavedAddressList";
 
 type Step = "address" | "payment" | "confirmation";
 
@@ -383,17 +384,13 @@ function CheckoutContent() {
                     {isPast ? <Check size={13} /> : <Icon size={14} />}
                   </div>
                   <span
-                    className={`text-[9px] uppercase tracking-widest font-medium transition-colors ${
+                    className={`font-serif text-[9px] uppercase tracking-[0.12em] font-medium transition-colors ${
                       isActive
                         ? "text-coral-600 dark:text-coral-400"
                         : isPast
                           ? "text-forest-600 dark:text-forest-400"
                           : "text-brown-300 dark:text-amber-100/30"
                     }`}
-                    style={{
-                      fontFamily: "var(--font-serif)",
-                      letterSpacing: "0.12em",
-                    }}
                   >
                     {s.label}
                   </span>
@@ -417,8 +414,7 @@ function CheckoutContent() {
           <div className="mb-6">
             <button
               onClick={() => router.push("/cart")}
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-brown-500 dark:text-amber-100/50 hover:text-coral-600 dark:hover:text-amber-400 transition-colors"
-              style={{ fontFamily: "var(--font-serif)" }}
+              className="font-serif inline-flex items-center gap-1.5 text-sm font-medium text-brown-500 dark:text-amber-100/50 hover:text-coral-600 dark:hover:text-amber-400 transition-colors"
             >
               <ArrowLeft size={14} />
               Back to basket
@@ -463,19 +459,16 @@ function CheckoutContent() {
               )}
             </div>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button
-                onClick={() => router.push("/")}
-                className="inline-flex items-center justify-center gap-2 bg-coral-600 dark:bg-amber-600 text-white px-8 py-3.5 rounded-xl font-semibold hover:bg-coral-700 dark:hover:bg-amber-500 transition-all duration-200 shadow-lg shadow-coral-200 dark:shadow-amber-900/30 hover:-translate-y-0.5 text-sm"
-              >
+              <Button onClick={() => router.push("/")} variant="primary">
                 Continue Shopping
-              </button>
+              </Button>
               {verifiedUser && (
-                <button
+                <Button
                   onClick={() => router.push("/account")}
-                  className="inline-flex items-center justify-center gap-2 bg-coral-600 dark:bg-coral-500 text-white px-8 py-3.5 rounded-xl font-semibold hover:bg-coral-700 dark:hover:bg-coral-600 transition-all duration-200 shadow-lg shadow-coral-200 dark:shadow-coral-900/30 hover:-translate-y-0.5 text-sm"
+                  variant="primary"
                 >
                   View My Orders
-                </button>
+                </Button>
               )}
             </div>
           </div>
@@ -499,12 +492,13 @@ function CheckoutContent() {
                         handcrafted pieces, manage your orders, and access your
                         saved favorites anytime from your account.
                       </p>
-                      <button
+                      <Button
                         onClick={() => setAuthModalOpen(true)}
-                        className="inline-flex items-center justify-center gap-2 bg-coral-600 dark:bg-amber-600 text-white px-10 py-4 rounded-xl font-semibold hover:bg-coral-700 dark:hover:bg-amber-500 transition-all duration-200 shadow-lg shadow-coral-200 dark:shadow-amber-900/30 hover:-translate-y-0.5"
+                        variant="primary"
+                        size="lg"
                       >
                         Log in or Sign up
-                      </button>
+                      </Button>
                     </div>
                   ) : (
                     <div className="bg-white dark:bg-[#1a1830] rounded-3xl p-6 sm:p-8 shadow-[0_4px_12px_rgba(28,18,9,0.05)] border border-cream-200 dark:border-amber-900/30">
@@ -532,20 +526,11 @@ function CheckoutContent() {
                         </div>
                       </div>
                       <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 lg:gap-4 mb-6">
-                        <h2
-                          className="font-bold text-brown-900 dark:text-amber-100 whitespace-nowrap"
-                          style={{
-                            fontFamily: "var(--font-serif)",
-                            fontSize: 24,
-                          }}
-                        >
+                        <h2 className="font-serif text-[24px] font-bold text-brown-900 dark:text-amber-100 whitespace-nowrap">
                           Shipping{" "}
                           <span
-                            className="text-coral-600 dark:text-amber-400"
-                            style={{
-                              fontFamily: "var(--font-script)",
-                              fontSize: 30,
-                            }}
+                            className="text-[30px] text-coral-600 dark:text-amber-400"
+                            style={{ fontFamily: "var(--font-script)" }}
                           >
                             Address
                           </span>
@@ -652,98 +637,15 @@ function CheckoutContent() {
                       {/* Saved Addresses Selection */}
                       {savedAddresses.length > 0 && (
                         <div className="mb-8">
-                          {!showSavedAddresses ? (
-                            selectedSavedAddress ? (
-                              /* Pre-filled pill — shown when a saved/default address is active */
-                              <div className="flex items-center justify-between px-4 py-3 bg-forest-50 dark:bg-forest-900/10 border border-forest-200 dark:border-forest-800/40 rounded-xl">
-                                <div className="flex items-center gap-2 min-w-0">
-                                  <Check
-                                    size={14}
-                                    className="text-forest-600 dark:text-forest-400 shrink-0"
-                                  />
-                                  <span className="text-sm font-medium text-forest-800 dark:text-forest-300 truncate">
-                                    {selectedSavedAddress.fullName} ·{" "}
-                                    {selectedSavedAddress.address1},{" "}
-                                    {selectedSavedAddress.city}
-                                  </span>
-                                </div>
-                                <button
-                                  onClick={() => setShowSavedAddresses(true)}
-                                  className="text-xs text-coral-600 dark:text-amber-400 font-semibold uppercase tracking-wide hover:underline shrink-0 ml-3"
-                                >
-                                  Change
-                                </button>
-                              </div>
-                            ) : (
-                              /* No address selected yet — show trigger button */
-                              <button
-                                onClick={() => setShowSavedAddresses(true)}
-                                className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-brown-300 dark:border-amber-900/40 rounded-xl text-sm font-medium text-brown-600 dark:text-amber-100/60 hover:border-coral-400 hover:text-coral-600 dark:hover:border-amber-600 dark:hover:text-amber-400 transition-colors"
-                                style={{ fontFamily: "var(--font-serif)" }}
-                              >
-                                Use a saved address
-                              </button>
-                            )
-                          ) : (
-                            /* Expanded panel */
-                            <div className="border border-cream-200 dark:border-amber-900/30 rounded-2xl overflow-hidden">
-                              <div className="px-4 py-3 bg-cream-50 dark:bg-[#12101e] border-b border-cream-200 dark:border-amber-900/30 flex items-center justify-between">
-                                <span className="text-xs font-semibold text-brown-500 dark:text-amber-100/60 uppercase tracking-wider">
-                                  Your saved addresses
-                                </span>
-                                <button
-                                  onClick={() => setShowSavedAddresses(false)}
-                                  className="text-xs text-brown-400 dark:text-amber-100/40 hover:text-brown-600 dark:hover:text-amber-100/70 transition-colors"
-                                >
-                                  ✕ Close
-                                </button>
-                              </div>
-                              <div className="p-3 grid gap-2 sm:grid-cols-2">
-                                {savedAddresses.map((addr, idx) => (
-                                  <div
-                                    key={idx}
-                                    onClick={() => {
-                                      setSelectedSavedAddress(addr);
-                                      setShowSavedAddresses(false);
-                                      setPaymentError("");
-                                    }}
-                                    className="p-3 rounded-xl border-2 border-cream-200 dark:border-amber-900/20 bg-white dark:bg-[#1a1830] cursor-pointer hover:border-coral-400 dark:hover:border-amber-600 transition-all"
-                                  >
-                                    <p className="font-semibold text-sm text-brown-900 dark:text-amber-100">
-                                      {addr.fullName}
-                                      {addr.isDefault && (
-                                        <span className="ml-2 text-[10px] font-bold text-forest-700 dark:text-forest-400 uppercase tracking-wide">
-                                          Default
-                                        </span>
-                                      )}
-                                    </p>
-                                    <p className="text-xs mt-1 text-brown-500 dark:text-amber-100/60">
-                                      {addr.address1}
-                                      {addr.address2
-                                        ? `, ${addr.address2}`
-                                        : ""}
-                                    </p>
-                                    <p className="text-xs text-brown-500 dark:text-amber-100/60">
-                                      {addr.city}, {addr.state}{" "}
-                                      {addr.postalCode}
-                                    </p>
-                                  </div>
-                                ))}
-                              </div>
-                              <div className="px-4 py-3 border-t border-cream-200 dark:border-amber-900/30">
-                                <button
-                                  onClick={() => {
-                                    setSelectedSavedAddress(null);
-                                    setShowSavedAddresses(false);
-                                    setSaveAddress(true);
-                                  }}
-                                  className="text-xs text-coral-600 dark:text-amber-400 font-semibold uppercase tracking-wide hover:underline"
-                                >
-                                  + Enter a new address
-                                </button>
-                              </div>
-                            </div>
-                          )}
+                          <SavedAddressList
+                            savedAddresses={savedAddresses}
+                            selectedSavedAddress={selectedSavedAddress}
+                            setSelectedSavedAddress={setSelectedSavedAddress}
+                            showSavedAddresses={showSavedAddresses}
+                            setShowSavedAddresses={setShowSavedAddresses}
+                            setSaveAddress={setSaveAddress}
+                            setPaymentError={setPaymentError}
+                          />
                         </div>
                       )}
 
@@ -895,17 +797,11 @@ function CheckoutContent() {
                   </div>
 
                   <div className="bg-white dark:bg-[#1a1830] rounded-3xl p-6 sm:p-8 shadow-[0_4px_12px_rgba(28,18,9,0.05)] border border-cream-200 dark:border-amber-900/30">
-                    <h2
-                      className="font-bold text-brown-900 dark:text-amber-100 mb-6"
-                      style={{ fontFamily: "var(--font-serif)", fontSize: 24 }}
-                    >
+                    <h2 className="font-serif text-[24px] font-bold text-brown-900 dark:text-amber-100 mb-6">
                       Payment{" "}
                       <span
-                        className="text-coral-600 dark:text-amber-400"
-                        style={{
-                          fontFamily: "var(--font-script)",
-                          fontSize: 30,
-                        }}
+                        className="text-[30px] text-coral-600 dark:text-amber-400"
+                        style={{ fontFamily: "var(--font-script)" }}
                       >
                         Method
                       </span>
@@ -1071,54 +967,30 @@ function CheckoutContent() {
 
               {/* Discount code — crafty coupon style */}
               <div className="craft-coupon bg-white dark:bg-[#1a1830] p-6 shadow-[0_4px_12px_rgba(67,44,26,0.08)] dark:shadow-none">
-                <h3
-                  className="font-bold text-brown-900 dark:text-amber-100 mb-1 flex items-center gap-2"
-                  style={{ fontFamily: "var(--font-serif)", fontSize: 20 }}
-                >
+                <h3 className="font-serif text-[20px] font-bold text-brown-900 dark:text-amber-100 mb-1 flex items-center gap-2">
                   <Tag
                     size={16}
                     className="text-amber-600 dark:text-amber-400"
                   />
                   Got a{" "}
                   <span
-                    className="text-coral-600 dark:text-amber-400"
-                    style={{ fontFamily: "var(--font-script)", fontSize: 25 }}
+                    className="text-[25px] text-coral-600 dark:text-amber-400"
+                    style={{ fontFamily: "var(--font-script)" }}
                   >
                     code?
                   </span>
                 </h3>
-                <p
-                  className="text-brown-400 dark:text-amber-100/40 mb-4"
-                  style={{
-                    fontFamily: "var(--font-serif)",
-                    fontStyle: "italic",
-                    fontSize: 13,
-                  }}
-                >
+                <p className="font-serif italic text-[13px] text-brown-400 dark:text-amber-100/40 mb-4">
                   enter it below — we'll take it off your total straight away
                 </p>
 
                 {appliedDiscount ? (
                   <div className="flex items-center justify-between px-4 py-3 bg-coral-50 dark:bg-coral-900/10 border border-dashed border-coral-300 dark:border-coral-700/40 rounded-xl">
                     <div>
-                      <p
-                        className="font-bold text-coral-800 dark:text-coral-300"
-                        style={{
-                          fontFamily: "var(--font-sans)",
-                          fontSize: 14,
-                          letterSpacing: "0.06em",
-                        }}
-                      >
+                      <p className="font-sans text-[14px] tracking-[0.06em] font-bold text-coral-800 dark:text-coral-300">
                         {discountCode}
                       </p>
-                      <p
-                        className="text-coral-600 dark:text-coral-400 mt-0.5"
-                        style={{
-                          fontFamily: "var(--font-serif)",
-                          fontStyle: "italic",
-                          fontSize: 13,
-                        }}
-                      >
+                      <p className="font-serif italic text-[13px] text-coral-600 dark:text-coral-400 mt-0.5">
                         −{formatPrice(discountAmount)} saved ✓
                       </p>
                     </div>
@@ -1150,22 +1022,14 @@ function CheckoutContent() {
                     <button
                       onClick={handleApplyDiscount}
                       disabled={applyingDiscount}
-                      className="px-4 py-2 border border-dashed border-[rgba(122,80,40,0.4)] dark:border-amber-900/40 rounded-lg text-brown-800 dark:text-amber-200 hover:border-coral-500 dark:hover:border-amber-400 hover:text-coral-700 dark:hover:text-amber-400 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                      style={{ fontFamily: "var(--font-serif)", fontSize: 13 }}
+                      className="font-serif text-[13px] px-4 py-2 border border-dashed border-[rgba(122,80,40,0.4)] dark:border-amber-900/40 rounded-lg text-brown-800 dark:text-amber-200 hover:border-coral-500 dark:hover:border-amber-400 hover:text-coral-700 dark:hover:text-amber-400 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                       {applyingDiscount ? "…" : "apply"}
                     </button>
                   </div>
                 )}
                 {discountError && (
-                  <p
-                    className="mt-2 text-coral-600 dark:text-coral-400"
-                    style={{
-                      fontFamily: "var(--font-serif)",
-                      fontStyle: "italic",
-                      fontSize: 13,
-                    }}
-                  >
+                  <p className="font-serif italic text-[13px] mt-2 text-coral-600 dark:text-coral-400">
                     {discountError}
                   </p>
                 )}
