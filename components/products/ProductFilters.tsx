@@ -292,44 +292,19 @@ export default function ProductFilters(props: ProductFiltersProps) {
 
       {/* ── Desktop: sticky notebook sidebar ── */}
       <div className="hidden lg:block w-full mt-12">
-        <motion.div
-          initial={{ opacity: 0, y: -150, rotate: -8 }}
-          animate={{ opacity: 1, y: 0, rotate: 0 }}
-          transition={{ type: "spring", stiffness: 110, damping: 12 }}
-          className="relative bg-[#fdf8ef] dark:bg-[#1c1710] p-6 lg:p-8 pt-10 lg:pt-12 rounded-2xl shadow-[0_15px_40px_-10px_rgba(67,44,26,0.15)] dark:shadow-[0_20px_50px_-10px_rgba(0,0,0,0.5)] border border-solid border-[rgba(122,80,40,0.25)] dark:border-amber-900/30 sticky top-28 origin-top transition-all"
-        >
+        <div className="relative bg-[#fdf8ef] dark:bg-[#1c1710] p-6 lg:p-8 pt-10 lg:pt-12 rounded-2xl shadow-[0_15px_40px_-10px_rgba(67,44,26,0.15)] dark:shadow-[0_20px_50px_-10px_rgba(0,0,0,0.5)] border border-solid border-[rgba(122,80,40,0.25)] dark:border-amber-900/30 sticky top-28 origin-top">
           {/* Hanging Mechanism */}
           <div className="absolute -top-12 left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none z-20">
             {/* Thumb Pin */}
-            <motion.div
-              initial={{ scale: 1.5, y: -20 }}
-              animate={{ scale: 1, y: 0 }}
-              transition={{
-                type: "spring",
-                stiffness: 400,
-                damping: 15,
-                delay: 0.4,
-              }}
-              className="relative w-5 h-5 z-30"
-            >
-              {/* Animated Shadow to simulate depth */}
-              <motion.div
-                initial={{ x: 12, y: 16, opacity: 0, filter: "blur(5px)" }}
-                animate={{ x: 4, y: 6, opacity: 0.4, filter: "blur(2px)" }}
-                transition={{
-                  type: "spring",
-                  stiffness: 400,
-                  damping: 15,
-                  delay: 0.4,
-                }}
-                className="absolute inset-0 rounded-full bg-[#412e1f] dark:bg-black"
-              />
+            <div className="relative w-5 h-5 z-30">
+              {/* Shadow to simulate depth */}
+              <div className="absolute inset-0 rounded-full bg-[#412e1f] dark:bg-black translate-x-1 translate-y-1.5 opacity-40 blur-[2px]" />
               {/* Realistic Pin Body */}
               <div className="absolute inset-0 rounded-full bg-gradient-to-br from-red-500 to-red-700 shadow-[inset_0_1px_2px_rgba(255,255,255,0.4)] border border-red-800/60">
                 <div className="absolute top-1 left-1 w-1.5 h-1.5 rounded-full bg-white/70 blur-[0.5px]" />
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-gradient-to-br from-gray-200 to-gray-400 shadow-sm border border-gray-500/50" />
               </div>
-            </motion.div>
+            </div>
             {/* Thread */}
             <svg
               className="w-10 h-[70px] -mt-2 drop-shadow-[0_2px_3px_rgba(67,44,26,0.3)] dark:drop-shadow-[0_2px_3px_rgba(0,0,0,0.5)]"
@@ -371,7 +346,7 @@ export default function ProductFilters(props: ProductFiltersProps) {
           </div>
 
           <FilterContent {...props} />
-        </motion.div>
+        </div>
       </div>
     </>
   );
