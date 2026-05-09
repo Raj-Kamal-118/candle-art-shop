@@ -14,14 +14,15 @@ function getBaseUrl() {
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   try {
+    const { slug } = await params;
     const res = await fetch(`${getBaseUrl()}/api/categories`);
     if (!res.ok) return { title: "Category Not Found" };
 
     const cats = await res.json();
-    const category = cats.find((c: any) => c.slug === params.slug);
+    const category = cats.find((c: any) => c.slug === slug);
     if (!category) return { title: "Category Not Found" };
 
     const cleanDescription = category.description
@@ -48,9 +49,11 @@ export default async function CategoryLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
+  const { slug } = await params;
   let category = null;
+  let cats: any[] = [];
   let products = [];
   let schema = null;
 
@@ -59,8 +62,8 @@ export default async function CategoryLayout({
       next: { revalidate: 60 },
     });
     if (res.ok) {
-      const cats = await res.json();
-      category = cats.find((c: any) => c.slug === params.slug);
+      cats = await res.json();
+      category = cats.find((c: any) => c.slug === slug);
 
       if (category) {
         const pRes = await fetch(
@@ -101,7 +104,7 @@ export default async function CategoryLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
         />
       )}
-      <CategoryProvider category={category} products={products}>
+      <CategoryProvider category={category} products={products} allCategories={cats ?? []}>
         {children}
       </CategoryProvider>
     </>

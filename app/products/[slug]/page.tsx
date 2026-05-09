@@ -587,13 +587,42 @@ export default function ProductDetailPage() {
                         <>
                           {words.length > 0 && <>{words.join(" ")} </>}
                           <span
-                            className="text-coral-600 dark:text-amber-400"
                             style={{
-                              fontFamily: "var(--font-script)",
-                              fontSize: "clamp(32px, 4.5vw, 52px)",
+                              position: "relative",
+                              display: "inline-block",
                             }}
                           >
-                            {last}
+                            <span
+                              className="text-coral-600 dark:text-amber-400"
+                              style={{
+                                fontFamily: "var(--font-script)",
+                                fontSize: "clamp(32px, 4.5vw, 52px)",
+                              }}
+                            >
+                              {last}
+                            </span>
+                            <svg
+                              aria-hidden="true"
+                              style={{
+                                position: "absolute",
+                                left: 0,
+                                bottom: -4,
+                                width: "100%",
+                                height: 12,
+                                overflow: "visible",
+                              }}
+                              viewBox="0 0 200 12"
+                              preserveAspectRatio="none"
+                            >
+                              <path
+                                d="M0,6 C30,0 60,12 100,6 C140,0 170,12 200,6"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="3"
+                                strokeLinecap="round"
+                                className="text-coral-600 dark:text-amber-400"
+                              />
+                            </svg>
                           </span>
                         </>
                       );
@@ -1797,14 +1826,38 @@ function BurnGuideSection() {
             }}
           >
             Burn{" "}
-            <span
-              className="text-coral-600 dark:text-amber-400"
-              style={{
-                fontFamily: "var(--font-script)",
-                fontSize: "clamp(34px,4.5vw,52px)",
-              }}
-            >
-              Better
+            <span style={{ position: "relative", display: "inline-block" }}>
+              <span
+                className="text-coral-600 dark:text-amber-400"
+                style={{
+                  fontFamily: "var(--font-script)",
+                  fontSize: "clamp(34px,4.5vw,52px)",
+                }}
+              >
+                Better
+              </span>
+              <svg
+                aria-hidden="true"
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  bottom: -4,
+                  width: "100%",
+                  height: 12,
+                  overflow: "visible",
+                }}
+                viewBox="0 0 200 12"
+                preserveAspectRatio="none"
+              >
+                <path
+                  d="M0,6 C30,0 60,12 100,6 C140,0 170,12 200,6"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  className="text-coral-600 dark:text-amber-400"
+                />
+              </svg>
             </span>
           </h2>
         </div>
@@ -1946,14 +1999,38 @@ function KeyChainGuideSection() {
             }}
           >
             Carry with{" "}
-            <span
-              className="text-coral-600 dark:text-amber-400"
-              style={{
-                fontFamily: "var(--font-script)",
-                fontSize: "clamp(34px,4.5vw,52px)",
-              }}
-            >
-              Love
+            <span style={{ position: "relative", display: "inline-block" }}>
+              <span
+                className="text-coral-600 dark:text-amber-400"
+                style={{
+                  fontFamily: "var(--font-script)",
+                  fontSize: "clamp(34px,4.5vw,52px)",
+                }}
+              >
+                Love
+              </span>
+              <svg
+                aria-hidden="true"
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  bottom: -4,
+                  width: "100%",
+                  height: 12,
+                  overflow: "visible",
+                }}
+                viewBox="0 0 200 12"
+                preserveAspectRatio="none"
+              >
+                <path
+                  d="M0,6 C30,0 60,12 100,6 C140,0 170,12 200,6"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  className="text-coral-600 dark:text-amber-400"
+                />
+              </svg>
             </span>
           </h2>
         </div>
@@ -1965,7 +2042,8 @@ function KeyChainGuideSection() {
             fontSize: 13,
           }}
         >
-          Five simple habits to keep your keychain looking and smelling its best.
+          Five simple habits to keep your keychain looking and smelling its
+          best.
         </p>
       </div>
 
@@ -2095,14 +2173,38 @@ function MagnetGuideSection() {
             }}
           >
             Stick it{" "}
-            <span
-              className="text-coral-600 dark:text-amber-400"
-              style={{
-                fontFamily: "var(--font-script)",
-                fontSize: "clamp(34px,4.5vw,52px)",
-              }}
-            >
-              Right
+            <span style={{ position: "relative", display: "inline-block" }}>
+              <span
+                className="text-coral-600 dark:text-amber-400"
+                style={{
+                  fontFamily: "var(--font-script)",
+                  fontSize: "clamp(34px,4.5vw,52px)",
+                }}
+              >
+                Right
+              </span>
+              <svg
+                aria-hidden="true"
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  bottom: -4,
+                  width: "100%",
+                  height: 12,
+                  overflow: "visible",
+                }}
+                viewBox="0 0 200 12"
+                preserveAspectRatio="none"
+              >
+                <path
+                  d="M0,6 C30,0 60,12 100,6 C140,0 170,12 200,6"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  className="text-coral-600 dark:text-amber-400"
+                />
+              </svg>
             </span>
           </h2>
         </div>
@@ -2246,14 +2348,38 @@ function GiftingSection() {
             }}
           >
             Gift it with{" "}
-            <span
-              className="text-coral-600 dark:text-amber-400"
-              style={{
-                fontFamily: "var(--font-script)",
-                fontSize: "clamp(34px,4.5vw,52px)",
-              }}
-            >
-              Joy
+            <span style={{ position: "relative", display: "inline-block" }}>
+              <span
+                className="text-coral-600 dark:text-amber-400"
+                style={{
+                  fontFamily: "var(--font-script)",
+                  fontSize: "clamp(34px,4.5vw,52px)",
+                }}
+              >
+                Joy
+              </span>
+              <svg
+                aria-hidden="true"
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  bottom: -4,
+                  width: "100%",
+                  height: 12,
+                  overflow: "visible",
+                }}
+                viewBox="0 0 200 12"
+                preserveAspectRatio="none"
+              >
+                <path
+                  d="M0,6 C30,0 60,12 100,6 C140,0 170,12 200,6"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  className="text-coral-600 dark:text-amber-400"
+                />
+              </svg>
             </span>
           </h2>
         </div>
@@ -2361,7 +2487,10 @@ function GiftingSection() {
 
       {/* Free wrapping callout */}
       <div className="flex items-start gap-3 mb-6 px-4 py-3 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-300/60 dark:border-amber-700/40 w-fit">
-        <Gift size={18} className="text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+        <Gift
+          size={18}
+          className="text-amber-600 dark:text-amber-400 shrink-0 mt-0.5"
+        />
         <p
           className="text-amber-900 dark:text-amber-200/90"
           style={{
@@ -2453,14 +2582,38 @@ function BespokeSection() {
             }}
           >
             Order{" "}
-            <span
-              className="text-coral-600 dark:text-amber-400"
-              style={{
-                fontFamily: "var(--font-script)",
-                fontSize: "clamp(34px,4.5vw,52px)",
-              }}
-            >
-              Bespoke
+            <span style={{ position: "relative", display: "inline-block" }}>
+              <span
+                className="text-coral-600 dark:text-amber-400"
+                style={{
+                  fontFamily: "var(--font-script)",
+                  fontSize: "clamp(34px,4.5vw,52px)",
+                }}
+              >
+                Bespoke
+              </span>
+              <svg
+                aria-hidden="true"
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  bottom: -4,
+                  width: "100%",
+                  height: 12,
+                  overflow: "visible",
+                }}
+                viewBox="0 0 200 12"
+                preserveAspectRatio="none"
+              >
+                <path
+                  d="M0,6 C30,0 60,12 100,6 C140,0 170,12 200,6"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  className="text-coral-600 dark:text-amber-400"
+                />
+              </svg>
             </span>
           </h2>
         </div>
@@ -2626,14 +2779,38 @@ function FAQSection({ categorySlug }: { categorySlug?: string }) {
             }}
           >
             Quick{" "}
-            <span
-              className="text-coral-600 dark:text-amber-400"
-              style={{
-                fontFamily: "var(--font-script)",
-                fontSize: "clamp(34px,4.5vw,52px)",
-              }}
-            >
-              Answers
+            <span style={{ position: "relative", display: "inline-block" }}>
+              <span
+                className="text-coral-600 dark:text-amber-400"
+                style={{
+                  fontFamily: "var(--font-script)",
+                  fontSize: "clamp(34px,4.5vw,52px)",
+                }}
+              >
+                Answers
+              </span>
+              <svg
+                aria-hidden="true"
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  bottom: -4,
+                  width: "100%",
+                  height: 12,
+                  overflow: "visible",
+                }}
+                viewBox="0 0 200 12"
+                preserveAspectRatio="none"
+              >
+                <path
+                  d="M0,6 C30,0 60,12 100,6 C140,0 170,12 200,6"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  className="text-coral-600 dark:text-amber-400"
+                />
+              </svg>
             </span>
           </h2>
         </div>
@@ -2748,14 +2925,38 @@ function ReviewsSection() {
             }}
           >
             Customer{" "}
-            <span
-              className="text-coral-600 dark:text-amber-400"
-              style={{
-                fontFamily: "var(--font-script)",
-                fontSize: "clamp(34px,4.5vw,52px)",
-              }}
-            >
-              Stories
+            <span style={{ position: "relative", display: "inline-block" }}>
+              <span
+                className="text-coral-600 dark:text-amber-400"
+                style={{
+                  fontFamily: "var(--font-script)",
+                  fontSize: "clamp(34px,4.5vw,52px)",
+                }}
+              >
+                Stories
+              </span>
+              <svg
+                aria-hidden="true"
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  bottom: -4,
+                  width: "100%",
+                  height: 12,
+                  overflow: "visible",
+                }}
+                viewBox="0 0 200 12"
+                preserveAspectRatio="none"
+              >
+                <path
+                  d="M0,6 C30,0 60,12 100,6 C140,0 170,12 200,6"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  className="text-coral-600 dark:text-amber-400"
+                />
+              </svg>
             </span>
           </h2>
         </div>
@@ -2792,7 +2993,10 @@ function ReviewsSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.35, delay: i * 0.08 }}
-              style={{ transform: `rotate(${rot}deg)`, transformOrigin: "center top" }}
+              style={{
+                transform: `rotate(${rot}deg)`,
+                transformOrigin: "center top",
+              }}
             >
               <StickyNote
                 isAbsolute={false}
@@ -2807,7 +3011,11 @@ function ReviewsSection() {
                     <Star
                       key={si}
                       size={11}
-                      className={si < r.rating ? "fill-amber-500 text-amber-500" : "fill-amber-200 text-amber-200"}
+                      className={
+                        si < r.rating
+                          ? "fill-amber-500 text-amber-500"
+                          : "fill-amber-200 text-amber-200"
+                      }
                     />
                   ))}
                 </div>
@@ -2825,14 +3033,35 @@ function ReviewsSection() {
                 {/* Footer */}
                 <div className="mt-3 pt-2.5 border-t border-amber-300/40 flex items-end justify-between">
                   <div>
-                    <p style={{ fontFamily: "var(--font-hand)", fontSize: 16, color: "#78350f", fontWeight: 700 }}>
+                    <p
+                      style={{
+                        fontFamily: "var(--font-hand)",
+                        fontSize: 16,
+                        color: "#78350f",
+                        fontWeight: 700,
+                      }}
+                    >
                       {r.name}
                     </p>
-                    <p style={{ fontFamily: "var(--font-hand)", fontSize: 13, color: "#92400e", opacity: 0.7 }}>
+                    <p
+                      style={{
+                        fontFamily: "var(--font-hand)",
+                        fontSize: 13,
+                        color: "#92400e",
+                        opacity: 0.7,
+                      }}
+                    >
                       {r.location}
                     </p>
                   </div>
-                  <span style={{ fontFamily: "var(--font-hand)", fontSize: 13, color: "#92400e", opacity: 0.6 }}>
+                  <span
+                    style={{
+                      fontFamily: "var(--font-hand)",
+                      fontSize: 13,
+                      color: "#92400e",
+                      opacity: 0.6,
+                    }}
+                  >
                     {r.date}
                   </span>
                 </div>
@@ -2903,14 +3132,38 @@ function FeaturedProductsSection({
             }}
           >
             Featured{" "}
-            <span
-              className="text-coral-600 dark:text-amber-400"
-              style={{
-                fontFamily: "var(--font-script)",
-                fontSize: "clamp(32px,4vw,48px)",
-              }}
-            >
-              Pieces
+            <span style={{ position: "relative", display: "inline-block" }}>
+              <span
+                className="text-coral-600 dark:text-amber-400"
+                style={{
+                  fontFamily: "var(--font-script)",
+                  fontSize: "clamp(32px,4vw,48px)",
+                }}
+              >
+                Pieces
+              </span>
+              <svg
+                aria-hidden="true"
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  bottom: -4,
+                  width: "100%",
+                  height: 12,
+                  overflow: "visible",
+                }}
+                viewBox="0 0 200 12"
+                preserveAspectRatio="none"
+              >
+                <path
+                  d="M0,6 C30,0 60,12 100,6 C140,0 170,12 200,6"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  className="text-coral-600 dark:text-amber-400"
+                />
+              </svg>
             </span>
           </h2>
         </div>
