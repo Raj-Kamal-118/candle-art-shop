@@ -73,8 +73,8 @@ export default function AddressForm({
   }, [postalCode, setValue]);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 min-w-0">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 [&>*]:min-w-0">
         <div className="sm:col-span-2">
           <Input
             label="Full Name"

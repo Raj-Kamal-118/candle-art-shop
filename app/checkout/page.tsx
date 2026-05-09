@@ -473,9 +473,9 @@ function CheckoutContent() {
             </div>
           </div>
         ) : (
-          <div className="grid lg:grid-cols-3 gap-8 lg:gap-12">
+          <div className="grid lg:grid-cols-3 gap-8 lg:gap-12 min-w-0">
             {/* Main form */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="lg:col-span-2 space-y-6 min-w-0 overflow-hidden">
               {step === "address" && (
                 <>
                   {!verifiedUser ? (
@@ -857,12 +857,12 @@ function CheckoutContent() {
             </div>
 
             {/* Order summary */}
-            <div className="space-y-6">
+            <div className="space-y-6 min-w-0">
               {step === "payment" && isVaranasi ? (
                 <motion.div
-                  initial={{ scale: 1.15, opacity: 0, rotate: -2 }}
-                  animate={{ scale: 1, opacity: 1, rotate: 0 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 20 }}
                 >
                   <StickyNote
                     isAbsolute={false}
@@ -914,9 +914,9 @@ function CheckoutContent() {
                 </motion.div>
               ) : step === "address" ? (
                 <motion.div
-                  initial={{ scale: 1.15, opacity: 0, rotate: 2 }}
-                  animate={{ scale: 1, opacity: 1, rotate: 0 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 20 }}
                 >
                   <StickyNote
                     isAbsolute={false}
