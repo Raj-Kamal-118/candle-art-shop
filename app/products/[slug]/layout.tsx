@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { ProductProvider } from "./ProductProvider";
+import { getApprovedReviews } from "@/lib/reviews";
 
 // Helper to safely resolve absolute URLs for server-side fetching
 function getBaseUrl() {
@@ -75,8 +76,10 @@ export default async function ProductLayout({
   let productSchema = null;
   let product = null;
   let category = null;
+  let reviews: any[] = [];
 
   try {
+    reviews = await getApprovedReviews();
     const res = await fetch(
       `${getBaseUrl()}/api/products/slug/${params.slug}`,
       { next: { revalidate: 60 } },
@@ -153,7 +156,7 @@ export default async function ProductLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
         />
       )}
-      <ProductProvider product={product} category={category}>
+      <ProductProvider product={product} category={category} reviews={reviews}>
         {children}
       </ProductProvider>
     </>

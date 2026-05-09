@@ -45,6 +45,8 @@ import Breadcrumb from "@/components/ui/Breadcrumb";
 import StickyNote from "@/components/ui/StickyNote";
 import PostageStamp from "@/components/craft/PostageStamp";
 import ProductCard from "@/components/products/ProductCard";
+import Testimonials from "@/components/home/Testimonials";
+import HandDrawnStars from "@/components/ui/HandDrawnStars";
 
 const ICONS: Record<string, React.ElementType> = {
   flame: Flame,
@@ -64,7 +66,7 @@ export default function ProductDetailPage() {
   const router = useRouter();
   const { addToCart, addToFavorites, removeFromFavorites, isFavorite } =
     useStore();
-  const { product, category } = useProductData();
+  const { product, category, reviews } = useProductData();
 
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -360,63 +362,7 @@ export default function ProductDetailPage() {
               <div className="flex flex-col gap-2">
                 {/* Stars row */}
                 <div className="flex items-center gap-2.5">
-                  <div className="flex gap-1.5">
-                    {[...Array(5)].map((_, i) => (
-                      <svg
-                        key={i}
-                        width="22"
-                        height="22"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                      >
-                        <defs>
-                          <pattern
-                            id={`hatch-${i}`}
-                            patternUnits="userSpaceOnUse"
-                            width="3.5"
-                            height="3.5"
-                            patternTransform="rotate(42)"
-                          >
-                            <line
-                              x1="0"
-                              y1="0"
-                              x2="0"
-                              y2="3.5"
-                              stroke="#b45309"
-                              strokeWidth="1.1"
-                              opacity="0.55"
-                            />
-                          </pattern>
-                          <clipPath id={`sclip-${i}`}>
-                            <path d="M12 2.5 L14.2 8.6 L20.8 9.2 L16.1 13.7 L17.6 20.3 L12 17.0 L6.4 20.3 L7.9 13.7 L3.2 9.2 L9.8 8.6 Z" />
-                          </clipPath>
-                        </defs>
-                        {i < 4 && (
-                          <>
-                            <path
-                              d="M12 2.5 L14.2 8.6 L20.8 9.2 L16.1 13.7 L17.6 20.3 L12 17.0 L6.4 20.3 L7.9 13.7 L3.2 9.2 L9.8 8.6 Z"
-                              fill="#fde68a"
-                            />
-                            <rect
-                              x="0"
-                              y="0"
-                              width="24"
-                              height="24"
-                              fill={`url(#hatch-${i})`}
-                              clipPath={`url(#sclip-${i})`}
-                            />
-                          </>
-                        )}
-                        <path
-                          d="M12 2.5 L14.2 8.6 L20.8 9.2 L16.1 13.7 L17.6 20.3 L12 17.0 L6.4 20.3 L7.9 13.7 L3.2 9.2 L9.8 8.6 Z"
-                          fill="none"
-                          stroke={i < 4 ? "#d97706" : "#c8b49a"}
-                          strokeWidth="1.4"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    ))}
-                  </div>
+                  <HandDrawnStars rating={4.0} size={22} />
                   <span
                     className="font-bold text-brown-700 dark:text-amber-200"
                     style={{ fontFamily: "var(--font-hand)", fontSize: 20 }}
@@ -690,61 +636,7 @@ export default function ProductDetailPage() {
                     {/* Reviews — tablet/desktop only (hidden on mobile, shown md+) */}
                     <div className="hidden md:flex flex-col items-end gap-0.5 pb-0.5 shrink-0">
                       <div className="flex items-center gap-1.5">
-                        {[...Array(5)].map((_, i) => (
-                          <svg
-                            key={i}
-                            width="18"
-                            height="18"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                          >
-                            <defs>
-                              <pattern
-                                id={`pr-hatch-${i}`}
-                                patternUnits="userSpaceOnUse"
-                                width="3.5"
-                                height="3.5"
-                                patternTransform="rotate(42)"
-                              >
-                                <line
-                                  x1="0"
-                                  y1="0"
-                                  x2="0"
-                                  y2="3.5"
-                                  stroke="#b45309"
-                                  strokeWidth="1.1"
-                                  opacity="0.55"
-                                />
-                              </pattern>
-                              <clipPath id={`pr-clip-${i}`}>
-                                <path d="M12 2.5 L14.2 8.6 L20.8 9.2 L16.1 13.7 L17.6 20.3 L12 17.0 L6.4 20.3 L7.9 13.7 L3.2 9.2 L9.8 8.6 Z" />
-                              </clipPath>
-                            </defs>
-                            {i < 4 && (
-                              <>
-                                <path
-                                  d="M12 2.5 L14.2 8.6 L20.8 9.2 L16.1 13.7 L17.6 20.3 L12 17.0 L6.4 20.3 L7.9 13.7 L3.2 9.2 L9.8 8.6 Z"
-                                  fill="#fde68a"
-                                />
-                                <rect
-                                  x="0"
-                                  y="0"
-                                  width="24"
-                                  height="24"
-                                  fill={`url(#pr-hatch-${i})`}
-                                  clipPath={`url(#pr-clip-${i})`}
-                                />
-                              </>
-                            )}
-                            <path
-                              d="M12 2.5 L14.2 8.6 L20.8 9.2 L16.1 13.7 L17.6 20.3 L12 17.0 L6.4 20.3 L7.9 13.7 L3.2 9.2 L9.8 8.6 Z"
-                              fill="none"
-                              stroke={i < 4 ? "#d97706" : "#c8b49a"}
-                              strokeWidth="1.4"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        ))}
+                        <HandDrawnStars rating={4.0} size={18} />
                         <span
                           className="font-bold text-brown-700 dark:text-amber-200"
                           style={{
@@ -1536,7 +1428,28 @@ export default function ProductDetailPage() {
         <FAQSection categorySlug={category?.slug} />
 
         {/* Reviews */}
-        <ReviewsSection />
+        {(() => {
+          const productReviews = reviews?.filter(
+            (r) =>
+              r.product_name === product.name || r.product_id === product.id,
+          );
+          const displayReviews = productReviews?.length
+            ? productReviews
+            : reviews;
+
+          return (
+            <Testimonials
+              reviews={displayReviews}
+              limit={4}
+              titlePrefix="Customer"
+              titleHighlighted="Stories"
+              eyebrow="What people are saying"
+              className="py-14 border-t border-dashed border-[rgba(122,80,40,0.2)] dark:border-amber-900/20"
+              style={{}}
+              showHeaderDetails={true}
+            />
+          );
+        })()}
 
         {/* Featured products */}
         <FeaturedProductsSection
@@ -2857,230 +2770,6 @@ function FAQSection({ categorySlug }: { categorySlug?: string }) {
             )}
           </motion.div>
         ))}
-      </div>
-    </section>
-  );
-}
-
-/* ── Reviews section ─────────────────────────────────────────────────────── */
-function ReviewsSection() {
-  const reviews = [
-    {
-      name: "Priya S.",
-      location: "Mumbai",
-      rating: 5,
-      text: "Absolutely stunning. The scent filled my whole living room within minutes and the packaging was gift-perfect. Already ordered two more as presents.",
-      date: "Mar 2025",
-      tilt: -2,
-      color: "#fef3c7",
-      pinColor: "#d97706",
-    },
-    {
-      name: "Rohan M.",
-      location: "Bangalore",
-      rating: 5,
-      text: "Bought the keychain for my sister's birthday and she loved it. The craft quality is unlike anything I've found online — clearly made with care.",
-      date: "Feb 2025",
-      tilt: 1.5,
-      color: "#e0f2fe",
-      pinColor: "#0284c7",
-    },
-    {
-      name: "Ananya K.",
-      location: "Delhi",
-      rating: 4,
-      text: "Gorgeous fridge magnet, the artwork is so detailed. Arrived beautifully wrapped with a little note. Will definitely be coming back.",
-      date: "Apr 2025",
-      tilt: -1,
-      color: "#dcfce7",
-      pinColor: "#16a34a",
-    },
-    {
-      name: "Kavya T.",
-      location: "Chennai",
-      rating: 5,
-      text: "Ordered a customized candle with our wedding date on it. The personalization was spot on and burn time is incredible. Highly recommend.",
-      date: "Jan 2025",
-      tilt: 2,
-      color: "#fee2e2",
-      pinColor: "#e85d4a",
-    },
-  ];
-
-  return (
-    <section className="py-14 border-t border-dashed border-[rgba(122,80,40,0.2)] dark:border-amber-900/20">
-      <div className="flex flex-col sm:flex-row sm:items-end gap-4 mb-10">
-        <div>
-          <p
-            className="text-coral-600 dark:text-amber-400 uppercase tracking-[0.18em] text-[11px] font-bold mb-1"
-            style={{ fontFamily: "var(--font-serif)" }}
-          >
-            What people are saying
-          </p>
-          <h2
-            className="text-brown-900 dark:text-amber-100 leading-tight font-bold"
-            style={{
-              fontFamily: "var(--font-serif)",
-              fontSize: "clamp(28px,3.5vw,42px)",
-            }}
-          >
-            Customer{" "}
-            <span style={{ position: "relative", display: "inline-block" }}>
-              <span
-                className="text-coral-600 dark:text-amber-400"
-                style={{
-                  fontFamily: "var(--font-script)",
-                  fontSize: "clamp(34px,4.5vw,52px)",
-                }}
-              >
-                Stories
-              </span>
-              <svg
-                aria-hidden="true"
-                style={{
-                  position: "absolute",
-                  left: 0,
-                  bottom: -4,
-                  width: "100%",
-                  height: 12,
-                  overflow: "visible",
-                }}
-                viewBox="0 0 200 12"
-                preserveAspectRatio="none"
-              >
-                <path
-                  d="M0,6 C30,0 60,12 100,6 C140,0 170,12 200,6"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  className="text-coral-600 dark:text-amber-400"
-                />
-              </svg>
-            </span>
-          </h2>
-        </div>
-        <div className="sm:ml-auto flex items-center gap-3 pb-1">
-          <div className="flex gap-1">
-            {[...Array(5)].map((_, i) => (
-              <Star
-                key={i}
-                size={16}
-                className="fill-amber-400 text-amber-400"
-              />
-            ))}
-          </div>
-          <span
-            className="text-brown-500 dark:text-amber-100/70"
-            style={{
-              fontFamily: "var(--font-serif)",
-              fontStyle: "italic",
-              fontSize: 13,
-            }}
-          >
-            4.8 average · 124 reviews
-          </span>
-        </div>
-      </div>
-
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10 pt-6">
-        {reviews.map((r, i) => {
-          const rot = NOTE_ROTATIONS[i % NOTE_ROTATIONS.length];
-          return (
-            <motion.div
-              key={r.name}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.35, delay: i * 0.08 }}
-              style={{
-                transform: `rotate(${rot}deg)`,
-                transformOrigin: "center top",
-              }}
-            >
-              <StickyNote
-                isAbsolute={false}
-                showPin={true}
-                bgColor={r.color}
-                pinColor={r.pinColor}
-                positionClass="w-full"
-              >
-                {/* Stars */}
-                <div className="flex gap-0.5 mb-2 mt-1">
-                  {[...Array(5)].map((_, si) => (
-                    <Star
-                      key={si}
-                      size={11}
-                      className={
-                        si < r.rating
-                          ? "fill-amber-500 text-amber-500"
-                          : "fill-amber-200 text-amber-200"
-                      }
-                    />
-                  ))}
-                </div>
-                {/* Review text — handwritten */}
-                <p
-                  style={{
-                    fontFamily: "var(--font-hand)",
-                    fontSize: 17,
-                    color: "#451a03",
-                    lineHeight: 1.5,
-                  }}
-                >
-                  {r.text}
-                </p>
-                {/* Footer */}
-                <div className="mt-3 pt-2.5 border-t border-amber-300/40 flex items-end justify-between">
-                  <div>
-                    <p
-                      style={{
-                        fontFamily: "var(--font-hand)",
-                        fontSize: 16,
-                        color: "#78350f",
-                        fontWeight: 700,
-                      }}
-                    >
-                      {r.name}
-                    </p>
-                    <p
-                      style={{
-                        fontFamily: "var(--font-hand)",
-                        fontSize: 13,
-                        color: "#92400e",
-                        opacity: 0.7,
-                      }}
-                    >
-                      {r.location}
-                    </p>
-                  </div>
-                  <span
-                    style={{
-                      fontFamily: "var(--font-hand)",
-                      fontSize: 13,
-                      color: "#92400e",
-                      opacity: 0.6,
-                    }}
-                  >
-                    {r.date}
-                  </span>
-                </div>
-              </StickyNote>
-            </motion.div>
-          );
-        })}
-      </div>
-
-      <div className="mt-10 flex items-center gap-4">
-        <Link
-          href="/reviews"
-          className="inline-flex items-center gap-2 text-sm font-semibold text-coral-600 dark:text-amber-400 hover:underline"
-          style={{ fontFamily: "var(--font-serif)" }}
-        >
-          <MessageSquare size={14} />
-          Read all 124 reviews
-          <ArrowRight size={13} />
-        </Link>
       </div>
     </section>
   );
