@@ -61,7 +61,8 @@ export default function ProductCard({
   return (
     <Link href={`/products/${product.slug}`}>
       <div
-        className={`group relative bg-white dark:bg-[#1a1830] rounded-2xl overflow-hidden shadow-[0_4px_12px_rgba(28,18,9,0.05)] border border-cream-200 dark:border-amber-900/30 hover:shadow-[0_12px_32px_rgba(28,18,9,0.08)] dark:hover:border-amber-700/50 transition-all duration-300 cursor-pointer flex ${viewMode === "list" ? "flex-col sm:flex-row" : "flex-col"}`}
+        className={`group relative craft-polaroid hover:bg-amber-50/60 dark:hover:bg-amber-900/20 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 cursor-pointer flex ${viewMode === "list" ? "flex-col sm:flex-row gap-4" : "flex-col"}`}
+        style={{ padding: viewMode === "list" ? "14px" : "14px 14px 20px" }}
       >
         {/* Image container */}
         <div
@@ -143,13 +144,13 @@ export default function ProductCard({
 
         {/* Content */}
         <div
-          className={`p-4 sm:p-5 flex flex-col ${viewMode === "list" ? "justify-center flex-1" : "h-auto min-h-[110px] sm:min-h-[130px]"}`}
+          className={`flex flex-col ${viewMode === "list" ? "justify-center flex-1 py-2 pr-2" : "px-1 mt-3 h-auto min-h-[110px] sm:min-h-[130px]"}`}
         >
-          <p className="text-[10px] sm:text-xs text-amber-600 dark:text-amber-500 font-bold uppercase tracking-wide mb-1.5 truncate">
+          <p className="text-[10px] sm:text-xs lg:text-sm text-amber-600 dark:text-amber-500 font-bold uppercase tracking-wide mb-1.5 truncate">
             {product.customizable ? "Customizable" : "Ready to Ship"}
           </p>
           <h3
-            className={`font-bold text-brown-900 dark:text-amber-50 leading-tight mb-1 group-hover:text-amber-700 dark:group-hover:text-amber-400 transition-colors line-clamp-2 ${viewMode === "list" ? "text-lg sm:text-xl font-serif" : "text-sm sm:text-base font-serif"}`}
+            className={`font-bold text-brown-900 dark:text-amber-50 leading-tight mb-1 group-hover:text-amber-700 dark:group-hover:text-amber-400 transition-colors line-clamp-2 ${viewMode === "list" ? "text-lg sm:text-xl lg:text-2xl font-serif" : "text-sm sm:text-base lg:text-lg font-serif"}`}
           >
             {product.name}
           </h3>
@@ -157,7 +158,7 @@ export default function ProductCard({
           {/* Short description for list view */}
           {viewMode === "list" && product.description && (
             <div
-              className="hidden sm:block mt-2 mb-4 text-sm text-brown-500 dark:text-amber-100/60 line-clamp-2 font-serif italic"
+              className="hidden sm:block mt-2 mb-4 text-sm lg:text-base text-brown-500 dark:text-amber-100/60 line-clamp-2 font-serif italic"
               dangerouslySetInnerHTML={{ __html: product.description }}
             />
           )}
@@ -178,11 +179,11 @@ export default function ProductCard({
                 />
               ) : (
                 <div className="flex items-baseline gap-1.5 flex-wrap">
-                  <span className="text-sm sm:text-base font-bold text-brown-900 dark:text-amber-100 font-serif">
+                  <span className="text-sm sm:text-base lg:text-lg font-bold text-brown-900 dark:text-amber-100 font-serif">
                     {formatPrice(product.price)}
                   </span>
                   {product.compareAtPrice && (
-                    <span className="text-[10px] sm:text-xs text-brown-400 dark:text-amber-100/50 line-through">
+                    <span className="text-[10px] sm:text-xs lg:text-sm text-brown-400 dark:text-amber-100/50 line-through">
                       {formatPrice(product.compareAtPrice)}
                     </span>
                   )}
@@ -193,7 +194,7 @@ export default function ProductCard({
                   className="hidden md:inline-block self-start text-amber-800 dark:text-amber-400 border border-dashed border-amber-400/60 dark:border-amber-600/50 px-2 py-0.5 rounded-sm"
                   style={{
                     fontFamily: "var(--font-hand)",
-                    fontSize: 13,
+                    fontSize: 15,
                     transform: "rotate(-1.5deg)",
                     display: "inline-block",
                     background: "rgba(251,191,36,0.08)",
@@ -207,7 +208,7 @@ export default function ProductCard({
             <button
               onClick={handleAction}
               disabled={!product.inStock}
-              className={`flex items-center justify-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-[10px] sm:text-xs font-semibold transition-colors shrink-0 shadow-sm text-white ${
+              className={`flex items-center justify-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-[10px] sm:text-xs lg:text-sm font-semibold transition-colors shrink-0 shadow-sm text-white ${
                 !product.inStock
                   ? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed text-gray-500 dark:text-gray-400 shadow-none"
                   : addedToCart && !product.customizable

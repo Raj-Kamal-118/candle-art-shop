@@ -135,7 +135,11 @@ function ClientFiltersAndGrid({
           </span>
         </div>
 
-        <ProductGrid products={filteredProducts} viewMode={viewMode} />
+        <ProductGrid
+          products={filteredProducts}
+          viewMode={viewMode}
+          columns={3}
+        />
       </div>
     ) : (
       <motion.div
@@ -176,7 +180,7 @@ function ClientFiltersAndGrid({
               ✦ Our Bestsellers
             </h3>
           </div>
-          <ProductGrid products={featuredFallback} />
+          <ProductGrid products={featuredFallback} columns={3} />
         </div>
       </motion.div>
     );

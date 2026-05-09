@@ -174,7 +174,7 @@ export default function HeroSection({ settings }: HeroSectionProps) {
 
   return (
     <section
-      className={`relative min-h-[860px] flex items-center overflow-hidden ${
+      className={`relative min-h-[910px] flex items-center overflow-hidden ${
         isCustomBg
           ? ""
           : "bg-cream-50 dark:bg-[#0a0a16] transition-colors duration-700"

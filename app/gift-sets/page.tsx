@@ -156,9 +156,10 @@ export default function GiftSetsPage() {
           {/* "Build your own" inline card */}
           <Link
             href="/custom/gift-set"
-            className="group relative bg-white dark:bg-[#1a1830] rounded-2xl overflow-hidden shadow-[0_4px_12px_rgba(28,18,9,0.05)] border border-amber-200 dark:border-amber-700/50 hover:shadow-[0_12px_32px_rgba(28,18,9,0.08)] transition-all duration-300 cursor-pointer flex flex-col"
+            className="group relative craft-polaroid hover:bg-amber-50/60 dark:hover:bg-amber-900/20 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col"
+            style={{ padding: "14px 14px 20px" }}
           >
-            <div className="relative aspect-square flex flex-col items-center justify-center p-6 text-center overflow-hidden bg-amber-50/50 dark:bg-amber-900/10">
+            <div className="relative aspect-square flex flex-col items-center justify-center p-6 text-center overflow-hidden bg-amber-50/50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-700/50">
               <div className="absolute inset-0 bg-gradient-to-br from-amber-100/50 to-transparent dark:from-amber-500/10 dark:to-transparent" />
               <div className="relative z-10 flex flex-col items-center">
                 <div className="w-14 h-14 bg-white dark:bg-[#0f0e1c] border border-amber-100 dark:border-amber-900/50 rounded-full flex items-center justify-center text-amber-500 shadow-sm mb-4 group-hover:scale-110 transition-transform">
@@ -172,8 +173,8 @@ export default function GiftSetsPage() {
                 </p>
               </div>
             </div>
-            <div className="p-3 sm:p-4 flex flex-col h-auto min-h-[110px] sm:min-h-[130px] justify-center bg-white dark:bg-[#1a1830] border-t border-amber-100 dark:border-amber-900/30">
-              <div className="w-full bg-coral-600 group-hover:bg-coral-700 dark:bg-amber-600 dark:hover:bg-amber-700 text-white text-xs sm:text-sm font-semibold py-2.5 sm:py-3 rounded-lg flex items-center justify-center transition-colors shadow-sm gap-2">
+            <div className="px-1 mt-3 flex flex-col h-auto min-h-[110px] sm:min-h-[130px] justify-center border-amber-100 dark:border-amber-900/30">
+              <div className="w-full bg-coral-600 group-hover:bg-coral-700 dark:bg-amber-600 dark:hover:bg-amber-700 text-white text-xs sm:text-sm lg:text-base font-semibold py-2.5 sm:py-3 rounded-lg flex items-center justify-center transition-colors shadow-sm gap-2">
                 <Sparkles size={14} />
                 Start building
               </div>

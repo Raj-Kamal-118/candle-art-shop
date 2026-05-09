@@ -9,7 +9,7 @@ export default function ProductsLoading() {
         <div className="h-10 bg-cream-200 dark:bg-amber-900/20 rounded-lg w-full max-w-sm mb-10 animate-pulse" />
 
         {/* Mimic the Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(8)].map((_, i) => (
             <div
               key={i}

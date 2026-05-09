@@ -7,6 +7,7 @@ interface ProductGridProps {
   customCard?: React.ReactNode;
   customCardEnd?: React.ReactNode;
   viewMode?: "grid" | "list";
+  columns?: 3 | 4;
 }
 
 export default function ProductGrid({
@@ -15,6 +16,7 @@ export default function ProductGrid({
   customCard,
   viewMode = "grid",
   customCardEnd,
+  columns = 4,
 }: ProductGridProps) {
   if (products.length === 0 && !customCard && !customCardEnd) {
     return (
@@ -30,7 +32,7 @@ export default function ProductGrid({
       className={
         viewMode === "list"
           ? "grid grid-cols-1 gap-6"
-          : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+          : `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ${columns === 4 ? "xl:grid-cols-4" : ""} gap-6`
       }
     >
       {customCard}
