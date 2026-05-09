@@ -153,9 +153,9 @@ export default function ProductDetailPage() {
           />
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12 xl:gap-16 mb-16">
+        <div className="grid lg:grid-cols-12 gap-12 xl:gap-16 mb-16">
           {/* ── Image column ── */}
-          <div className="space-y-6 min-w-0 w-full">
+          <div className="space-y-6 min-w-0 w-full lg:col-span-5">
             {/* Main polaroid frame */}
             <div className="relative mt-6">
               <motion.div
@@ -166,7 +166,7 @@ export default function ProductDetailPage() {
                   scale: 1,
                 }}
                 transition={{ duration: 0.35, ease: "easeOut" }}
-                className="craft-polaroid mx-auto"
+                className="craft-polaroid mx-auto lg:mx-0"
                 style={{ padding: "14px", maxWidth: 560 }}
               >
                 {/* Top Right Diagonal Tape */}
@@ -282,7 +282,7 @@ export default function ProductDetailPage() {
 
             {/* Thumbnail strip — mini polaroids */}
             {product.images && product.images.length > 1 && (
-              <div className="flex gap-4 overflow-x-auto pt-4 pb-4 px-2 scrollbar-hide justify-center">
+              <div className="flex gap-4 overflow-x-auto pt-4 pb-4 px-2 scrollbar-hide justify-center lg:justify-start">
                 {product.images.map((img, i) => (
                   <button
                     key={i}
@@ -307,12 +307,21 @@ export default function ProductDetailPage() {
                       fill="none"
                       className="absolute top-[-10px] left-3 z-10 drop-shadow-sm"
                       style={{
-                        transform: `rotate(${i % 2 === 0 ? -8 : 12}deg)`,
+                        transform: `rotate(${[-12, 15, -8, 6, -15, 10][i % 6]}deg)`,
                       }}
                     >
                       <path
                         d="M14 42 V 16 A 6 6 0 0 1 26 16 V 48 A 11 11 0 0 1 4 48 V 16"
-                        stroke="#9ca3af"
+                        stroke={
+                          [
+                            "#9ca3af",
+                            "#d4b896",
+                            "#e85d4a",
+                            "#6b7280",
+                            "#93c5fd",
+                            "#a78bfa",
+                          ][i % 6]
+                        }
                         strokeWidth="4"
                         strokeLinecap="round"
                       />
@@ -333,10 +342,54 @@ export default function ProductDetailPage() {
                 ))}
               </div>
             )}
+
+            {/* ── Left Column Fillers (Desktop only) ── */}
+            <div className="hidden lg:flex flex-col gap-12 mt-16 px-4 xl:px-8">
+              <StickyNote
+                type="Maker's Note"
+                text="Each piece is hand-poured and crafted in small batches in our Varanasi studio. We use 100% natural materials and premium phthalate-free fragrances for a clean, beautiful experience."
+                isAbsolute={false}
+                showPin={true}
+                bgColor="#fef3c7"
+                pinColor="#d97706"
+                icon={
+                  <Sparkles
+                    size={16}
+                    className="text-amber-600 drop-shadow-sm"
+                  />
+                }
+                positionClass="w-full"
+              />
+
+              <StickyNote
+                isAbsolute={false}
+                showPin={true}
+                bgColor="#f0fdf4"
+                pinColor="#16a34a"
+                positionClass="w-11/12 ml-auto"
+              >
+                <div className="flex items-center gap-1.5 mb-2">
+                  <Leaf
+                    size={16}
+                    className="text-green-600 shrink-0 drop-shadow-sm"
+                  />
+                  <div className="text-[10px] font-black tracking-[0.15em] uppercase text-green-900/60 dark:text-green-900/80 leading-tight">
+                    Our Promise
+                  </div>
+                </div>
+                <ul className="font-serif italic text-[14px] text-green-900 space-y-2 pl-4 list-disc marker:text-green-500">
+                  <li>Sustainable materials sourced from local vendors.</li>
+                  <li>Plastic-free packaging that's kind to the earth.</li>
+                  <li>
+                    Every purchase supports independent artisans in Varanasi.
+                  </li>
+                </ul>
+              </StickyNote>
+            </div>
           </div>
 
           {/* ── Details column ── */}
-          <div className="lg:py-2 min-w-0 w-full">
+          <div className="lg:py-2 min-w-0 w-full lg:col-span-7">
             {/* label badges */}
             <div className="flex flex-wrap items-center gap-2 mb-3">
               {product.featured && (
@@ -997,7 +1050,7 @@ function ProductTabs({
           />
 
           <div
-            className={`grid gap-8 md:gap-12 items-start relative z-10 ${hasImage ? "md:grid-cols-2" : "max-w-3xl"}`}
+            className={`grid gap-8 md:gap-12 items-start relative z-10 ${hasImage ? "md:grid-cols-2" : ""}`}
           >
             {hasImage && (
               <div

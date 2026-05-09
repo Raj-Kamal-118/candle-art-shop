@@ -16,6 +16,7 @@ import {
   CheckCircle2,
   ChevronDown,
   Gift,
+  Info,
 } from "lucide-react";
 import {
   CartGiftSet,
@@ -155,23 +156,23 @@ function OptionField({ opt, value, onChange }: OptionFieldProps) {
       <p
         style={{
           fontFamily: "var(--font-serif)",
-          fontSize: 10,
+          fontSize: 12,
           fontWeight: 700,
           letterSpacing: "0.12em",
           textTransform: "uppercase",
           color: "#7c5c3a",
-          marginBottom: 4,
+          marginBottom: 6,
         }}
       >
         {opt.label}
       </p>
       {opt.type === "select" && opt.options ? (
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-1.5">
           {opt.options.map((o) => (
             <button
               key={o}
               onClick={() => onChange(o)}
-              className="text-[10px] px-2 py-0.5 border rounded-sm font-serif transition-all"
+              className="text-[12px] px-2.5 py-1 border rounded-sm font-serif transition-all"
               style={{
                 borderColor: value === o ? "#e85d4a" : "#d4b896",
                 background: value === o ? "#fde8e4" : "#fffdf7",
@@ -207,7 +208,8 @@ function OptionField({ opt, value, onChange }: OptionFieldProps) {
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={`enter ${opt.label.toLowerCase()}…`}
-          className="w-full border-b border-amber-300 bg-transparent text-[12px] text-brown-900 font-serif placeholder:italic placeholder:text-brown-400 focus:outline-none focus:border-coral-400 py-0.5"
+          className="w-full border-b border-amber-300 bg-transparent text-[16px] text-brown-900 placeholder:text-brown-400 focus:outline-none focus:border-coral-400 py-1"
+          style={{ fontFamily: "var(--font-hand)" }}
         />
       )}
     </div>
@@ -395,10 +397,10 @@ function ItemCard({
                 />
 
                 <p
-                  className="mb-3 pl-6"
+                  className="mb-4 pl-6"
                   style={{
                     fontFamily: "var(--font-hand)",
-                    fontSize: 17,
+                    fontSize: 24,
                     color: "#3b1f0a",
                   }}
                 >
@@ -432,7 +434,7 @@ function ItemCard({
 
                 <Link
                   href={`/products/${item.slug}`}
-                  className="mt-4 ml-6 inline-flex items-center gap-1 text-[11px] font-bold text-coral-600 hover:text-coral-700 transition-colors"
+                  className="mt-5 ml-6 inline-flex items-center gap-1 text-[13px] font-bold text-coral-600 hover:text-coral-700 transition-colors"
                   style={{
                     fontFamily: "var(--font-serif)",
                     letterSpacing: "0.05em",
@@ -464,6 +466,7 @@ function NotebookDescription({
   onCustomiseClick,
 }: NotebookDescriptionProps) {
   const hasAnyCustomizable = items.some((i) => i.customizable);
+  const individualTotal = items.reduce((s, i) => s + i.price, 0);
 
   return (
     <div className="relative my-6 bg-[#fdfbf7] dark:bg-[#1c1710] rounded-lg shadow-lg border border-cream-200 dark:border-amber-900/30 overflow-hidden">
@@ -556,6 +559,9 @@ function NotebookDescription({
                       >
                         {item.name}
                       </span>
+                      <span className="font-serif font-bold text-brown-700 dark:text-amber-100/80 text-[15px] ml-1">
+                        {formatPrice(item.price)}
+                      </span>
                       {item.customizable && (
                         <span
                           style={{
@@ -578,6 +584,18 @@ function NotebookDescription({
                         </span>
                       )}
                     </div>
+                    {item.description && (
+                      <div className="relative group cursor-default mb-2.5">
+                        <div
+                          className="text-[13px] text-brown-600 dark:text-amber-100/70 font-serif italic line-clamp-2 hover:line-clamp-none transition-all duration-300 hover:text-brown-800 dark:hover:text-amber-100/90 leading-relaxed pr-6"
+                          dangerouslySetInnerHTML={{ __html: item.description }}
+                        />
+                        <Info
+                          size={14}
+                          className="absolute right-0 top-1 text-brown-400/50 dark:text-amber-100/30 opacity-60 group-hover:opacity-100 transition-opacity"
+                        />
+                      </div>
+                    )}
                     {opts.map((opt) => (
                       <p
                         key={opt.id}
@@ -602,8 +620,49 @@ function NotebookDescription({
             })}
           </div>
 
+          {/* Pricing Summary */}
+          <div className="mt-8 pt-6 border-t border-dashed border-[rgba(122,80,40,0.2)] dark:border-amber-900/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2">
+                <span className="text-brown-500 dark:text-amber-100/60 font-serif italic text-[14px]">
+                  Bought separately:
+                </span>
+                <span className="text-brown-400 dark:text-amber-100/50 line-through font-serif text-[15px]">
+                  {formatPrice(individualTotal)}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-brown-800 dark:text-amber-100 font-serif italic text-[16px] font-medium">
+                  Set price:
+                </span>
+                <span className="text-brown-900 dark:text-amber-50 font-black font-serif text-[20px]">
+                  {formatPrice(set.price)}
+                </span>
+              </div>
+            </div>
+            {set.saving > 0 && (
+              <span
+                style={{
+                  display: "inline-block",
+                  background: "var(--home-coral, #e85d4a)",
+                  color: "white",
+                  fontFamily: "var(--font-hand)",
+                  fontSize: 18,
+                  letterSpacing: "0.08em",
+                  fontWeight: 700,
+                  padding: "4px 18px 4px 10px",
+                  clipPath:
+                    "polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%)",
+                  lineHeight: 1.3,
+                }}
+              >
+                You save {formatPrice(set.saving)}
+              </span>
+            )}
+          </div>
+
           {hasAnyCustomizable && (
-            <div className="mt-10">
+            <div className="mt-8">
               <button
                 onClick={onCustomiseClick}
                 className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-sm transition-all duration-200 border-2 border-amber-300 text-amber-800 dark:text-amber-300 bg-amber-50/50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/40 group shadow-sm hover:-translate-y-0.5"
@@ -784,20 +843,6 @@ function BulletinBoard({
           {/* Title strip — paper slip */}
           <div className="flex justify-center mb-14">
             <div className="relative">
-              <Tape
-                color="amber"
-                width={74}
-                height={22}
-                rotate={-3}
-                className="absolute -top-3 left-3 z-10"
-              />
-              <Tape
-                color="pink"
-                width={62}
-                height={20}
-                rotate={4}
-                className="absolute -top-3 right-3 z-10"
-              />
               <div
                 style={{
                   background: "#fdfbf0",
@@ -810,7 +855,7 @@ function BulletinBoard({
                 <h3
                   style={{
                     fontFamily: "var(--font-hand)",
-                    fontSize: 28,
+                    fontSize: 36,
                     color: "#2d1a08",
                     lineHeight: 1,
                   }}
@@ -824,21 +869,13 @@ function BulletinBoard({
           {/* Helper note */}
           <div className="flex justify-center mb-10">
             <div className="relative">
-              <Tape
-                color="lavender"
-                width={44}
-                height={16}
-                rotate={1.5}
-                className="absolute -top-2 left-4 z-10"
-              />
               <p
                 style={{
                   background: "#fdfbf0",
-                  padding: "6px 16px",
-                  fontFamily: "var(--font-serif)",
-                  fontSize: 12,
+                  padding: "8px 20px",
+                  fontFamily: "var(--font-hand)",
+                  fontSize: 20,
                   color: "#7c5c3a",
-                  fontStyle: "italic",
                   boxShadow: "1px 3px 8px rgba(0,0,0,0.15)",
                   transform: "rotate(0.5deg)",
                 }}
@@ -871,44 +908,63 @@ function BulletinBoard({
 
           {/* Savings receipt strip */}
           {saving > 0 && (
-            <div className="flex justify-center mt-16">
-              <div className="relative">
-                <Tape
-                  color="mint"
-                  width={66}
-                  height={18}
-                  rotate={2}
-                  className="absolute -top-2.5 right-5 z-10"
-                />
+            <div className="flex justify-center mt-16 w-full px-4">
+              <div className="relative w-full max-w-2xl">
                 <div
                   style={{
                     background: "#fdfbf0",
-                    padding: "10px 24px",
+                    padding: "12px 24px",
                     transform: "rotate(0.5deg)",
                     boxShadow: "2px 4px 12px rgba(0,0,0,0.2)",
                     display: "flex",
                     alignItems: "center",
-                    gap: 14,
+                    justifyContent: "center",
+                    flexWrap: "wrap",
+                    gap: "8px 14px",
                   }}
                 >
                   <span
                     style={{
-                      fontFamily: "var(--font-serif)",
-                      fontSize: 12,
+                      fontFamily: "var(--font-hand)",
+                      fontSize: 20,
                       color: "#7c5c3a",
                     }}
                   >
-                    buy separately:
+                    buy separately you would have paid{" "}
+                    <span
+                      style={{
+                        textDecoration: "line-through",
+                        color: "#b08060",
+                        marginLeft: 4,
+                      }}
+                    >
+                      {formatPrice(individualTotal)}
+                    </span>
+                  </span>
+                  <span className="hidden sm:inline text-brown-300 dark:text-amber-900/30">
+                    ·
                   </span>
                   <span
                     style={{
-                      fontFamily: "var(--font-serif)",
-                      fontSize: 14,
-                      color: "#b08060",
-                      textDecoration: "line-through",
+                      fontFamily: "var(--font-hand)",
+                      fontSize: 20,
+                      color: "#7c5c3a",
                     }}
                   >
-                    {formatPrice(individualTotal)}
+                    now you just need to pay{" "}
+                    <span
+                      style={{
+                        fontWeight: 700,
+                        color: "#e85d4a",
+                        marginLeft: 4,
+                        fontSize: 22,
+                      }}
+                    >
+                      {formatPrice(individualTotal - saving)}
+                    </span>
+                  </span>
+                  <span className="hidden md:inline text-brown-300 dark:text-amber-900/30">
+                    ·
                   </span>
                   <span
                     style={{
@@ -923,7 +979,7 @@ function BulletinBoard({
                         "polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%)",
                     }}
                   >
-                    you save {formatPrice(saving)}
+                    You save {formatPrice(saving)}
                   </span>
                 </div>
               </div>
@@ -957,7 +1013,7 @@ export default function GiftSetDetailPage() {
   const [set, setSet] = useState<GiftSet | null>(null);
   const [loading, setLoading] = useState(true);
   const loadPremade = useGiftBuilderStore((s) => s.loadPremade);
-  const addToCart = useStore((s) => s.addToCart);
+  const { addToCart } = useStore();
 
   const [added, setAdded] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -1023,8 +1079,28 @@ export default function GiftSetDetailPage() {
     }, 100);
   };
 
+  const syntheticProduct = set
+    ? {
+        id: `giftset-${set.id}`,
+        name: set.name,
+        slug: set.slug,
+        description: set.description || set.tagline || "",
+        price: set.price,
+        compareAtPrice: set.price + set.saving,
+        categoryId: "",
+        images: set.image ? [set.image] : [],
+        tags: set.occasions,
+        inStock: true,
+        stockCount: 999,
+        featured: false,
+        customizable: false,
+        createdAt: set.createdAt,
+        updatedAt: set.updatedAt,
+      }
+    : null;
+
   const handleAddToCart = () => {
-    if (!set) return;
+    if (!set || !syntheticProduct) return;
     const items = set.items ?? [];
     const giftSetData: CartGiftSet = {
       kind: "premade",
@@ -1057,24 +1133,7 @@ export default function GiftSetDetailPage() {
       box: "kraft",
       card: { style: "card-min", recipient: "", note: "" },
     };
-    const syntheticProduct = {
-      id: `giftset-${set.id}`,
-      name: set.name,
-      slug: set.slug,
-      description: set.description || set.tagline || "",
-      price: set.price,
-      compareAtPrice: set.price + set.saving,
-      categoryId: "",
-      images: set.image ? [set.image] : [],
-      tags: set.occasions,
-      inStock: true,
-      stockCount: 999,
-      featured: false,
-      customizable: false,
-      createdAt: set.createdAt,
-      updatedAt: set.updatedAt,
-    };
-    addToCart(syntheticProduct, 1, undefined, giftSetData);
+    addToCart(syntheticProduct as any, 1, undefined, giftSetData);
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
@@ -1150,25 +1209,17 @@ export default function GiftSetDetailPage() {
           />
         </div>
 
-        <button
-          onClick={() => router.push("/gift-sets")}
-          className="inline-flex items-center gap-2 text-sm text-brown-700 dark:text-amber-100/70 hover:text-coral-600 transition-colors mb-6"
-        >
-          <ChevronLeft size={16} />
-          Back to gift sets
-        </button>
-
         {/* ── Two-column hero ── */}
-        <div className="grid lg:grid-cols-2 gap-12 xl:gap-16 mb-16">
+        <div className="grid lg:grid-cols-12 gap-12 xl:gap-16 mb-16">
           {/* ── Image column ── */}
-          <div className="space-y-6 min-w-0 w-full">
+          <div className="space-y-6 min-w-0 w-full lg:col-span-5">
             <div className="relative mt-6">
               <motion.div
                 key={activeIndex}
                 initial={{ opacity: 0, scale: 0.97 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.35, ease: "easeOut" }}
-                className="craft-polaroid mx-auto"
+                className="craft-polaroid mx-auto lg:mx-0"
                 style={{ padding: "14px", maxWidth: 520 }}
               >
                 <Tape
@@ -1207,7 +1258,7 @@ export default function GiftSetDetailPage() {
 
             {/* Thumbnail strip */}
             {allImages.length > 1 && (
-              <div className="flex gap-4 overflow-x-auto pt-4 pb-4 px-2 scrollbar-hide justify-center">
+              <div className="flex gap-4 overflow-x-auto pt-4 pb-4 px-2 scrollbar-hide justify-center lg:justify-start">
                 {allImages.map((img, i) => (
                   <button
                     key={`${img.id}-${i}`}
@@ -1231,12 +1282,21 @@ export default function GiftSetDetailPage() {
                       fill="none"
                       className="absolute top-[-10px] left-3 z-10 drop-shadow-sm"
                       style={{
-                        transform: `rotate(${i % 2 === 0 ? -8 : 12}deg)`,
+                        transform: `rotate(${[-12, 15, -8, 6, -15, 10][i % 6]}deg)`,
                       }}
                     >
                       <path
                         d="M14 42 V 16 A 6 6 0 0 1 26 16 V 48 A 11 11 0 0 1 4 48 V 16"
-                        stroke="#9ca3af"
+                        stroke={
+                          [
+                            "#9ca3af",
+                            "#d4b896",
+                            "#e85d4a",
+                            "#6b7280",
+                            "#93c5fd",
+                            "#a78bfa",
+                          ][i % 6]
+                        }
                         strokeWidth="4"
                         strokeLinecap="round"
                       />
@@ -1266,7 +1326,7 @@ export default function GiftSetDetailPage() {
           </div>
 
           {/* ── Details column ── */}
-          <div className="lg:py-2 min-w-0 w-full flex flex-col gap-4">
+          <div className="lg:py-2 min-w-0 w-full flex flex-col gap-4 lg:col-span-7">
             {/* Occasion tags */}
             <div className="flex flex-wrap items-center gap-2">
               {set.occasions.map((occ) => (
