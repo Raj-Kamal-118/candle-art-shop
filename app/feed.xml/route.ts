@@ -1,5 +1,7 @@
 import { getProducts } from "@/lib/data";
 
+export const revalidate = 86400; // Revalidate every day
+
 export async function GET() {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.artisanhouse.in";
   
@@ -14,6 +16,7 @@ export async function GET() {
       const cleanDescription = product.description
         ? product.description.replace(/<[^>]*>?/gm, "").trim()
         : `${product.name} by Artisan House`;
+      const formattedPrice = Number(product.price).toFixed(2);
 
       return `
     <item>
@@ -24,7 +27,7 @@ export async function GET() {
       <g:image_link>${product.images?.[0] || ""}</g:image_link>
       <g:condition>new</g:condition>
       <g:availability>${product.inStock ? "in_stock" : "out_of_stock"}</g:availability>
-      <g:price>${product.price}.00 INR</g:price>
+      <g:price>${formattedPrice} INR</g:price>
       <g:brand>Artisan House</g:brand>
     </item>`;
     })
