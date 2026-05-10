@@ -542,7 +542,7 @@ export default function ProductDetailPage() {
                   .dark .craft-fav-btn:hover { box-shadow: 0 6px 16px rgba(232,93,74,0.35) !important; }
                   .dark .craft-extra-btn.craft-extra-outline:hover { background: rgba(28,23,16,0.95) !important; }
                 `}</style>
-                <div className="relative z-10 p-8 pl-12 sm:p-10 sm:pl-16">
+                <div className="relative z-10 p-2 pl-12 sm:p-10 sm:pl-16">
                   {/* ── Badges ── */}
                   <div className="flex flex-wrap items-center gap-2 mb-5">
                     {product.featured && (
@@ -932,7 +932,7 @@ export default function ProductDetailPage() {
                             {opt.label}
                           </span>
                           <span
-                            className="inline-flex items-center gap-2 ml-1.5 bg-amber-50 dark:bg-amber-950/40  border-amber-300/70 dark:border-amber-700/40 rounded-lg px-3 py-1.5 text-amber-800 dark:text-amber-300/80"
+                            className="hidden sm:inline-flex items-center gap-2 ml-1.5 bg-amber-50 dark:bg-amber-950/40  border-amber-300/70 dark:border-amber-700/40 rounded-lg px-3 py-1.5 text-amber-800 dark:text-amber-300/80"
                             style={{
                               fontFamily: "var(--font-hand)",
                               fontSize: 17,
@@ -1429,7 +1429,7 @@ export default function ProductDetailPage() {
                   )}
 
                   {/* ── Trust stamps (inside notebook) ── */}
-                  <div className="flex justify-center gap-0 sm:gap-6 mt-6 pt-6 border-t border-dashed border-red-200/40 dark:border-red-700/20">
+                  <div className="flex justify-center gap-2 sm:gap-6 mt-6 pt-6 border-t border-dashed border-red-200/40 dark:border-red-700/20">
                     <PostageStamp
                       label="Shipping"
                       denom={
@@ -1729,7 +1729,7 @@ function ProductTabs({
                 {/* Characteristics sticky notes below polaroid */}
                 {productCharacteristics &&
                   productCharacteristics.length > 0 && (
-                    <div className="flex flex-wrap gap-5 px-2 pt-4">
+                    <div className="hidden sm:flex flex-wrap gap-5 px-2 pt-4">
                       {productCharacteristics.map((c, idx) => {
                         const Icon =
                           (c.icon && ICONS[c.icon.toLowerCase()]) || Flame;
@@ -1886,7 +1886,7 @@ function BurnGuideSection() {
         </p>
       </div>
 
-      <div className="flex flex-wrap gap-8 justify-start">
+      <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-4 sm:gap-8 justify-start px-2 sm:px-0">
         {tips.map((tip, i) => {
           const Icon = tip.icon;
           const rot = NOTE_ROTATIONS[i % NOTE_ROTATIONS.length];
@@ -1897,8 +1897,8 @@ function BurnGuideSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.35, delay: i * 0.07 }}
+              className="w-full sm:w-[176px]"
               style={{
-                width: 176,
                 flexShrink: 0,
                 transform: `rotate(${rot}deg)`,
                 transformOrigin: "center top",
@@ -2060,7 +2060,7 @@ function KeyChainGuideSection() {
         </p>
       </div>
 
-      <div className="flex flex-wrap gap-8 justify-start">
+      <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-4 sm:gap-8 justify-start px-2 sm:px-0">
         {tips.map((tip, i) => {
           const Icon = tip.icon;
           const rot = NOTE_ROTATIONS[i % NOTE_ROTATIONS.length];
@@ -2071,8 +2071,8 @@ function KeyChainGuideSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.35, delay: i * 0.07 }}
+              className="w-full sm:w-[176px]"
               style={{
-                width: 176,
                 flexShrink: 0,
                 transform: `rotate(${rot}deg)`,
                 transformOrigin: "center top",
@@ -2233,7 +2233,7 @@ function MagnetGuideSection() {
         </p>
       </div>
 
-      <div className="flex flex-wrap gap-8 justify-start">
+      <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-4 sm:gap-8 justify-start px-2 sm:px-0">
         {tips.map((tip, i) => {
           const Icon = tip.icon;
           const rot = NOTE_ROTATIONS[i % NOTE_ROTATIONS.length];
@@ -2244,8 +2244,8 @@ function MagnetGuideSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.35, delay: i * 0.07 }}
+              className="w-full sm:w-[176px]"
               style={{
-                width: 176,
                 flexShrink: 0,
                 transform: `rotate(${rot}deg)`,
                 transformOrigin: "center top",
@@ -2409,7 +2409,7 @@ function GiftingSection() {
       </div>
 
       {/* Perks row */}
-      <div className="flex flex-wrap gap-8 justify-start mb-12">
+      <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-4 sm:gap-8 justify-start px-2 sm:px-0 mb-12">
         {perks.map((perk, i) => {
           const Icon = perk.icon;
           const rot = NOTE_ROTATIONS[i % NOTE_ROTATIONS.length];
@@ -2420,8 +2420,8 @@ function GiftingSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.35, delay: i * 0.07 }}
+              className="w-full sm:w-[176px]"
               style={{
-                width: 176,
                 flexShrink: 0,
                 transform: `rotate(${rot}deg)`,
                 transformOrigin: "center top",
@@ -2965,26 +2965,44 @@ function FeaturedProductsSection({
         </Link>
       </div>
 
-      {/* Grid or Slider */}
-      {products.length > 4 ? (
-        <div className="-mx-2 sm:mx-0">
-          <ProductCarousel products={products} />
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-          {products.map((p, i) => (
-            <motion.div
-              key={p.id}
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.35, delay: i * 0.06 }}
-            >
-              <ProductCard product={p} />
-            </motion.div>
-          ))}
-        </div>
-      )}
+      {/* Desktop/Tablet View */}
+      <div className="hidden sm:block">
+        {products.length > 4 ? (
+          <div className="-mx-2 sm:mx-0">
+            <ProductCarousel products={products} />
+          </div>
+        ) : (
+          <div className="grid sm:grid-cols-3 lg:grid-cols-4 gap-6">
+            {products.map((p, i) => (
+              <motion.div
+                key={p.id}
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.35, delay: i * 0.06 }}
+              >
+                <ProductCard product={p} />
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Mobile View: 1 item centered snap carousel */}
+      <div className="sm:hidden flex overflow-x-auto snap-x snap-mandatory gap-5 px-8 pb-8 -mx-4 scrollbar-hide">
+        {products.map((p, i) => (
+          <motion.div
+            key={p.id}
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.35, delay: i * 0.06 }}
+            className="snap-center shrink-0 w-[calc(100vw-4rem)] max-w-[320px]"
+          >
+            <ProductCard product={p} />
+          </motion.div>
+        ))}
+      </div>
     </section>
   );
 }
