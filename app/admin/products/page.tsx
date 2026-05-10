@@ -558,6 +558,17 @@ export default function AdminProductsPage() {
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    const isVideo = file.type.startsWith("video/");
+    const maxSize = isVideo ? 50 * 1024 * 1024 : 5 * 1024 * 1024; // 50MB for video, 5MB for images
+    if (file.size > maxSize) {
+      alert(
+        `${isVideo ? "Video" : "Image"} file size must be less than ${isVideo ? "50MB" : "5MB"}.`,
+      );
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+
     setUploading(true);
     try {
       const fd = new FormData();
@@ -887,7 +898,7 @@ export default function AdminProductsPage() {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="image/*"
+                accept="image/*, video/mp4, video/webm, video/ogg"
                 className="hidden"
                 onChange={handleImageUpload}
               />
@@ -900,14 +911,26 @@ export default function AdminProductsPage() {
                     .split(",")
                     .map((i) => i.trim())
                     .filter(Boolean)
-                    .map((imgUrl, idx) => (
-                      <img
-                        key={idx}
-                        src={imgUrl}
-                        alt={`Product preview ${idx + 1}`}
-                        className="w-24 h-24 object-cover rounded-xl border border-cream-200 dark:border-amber-900/40 shadow-sm"
-                      />
-                    ))}
+                    .map((imgUrl, idx) =>
+                      imgUrl.match(/\.(mp4|webm|ogg)(\?.*)?$/i) ? (
+                        <video
+                          key={idx}
+                          src={imgUrl}
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                          className="w-24 h-24 object-cover rounded-xl border border-cream-200 dark:border-amber-900/40 shadow-sm"
+                        />
+                      ) : (
+                        <img
+                          key={idx}
+                          src={imgUrl}
+                          alt={`Product preview ${idx + 1}`}
+                          className="w-24 h-24 object-cover rounded-xl border border-cream-200 dark:border-amber-900/40 shadow-sm"
+                        />
+                      ),
+                    )}
                 </div>
               )}
             </div>
@@ -1648,11 +1671,24 @@ export default function AdminProductsPage() {
                             sectionFileInputs.current[s.id] = el;
                           }}
                           type="file"
-                          accept="image/*"
+                          accept="image/*, video/mp4, video/webm, video/ogg"
                           className="hidden"
                           onChange={async (e) => {
                             const file = e.target.files?.[0];
                             if (!file) return;
+
+                            const isVideo = file.type.startsWith("video/");
+                            const maxSize = isVideo
+                              ? 50 * 1024 * 1024
+                              : 5 * 1024 * 1024;
+                            if (file.size > maxSize) {
+                              alert(
+                                `${isVideo ? "Video" : "Image"} file size must be less than ${isVideo ? "50MB" : "5MB"}.`,
+                              );
+                              e.target.value = "";
+                              return;
+                            }
+
                             const fd = new FormData();
                             fd.append("file", file);
                             const res = await fetch("/api/upload", {
@@ -1672,13 +1708,23 @@ export default function AdminProductsPage() {
                           }}
                         />
                       </div>
-                      {s.image && (
-                        <img
-                          src={s.image}
-                          alt=""
-                          className="mt-2 w-32 h-20 object-cover rounded-lg border border-cream-200 dark:border-amber-900/40"
-                        />
-                      )}
+                      {s.image &&
+                        (s.image.match(/\.(mp4|webm|ogg)(\?.*)?$/i) ? (
+                          <video
+                            src={s.image}
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            className="mt-2 w-32 h-20 object-cover rounded-lg border border-cream-200 dark:border-amber-900/40"
+                          />
+                        ) : (
+                          <img
+                            src={s.image}
+                            alt=""
+                            className="mt-2 w-32 h-20 object-cover rounded-lg border border-cream-200 dark:border-amber-900/40"
+                          />
+                        ))}
                     </div>
                   </div>
                 ))}

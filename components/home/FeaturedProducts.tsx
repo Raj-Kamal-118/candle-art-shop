@@ -154,15 +154,28 @@ export default function FeaturedProducts({
                 >
                   <div className="w-20 h-20 rounded-xl overflow-hidden bg-cream-50 dark:bg-black/20 flex-shrink-0 relative shadow-sm">
                     {img ? (
-                      <Image
-                        src={img}
-                        alt={p.name}
-                        fill
-                        sizes="80px"
-                        className={`w-full h-full object-cover transition-transform duration-200 ${
-                          isActive ? "scale-110" : "group-hover:scale-110"
-                        }`}
-                      />
+                      img.match(/\.(mp4|webm|ogg)(\?.*)?$/i) ? (
+                        <video
+                          src={img}
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                          className={`w-full h-full object-cover transition-transform duration-200 ${
+                            isActive ? "scale-110" : "group-hover:scale-110"
+                          }`}
+                        />
+                      ) : (
+                        <Image
+                          src={img}
+                          alt={p.name}
+                          fill
+                          sizes="80px"
+                          className={`w-full h-full object-cover transition-transform duration-200 ${
+                            isActive ? "scale-110" : "group-hover:scale-110"
+                          }`}
+                        />
+                      )
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-2xl">
                         🕯️
@@ -337,14 +350,25 @@ function FeaturedPhotoStack({
             <div className="w-full h-full p-2.5 pb-10 md:pb-12 bg-white dark:bg-[#1a1830] rounded-xl border border-gray-100 dark:border-amber-900/30 flex flex-col">
               {img ? (
                 <div className="relative w-full h-full rounded-lg overflow-hidden bg-cream-50 dark:bg-black/20">
-                  <Image
-                    src={img}
-                    alt={`${product.name} - view ${idx + 1}`}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 400px"
-                    priority={activeIndex === 0 && idx === 0}
-                    className="object-cover"
-                  />
+                  {img.match(/\.(mp4|webm|ogg)(\?.*)?$/i) ? (
+                    <video
+                      src={img}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="object-cover w-full h-full"
+                    />
+                  ) : (
+                    <Image
+                      src={img}
+                      alt={`${product.name} - view ${idx + 1}`}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 400px"
+                      priority={activeIndex === 0 && idx === 0}
+                      className="object-cover"
+                    />
+                  )}
                 </div>
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-4xl bg-cream-50 dark:bg-black/20 rounded-lg">

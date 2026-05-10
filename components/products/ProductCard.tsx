@@ -69,13 +69,24 @@ export default function ProductCard({
           className={`relative overflow-hidden bg-cream-100 dark:bg-amber-900/20 ${viewMode === "list" ? "w-full sm:w-64 shrink-0 aspect-[4/3] sm:aspect-square" : "aspect-square w-full"}`}
         >
           {product.images?.[0] ? (
-            <Image
-              src={product.images[0]}
-              alt={product.name}
-              fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-              className="object-cover transition-transform duration-500 group-hover:scale-110"
-            />
+            product.images[0].match(/\.(mp4|webm|ogg)(\?.*)?$/i) ? (
+              <video
+                src={product.images[0]}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
+              />
+            ) : (
+              <Image
+                src={product.images[0]}
+                alt={product.name}
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                className="object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+            )
           ) : (
             <div className="w-full h-full flex items-center justify-center text-5xl">
               🕯️

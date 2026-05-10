@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -150,7 +150,10 @@ export default function ProductDetailPage() {
   const [customizations, setCustomizations] = useState<Record<string, string>>(
     {},
   );
-  const [displayNotes, setDisplayNotes] = useState<any[]>([]);
+  const [shuffledNotes, setShuffledNotes] = useState<any[]>([]);
+  const [notesCount, setNotesCount] = useState<number>(0);
+  const leftTopRef = useRef<HTMLDivElement>(null);
+  const rightColRef = useRef<HTMLDivElement>(null);
   const [isDescExpanded, setIsDescExpanded] = useState(false);
 
   useEffect(() => {
@@ -167,16 +170,45 @@ export default function ProductDetailPage() {
   }, [product]);
 
   useEffect(() => {
-    // Robust Fisher-Yates shuffle
     const shuffled = [...allCardboardNotes];
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
+    setShuffledNotes(shuffled);
+  }, [product?.id]);
 
-    if (product?.customizable) setDisplayNotes(shuffled);
-    else setDisplayNotes(shuffled.slice(0, 3));
-  }, [product?.customizable]);
+  useEffect(() => {
+    const calculateNotes = () => {
+      if (!leftTopRef.current || !rightColRef.current) return;
+
+      // The notes are hidden on mobile via CSS (lg:flex).
+      // We skip calculations entirely below 1024px to prevent any state updates or layout shifts.
+      if (window.innerWidth < 1024) {
+        setNotesCount(0);
+        return;
+      }
+
+      const leftHeight = leftTopRef.current.getBoundingClientRect().height;
+      const rightHeight = rightColRef.current.getBoundingClientRect().height;
+
+      // Available space on the left (gap is 64px from mt-16)
+      const availableSpace = rightHeight - leftHeight - 64;
+
+      // Reduced the estimated card + gap height to 180px to safely fit 1 more card in the available space.
+      const count = Math.max(0, Math.floor(availableSpace / 150));
+      setNotesCount(Math.min(allCardboardNotes.length, count));
+    };
+
+    const observer = new ResizeObserver(() => {
+      window.requestAnimationFrame(calculateNotes);
+    });
+
+    if (rightColRef.current) observer.observe(rightColRef.current);
+    if (leftTopRef.current) observer.observe(leftTopRef.current);
+
+    return () => observer.disconnect();
+  }, []);
 
   const [addedToCart, setAddedToCart] = useState(false);
 
@@ -261,237 +293,263 @@ export default function ProductDetailPage() {
 
         <div className="grid lg:grid-cols-12 gap-12 xl:gap-16 mb-16">
           {/* ── Image column ── */}
-          <div className="space-y-6 min-w-0 w-full lg:col-span-5">
-            {/* Main polaroid frame */}
-            <div className="relative mt-6">
-              <motion.div
-                key={selectedImage}
-                initial={{ opacity: 0, scale: 0.97 }}
-                animate={{
-                  opacity: 1,
-                  scale: 1,
-                }}
-                transition={{ duration: 0.35, ease: "easeOut" }}
-                className="craft-polaroid mx-auto lg:mx-0"
-                style={{ padding: "14px", maxWidth: 560 }}
-              >
-                {/* Top Right Diagonal Tape */}
-                <Tape
-                  color="amber"
-                  width={140}
-                  height={30}
-                  rotate={45}
-                  className="absolute -right-10 -top-0.5 z-20"
-                />
-
-                <div className="relative bg-[#f5ecda] dark:bg-amber-950/60 overflow-hidden w-full aspect-square group/main-img">
-                  {product.images?.[selectedImage] ? (
-                    <Image
-                      src={product.images[selectedImage]}
-                      alt={product.name}
-                      fill
-                      sizes="(max-width: 1024px) 100vw, 50vw"
-                      priority
-                      className="object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-[80px]">
-                      🕯️
-                    </div>
-                  )}
-
-                  {/* Image Navigation Buttons */}
-                  {product.images && product.images.length > 1 && (
-                    <>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedImage(
-                            (prev) =>
-                              (prev - 1 + product.images!.length) %
-                              product.images!.length,
-                          );
-                        }}
-                        className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center bg-white/80 hover:bg-white text-brown-900 rounded-full shadow-md backdrop-blur-sm transition-all z-20 opacity-0 group-hover/main-img:opacity-100"
-                      >
-                        <ArrowLeft size={18} />
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedImage(
-                            (prev) => (prev + 1) % product.images!.length,
-                          );
-                        }}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center bg-white/80 hover:bg-white text-brown-900 rounded-full shadow-md backdrop-blur-sm transition-all z-20 opacity-0 group-hover/main-img:opacity-100"
-                      >
-                        <ArrowRight size={18} />
-                      </button>
-                    </>
-                  )}
-
-                  {/* Discount ribbon */}
-                  {discount && (
-                    <div className="absolute top-4 left-0 z-10">
-                      <div
-                        style={{
-                          background: "#e85d4a",
-                          color: "white",
-                          fontFamily: "var(--font-hand)",
-                          fontSize: 24,
-                          letterSpacing: "0.08em",
-                          fontWeight: 700,
-                          padding: "6px 24px 6px 14px",
-                          clipPath:
-                            "polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%)",
-                          lineHeight: 1.2,
-                          boxShadow: "2px 2px 8px rgba(0,0,0,0.2)",
-                        }}
-                      >
-                        {discount}% off
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Sold-out stamp */}
-                  {!product.inStock && (
-                    <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/25 dark:bg-black/30 backdrop-blur-[1px]">
-                      <div
-                        style={{
-                          border: "3px solid rgba(180,40,30,0.85)",
-                          borderRadius: "50%",
-                          padding: "10px 24px",
-                          transform: "rotate(-15deg)",
-                          color: "rgba(180,40,30,0.9)",
-                          fontFamily: "var(--font-hand)",
-                          fontSize: 24,
-                          fontWeight: 700,
-                          letterSpacing: "0.1em",
-                          background: "rgba(255,255,255,0.65)",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        Sold out
-                      </div>
-                    </div>
-                  )}
-                </div>
-                {/* Polaroid caption */}
-                <p
-                  className="text-center text-brown-500 dark:text-amber-200/75 mt-3 px-2 leading-snug line-clamp-1"
-                  style={{ fontFamily: "var(--font-hand)", fontSize: 32 }}
+          <div className="min-w-0 w-full lg:col-span-5 flex flex-col">
+            <div ref={leftTopRef} className="space-y-6">
+              {/* Main polaroid frame */}
+              <div className="relative mt-6">
+                <motion.div
+                  key={selectedImage}
+                  initial={{ opacity: 0, scale: 0.97 }}
+                  animate={{
+                    opacity: 1,
+                    scale: 1,
+                  }}
+                  transition={{ duration: 0.35, ease: "easeOut" }}
+                  className="craft-polaroid mx-auto lg:mx-0"
+                  style={{ padding: "14px", maxWidth: 560 }}
                 >
-                  {product.name}
-                </p>
-              </motion.div>
-            </div>
+                  {/* Top Right Diagonal Tape */}
+                  <Tape
+                    color="amber"
+                    width={140}
+                    height={30}
+                    rotate={45}
+                    className="absolute -right-10 -top-0.5 z-20"
+                  />
 
-            {/* Thumbnail strip — mini polaroids */}
-            {product.images && product.images.length > 1 && (
-              <div className="flex gap-4 overflow-x-auto pt-4 pb-4 px-2 scrollbar-hide justify-center lg:justify-start">
-                {product.images.map((img, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setSelectedImage(i)}
-                    className="relative shrink-0 craft-polaroid transition-all duration-200 hover:-translate-y-1"
-                    style={{
-                      padding: "6px 6px 16px",
-                      width: 80,
-                      opacity: selectedImage === i ? 1 : 0.5,
-                      transform:
-                        selectedImage === i
-                          ? `scale(1.1) rotate(${i % 2 === 0 ? -1 : 2}deg)`
-                          : `rotate(${i % 2 === 0 ? -3 : 3}deg)`,
-                    }}
-                    aria-label={`View image ${i + 1}`}
+                  <div className="relative bg-[#f5ecda] dark:bg-amber-950/60 overflow-hidden w-full aspect-square group/main-img">
+                    {product.images?.[selectedImage] ? (
+                      product.images[selectedImage].match(
+                        /\.(mp4|webm|ogg)(\?.*)?$/i,
+                      ) ? (
+                        <video
+                          src={product.images[selectedImage]}
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                          className="object-cover w-full h-full"
+                        />
+                      ) : (
+                        <Image
+                          src={product.images[selectedImage]}
+                          alt={product.name}
+                          fill
+                          sizes="(max-width: 1024px) 100vw, 50vw"
+                          priority
+                          className="object-cover"
+                        />
+                      )
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-[80px]">
+                        🕯️
+                      </div>
+                    )}
+
+                    {/* Image Navigation Buttons */}
+                    {product.images && product.images.length > 1 && (
+                      <>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedImage(
+                              (prev) =>
+                                (prev - 1 + product.images!.length) %
+                                product.images!.length,
+                            );
+                          }}
+                          className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center bg-white/80 hover:bg-white text-brown-900 rounded-full shadow-md backdrop-blur-sm transition-all z-20 opacity-0 group-hover/main-img:opacity-100"
+                        >
+                          <ArrowLeft size={18} />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedImage(
+                              (prev) => (prev + 1) % product.images!.length,
+                            );
+                          }}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center bg-white/80 hover:bg-white text-brown-900 rounded-full shadow-md backdrop-blur-sm transition-all z-20 opacity-0 group-hover/main-img:opacity-100"
+                        >
+                          <ArrowRight size={18} />
+                        </button>
+                      </>
+                    )}
+
+                    {/* Discount ribbon */}
+                    {discount && (
+                      <div className="absolute top-4 left-0 z-10">
+                        <div
+                          style={{
+                            background: "#e85d4a",
+                            color: "white",
+                            fontFamily: "var(--font-hand)",
+                            fontSize: 24,
+                            letterSpacing: "0.08em",
+                            fontWeight: 700,
+                            padding: "6px 24px 6px 14px",
+                            clipPath:
+                              "polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%)",
+                            lineHeight: 1.2,
+                            boxShadow: "2px 2px 8px rgba(0,0,0,0.2)",
+                          }}
+                        >
+                          {discount}% off
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Sold-out stamp */}
+                    {!product.inStock && (
+                      <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/25 dark:bg-black/30 backdrop-blur-[1px]">
+                        <div
+                          style={{
+                            border: "3px solid rgba(180,40,30,0.85)",
+                            borderRadius: "50%",
+                            padding: "10px 24px",
+                            transform: "rotate(-15deg)",
+                            color: "rgba(180,40,30,0.9)",
+                            fontFamily: "var(--font-hand)",
+                            fontSize: 24,
+                            fontWeight: 700,
+                            letterSpacing: "0.1em",
+                            background: "rgba(255,255,255,0.65)",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          Sold out
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  {/* Polaroid caption */}
+                  <p
+                    className="text-center text-brown-500 dark:text-amber-200/75 mt-3 px-2 leading-snug line-clamp-1"
+                    style={{ fontFamily: "var(--font-hand)", fontSize: 32 }}
                   >
-                    {/* Paperclip */}
-                    <svg
-                      width="14"
-                      height="28"
-                      viewBox="0 0 32 64"
-                      fill="none"
-                      className="absolute top-[-10px] left-3 z-10 drop-shadow-sm"
+                    {product.name}
+                  </p>
+                </motion.div>
+              </div>
+
+              {/* Thumbnail strip — mini polaroids */}
+              {product.images && product.images.length > 1 && (
+                <div className="flex gap-4 overflow-x-auto pt-4 pb-4 px-2 scrollbar-hide justify-center lg:justify-start">
+                  {product.images.map((img, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setSelectedImage(i)}
+                      className="relative shrink-0 craft-polaroid transition-all duration-200 hover:-translate-y-1"
                       style={{
-                        transform: `rotate(${[-12, 15, -8, 6, -15, 10][i % 6]}deg)`,
+                        padding: "6px 6px 16px",
+                        width: 80,
+                        opacity: selectedImage === i ? 1 : 0.5,
+                        transform:
+                          selectedImage === i
+                            ? `scale(1.1) rotate(${i % 2 === 0 ? -1 : 2}deg)`
+                            : `rotate(${i % 2 === 0 ? -3 : 3}deg)`,
+                      }}
+                      aria-label={`View image ${i + 1}`}
+                    >
+                      {/* Paperclip */}
+                      <svg
+                        width="14"
+                        height="28"
+                        viewBox="0 0 32 64"
+                        fill="none"
+                        className="absolute top-[-10px] left-3 z-10 drop-shadow-sm"
+                        style={{
+                          transform: `rotate(${[-12, 15, -8, 6, -15, 10][i % 6]}deg)`,
+                        }}
+                      >
+                        <path
+                          d="M14 42 V 16 A 6 6 0 0 1 26 16 V 48 A 11 11 0 0 1 4 48 V 16"
+                          stroke={
+                            [
+                              "#9ca3af",
+                              "#d4b896",
+                              "#e85d4a",
+                              "#6b7280",
+                              "#93c5fd",
+                              "#a78bfa",
+                            ][i % 6]
+                          }
+                          strokeWidth="4"
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                      <div
+                        className="relative bg-[#f5ecda] dark:bg-amber-950/60 overflow-hidden"
+                        style={{ width: 64, height: 64 }}
+                      >
+                        {img.match(/\.(mp4|webm|ogg)(\?.*)?$/i) ? (
+                          <video
+                            src={img}
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            className="object-cover w-full h-full"
+                          />
+                        ) : (
+                          <Image
+                            src={img}
+                            alt=""
+                            fill
+                            sizes="66px"
+                            className="object-cover"
+                          />
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* ── Reviews — mobile only; tablet/desktop shown inline with price ── */}
+              <div className="md:hidden mt-8 px-2 lg:px-4 xl:px-8">
+                <div className="flex flex-col gap-2">
+                  {/* Stars row */}
+                  <div className="flex items-center gap-2.5">
+                    <HandDrawnStars rating={4.0} size={22} />
+                    <span
+                      className="font-bold text-brown-700 dark:text-amber-200"
+                      style={{ fontFamily: "var(--font-hand)", fontSize: 20 }}
+                    >
+                      4.0
+                    </span>
+                  </div>
+                  {/* Count + link */}
+                  <div className="flex items-center gap-3">
+                    <span
+                      className="text-brown-400 dark:text-amber-100/70"
+                      style={{
+                        fontFamily: "var(--font-serif)",
+                        fontStyle: "italic",
+                        fontSize: 13,
                       }}
                     >
-                      <path
-                        d="M14 42 V 16 A 6 6 0 0 1 26 16 V 48 A 11 11 0 0 1 4 48 V 16"
-                        stroke={
-                          [
-                            "#9ca3af",
-                            "#d4b896",
-                            "#e85d4a",
-                            "#6b7280",
-                            "#93c5fd",
-                            "#a78bfa",
-                          ][i % 6]
-                        }
-                        strokeWidth="4"
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                    <div
-                      className="relative bg-[#f5ecda] dark:bg-amber-950/60 overflow-hidden"
-                      style={{ width: 64, height: 64 }}
+                      Based on 24 reviews
+                    </span>
+                    <Link
+                      href="/reviews"
+                      className="inline-flex items-center gap-1 text-coral-600 dark:text-amber-400 hover:underline"
+                      style={{
+                        fontFamily: "var(--font-serif)",
+                        fontStyle: "italic",
+                        fontSize: 12,
+                      }}
                     >
-                      <Image
-                        src={img}
-                        alt=""
-                        fill
-                        sizes="66px"
-                        className="object-cover"
-                      />
-                    </div>
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {/* ── Reviews — mobile only; tablet/desktop shown inline with price ── */}
-            <div className="md:hidden mt-8 px-2 lg:px-4 xl:px-8">
-              <div className="flex flex-col gap-2">
-                {/* Stars row */}
-                <div className="flex items-center gap-2.5">
-                  <HandDrawnStars rating={4.0} size={22} />
-                  <span
-                    className="font-bold text-brown-700 dark:text-amber-200"
-                    style={{ fontFamily: "var(--font-hand)", fontSize: 20 }}
-                  >
-                    4.0
-                  </span>
-                </div>
-                {/* Count + link */}
-                <div className="flex items-center gap-3">
-                  <span
-                    className="text-brown-400 dark:text-amber-100/70"
-                    style={{
-                      fontFamily: "var(--font-serif)",
-                      fontStyle: "italic",
-                      fontSize: 13,
-                    }}
-                  >
-                    Based on 24 reviews
-                  </span>
-                  <Link
-                    href="/reviews"
-                    className="inline-flex items-center gap-1 text-coral-600 dark:text-amber-400 hover:underline"
-                    style={{
-                      fontFamily: "var(--font-serif)",
-                      fontStyle: "italic",
-                      fontSize: 12,
-                    }}
-                  >
-                    Read all <ArrowRight size={11} />
-                  </Link>
+                      Read all <ArrowRight size={11} />
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* ── Left Column Fillers (Desktop only) ── */}
             <div className="hidden lg:flex flex-col gap-12 mt-16 pr-4 xl:pr-8">
-              {displayNotes.map((noteProps, idx) => (
+              {shuffledNotes.slice(0, notesCount).map((noteProps, idx) => (
                 <ManilaTagNote
                   key={noteProps.id}
                   title={noteProps.title}
@@ -505,7 +563,10 @@ export default function ProductDetailPage() {
           </div>
 
           {/* ── Details column ── */}
-          <div className="lg:py-2 min-w-0 w-full lg:col-span-7">
+          <div
+            ref={rightColRef}
+            className="lg:py-2 min-w-0 w-full lg:col-span-7"
+          >
             {/* ── Single Combined Notebook ── */}
             <div className="relative my-0 z-20">
               <div
@@ -839,383 +900,325 @@ export default function ProductDetailPage() {
                     </div>
                   )}
 
-                  {/* ── Section divider ── */}
-                  <div className="my-10 relative">
-                    <div className="h-px bg-red-300/55 dark:bg-red-700/35" />
-                    <div className="h-px bg-red-200/35 dark:bg-red-600/20 mt-[3px]" />
-                    <span className="absolute -top-[11px] right-0 bg-[#fdfbf7] dark:bg-[#1c1710] pl-3 font-serif italic text-[11px] text-red-400/70 dark:text-red-400/75">
-                      ✦ your order
-                    </span>
-                  </div>
+                  {/* ── Order & Customisation Card ── */}
 
-                  {/* ── Order section heading ── */}
-                  <div className="flex items-start gap-3 mb-8">
-                    <div
-                      className="w-8 h-8 rounded-full flex items-center justify-center text-white shrink-0 shadow-md mt-1"
-                      style={{
-                        background:
-                          "linear-gradient(135deg,#e85d4a 0%,#c94535 100%)",
-                      }}
-                    >
-                      {product.customizable &&
-                      product.customizationOptions?.length ? (
-                        <Sparkles size={14} />
-                      ) : (
-                        <Package size={14} />
-                      )}
-                    </div>
-
-                    <h3
-                      style={{
-                        fontFamily: "var(--font-hand)",
-                        fontSize: 26,
-                        lineHeight: 1.3,
-                        color: "var(--home-text)",
-                      }}
-                      className="pt-1"
-                    >
-                      {product.customizable &&
-                      product.customizationOptions?.length ? (
-                        <>
-                          A few quick steps to make this piece{" "}
-                          <span
-                            className="text-coral-600 dark:text-amber-400"
-                            style={{
-                              fontFamily: "var(--font-script)",
-                              fontSize: "1.1em",
-                            }}
-                          >
-                            uniquely yours
-                          </span>
-                          .
-                        </>
-                      ) : (
-                        <>
-                          Select your quantity and add it to your{" "}
-                          <span
-                            className="text-coral-600 dark:text-amber-400"
-                            style={{
-                              fontFamily: "var(--font-script)",
-                              fontSize: "1.1em",
-                            }}
-                          >
-                            basket
-                          </span>
-                          .
-                        </>
-                      )}
-                    </h3>
-                  </div>
-
-                  {/* ── Customization options ── */}
-                  {product.customizable &&
-                    product.customizationOptions?.map((opt, stepIdx) => (
-                      <div key={opt.label} className="mb-10">
-                        {/* Step header row */}
-                        <div className="flex items-center gap-2.5 mb-4">
-                          <span
-                            className="w-7 h-7 rounded-full flex items-center justify-center text-white text-[13px] font-black shrink-0 shadow-[0_0_12px_rgba(232,93,74,0.6)]"
-                            style={{
-                              background:
-                                "linear-gradient(135deg,#e85d4a 0%,#c94535 100%)",
-                            }}
-                          >
-                            {stepIdx + 1}
-                          </span>
-                          <span
-                            className="px-2.5 py-0.5 rounded text-white text-[13px] font-bold uppercase tracking-wider"
-                            style={{
-                              background: "#e85d4a",
-                              fontFamily: "var(--font-serif)",
-                            }}
-                          >
-                            {opt.label}
-                          </span>
-                          <span
-                            className="hidden sm:inline-flex items-center gap-2 ml-1.5 bg-amber-50 dark:bg-amber-950/40  border-amber-300/70 dark:border-amber-700/40 rounded-lg px-3 py-1.5 text-amber-800 dark:text-amber-300/80"
-                            style={{
-                              fontFamily: "var(--font-hand)",
-                              fontSize: 17,
-                              lineHeight: 1.5,
-                            }}
-                          >
-                            {opt.type === "text" ? (
-                              <>
-                                <PenLine
-                                  size={14}
-                                  className="shrink-0 text-amber-600"
-                                />{" "}
-                                Jot your {opt.label.toLowerCase()} below —
-                                we&apos;ll inscribe it by hand
-                              </>
-                            ) : opt.type === "color" ? (
-                              <>
-                                <Palette
-                                  size={14}
-                                  className="shrink-0 text-amber-600"
-                                />{" "}
-                                Tap the swatch and pick your perfect shade
-                              </>
-                            ) : (
-                              <>
-                                <MousePointerClick
-                                  size={14}
-                                  className="shrink-0 text-amber-600"
-                                />{" "}
-                                Tap the one that feels right — it&apos;ll get a
-                                highlight
-                              </>
-                            )}
-                          </span>
-                        </div>
-                        {opt.type === "select" && opt.options ? (
-                          <div className="flex flex-wrap gap-x-3 gap-y-3 pl-10">
-                            {opt.options.map((o) => {
-                              const sel = customizations[opt.label] === o;
-                              return (
-                                <button
-                                  key={o}
-                                  type="button"
-                                  onClick={() =>
-                                    setCustomizations((p) => ({
-                                      ...p,
-                                      [opt.label]: o,
-                                    }))
-                                  }
-                                  className={`transition-all px-4 py-1 rounded-xl border-2 ${
-                                    sel
-                                      ? "scale-110 shadow-sm border-transparent"
-                                      : "border-dashed border-brown-300/50 dark:border-amber-900/40 hover:border-coral-400 hover:border-solid dark:hover:border-amber-500 hover:bg-amber-50/50 dark:hover:bg-amber-900/20 hover:scale-110 hover:shadow-sm active:scale-95"
-                                  }`}
-                                  style={{
-                                    fontFamily: "var(--font-hand)",
-                                    fontSize: 24,
-                                    lineHeight: 1.5,
-                                    color: sel
-                                      ? "#78350f"
-                                      : "rgba(92,64,40,0.65)",
-                                    fontWeight: sel ? 700 : 400,
-                                    background: sel
-                                      ? markerHighlight
-                                      : "transparent",
-                                    backgroundSize: "100% 100%",
-                                  }}
-                                >
-                                  {o}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        ) : opt.type === "text" ? (
-                          <div className="pl-10 pr-2 sm:pr-8">
-                            <textarea
-                              placeholder="Scribble your message here..."
-                              rows={2}
-                              className={`w-full bg-white/60 dark:bg-black/20 border-2 focus:outline-none hover:border-coral-400 hover:border-solid focus:border-coral-400 focus:border-solid dark:hover:border-amber-500 dark:focus:border-amber-500 text-brown-900 dark:text-amber-100 placeholder:text-brown-300/60 dark:placeholder:text-amber-100/30 placeholder:italic placeholder:font-serif resize-none overflow-hidden rounded-xl px-4 py-3 transition-all shadow-sm ${
-                                customizations[opt.label]
-                                  ? "border-dashed border-brown-300/50 dark:border-amber-900/40"
-                                  : "border-dashed border-brown-300/50 dark:border-amber-900/40"
-                              }`}
-                              style={{
-                                fontFamily: "var(--font-hand)",
-                                fontSize: 24,
-                                lineHeight: "32px",
-                              }}
-                              value={customizations[opt.label] || ""}
-                              onChange={(e) => {
-                                e.target.style.height = "auto";
-                                e.target.style.height =
-                                  e.target.scrollHeight + "px";
-                                setCustomizations((p) => ({
-                                  ...p,
-                                  [opt.label]: e.target.value,
-                                }));
-                              }}
-                            />
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-4 pl-10">
-                            <div className="relative w-11 h-11 rounded-xl overflow-hidden border-2 border-dashed border-brown-400/60 dark:border-amber-700/60 shadow-sm shrink-0 cursor-pointer hover:border-coral-500 hover:border-solid hover:scale-110 active:scale-95 transition-all">
-                              <input
-                                type="color"
-                                className="absolute -top-2 -left-2 w-16 h-16 cursor-pointer"
-                                value={customizations[opt.label] || "#d97706"}
-                                onChange={(e) =>
-                                  setCustomizations((p) => ({
-                                    ...p,
-                                    [opt.label]: e.target.value,
-                                  }))
-                                }
-                              />
-                            </div>
+                  {/* Paper-tear top edge */}
+                  <div
+                    className="mt-10 h-5 w-full bg-[#fef3c7] dark:bg-[#231d17] transition-colors duration-300"
+                    style={{
+                      clipPath:
+                        "polygon(0% 100%,3% 25%,5% 60%,9% 40%,11% 75%,14% 20%,17% 55%,19% 35%,22% 70%,25% 30%,27% 65%,31% 45%,33% 70%,36% 25%,40% 60%,42% 35%,45% 75%,47% 20%,50% 55%,53% 40%,55% 70%,58% 25%,61% 60%,63% 30%,67% 70%,69% 35%,72% 65%,74% 25%,77% 55%,80% 40%,83% 70%,85% 30%,88% 65%,91% 20%,93% 55%,96% 35%,98% 65%,100% 100%)",
+                    }}
+                  />
+                  <div
+                    className="bg-[#fef3c7] dark:bg-[#231d17] transition-colors duration-300"
+                    style={{
+                      boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
+                    }}
+                  >
+                    <div className="px-5 pt-5 pb-6">
+                      {/* Card header */}
+                      <div className="flex items-start justify-between gap-3 mb-4">
+                        <div>
+                          <div className="flex items-baseline gap-1.5 mb-1">
+                            <span className="text-xl font-bold text-brown-600 dark:text-amber-100/80 font-serif">
+                              {product.customizable &&
+                              product.customizationOptions?.length
+                                ? "Personalise your"
+                                : "Your"}
+                            </span>
                             <span
+                              className="text-coral-600 dark:text-amber-400 leading-none"
                               style={{
-                                fontFamily: "var(--font-hand)",
-                                fontSize: 24,
-                                color: "#78350f",
-                                background: customizations[opt.label]
-                                  ? markerHighlight
-                                  : "transparent",
-                                backgroundSize: "100% 100%",
-                                padding: "0 5px",
+                                fontFamily: "var(--font-script)",
+                                fontSize: 32,
                               }}
                             >
-                              {customizations[opt.label] ||
-                                "tap swatch to pick"}
+                              order
                             </span>
                           </div>
-                        )}
-                      </div>
-                    ))}
-
-                  {/* ── Quantity stepper ── */}
-                  <div
-                    className={`mt-2 ${product.customizable && product.customizationOptions?.length ? "pt-6 border-t border-dashed border-red-200/50 dark:border-red-700/20" : ""}`}
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-4">
-                      <div className="flex items-center gap-2.5 shrink-0">
-                        <span
-                          className="w-7 h-7 rounded-full flex items-center justify-center text-white text-[13px] font-black shrink-0 shadow-[0_0_12px_rgba(22,163,74,0.6)]"
-                          style={{
-                            background:
-                              "linear-gradient(135deg,#16a34a 0%,#15803d 100%)",
-                          }}
-                        >
-                          {(product.customizationOptions?.length ?? 0) + 1}
-                        </span>
-                        <span
-                          className="inline-block px-2.5 py-0.5 rounded text-white text-[13px] font-bold uppercase tracking-wider"
-                          style={{
-                            background: "#16a34a",
-                            fontFamily: "var(--font-serif)",
-                          }}
-                        >
-                          Quantity
-                        </span>
-                      </div>
-                      <div className="hidden sm:block">
-                        <span
-                          className="inline-flex items-center gap-2 bg-amber-50 dark:bg-amber-950/40  rounded-lg px-3 py-1.5 text-amber-800 dark:text-amber-300/80"
-                          style={{
-                            fontFamily: "var(--font-hand)",
-                            fontSize: 17,
-                            lineHeight: 1.5,
-                          }}
-                        >
-                          <ShoppingCart
-                            size={14}
-                            className="shrink-0 text-amber-600"
-                          />
-                          How many would you like? Tap + or −
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4 pl-10">
-                      <button
-                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                        className="w-10 h-10 rounded-full border-2 border-dashed border-brown-300/50 dark:border-amber-900/60 flex items-center justify-center text-brown-600 dark:text-amber-100/60 hover:border-coral-400 hover:border-solid dark:hover:border-amber-500 hover:text-coral-600 dark:hover:text-amber-400 hover:bg-coral-50/50 dark:hover:bg-amber-900/20 hover:scale-110 hover:shadow-sm active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-coral-400"
-                        style={{
-                          fontFamily: "var(--font-hand)",
-                          fontSize: 26,
-                          lineHeight: 1,
-                        }}
-                        aria-label="Decrease quantity"
-                      >
-                        −
-                      </button>
-                      <span
-                        style={{
-                          fontFamily: "var(--font-hand)",
-                          fontSize: 34,
-                          lineHeight: 1.5,
-                          color: "#78350f",
-                          background: markerHighlight,
-                          backgroundSize: "100% 100%",
-                          padding: "0 14px",
-                          borderRadius: 1,
-                          minWidth: 56,
-                          textAlign: "center",
-                          display: "inline-block",
-                        }}
-                      >
-                        {quantity}
-                      </span>
-                      <button
-                        onClick={() =>
-                          setQuantity(
-                            Math.min(product.stockCount, quantity + 1),
-                          )
-                        }
-                        className="w-10 h-10 rounded-full border-2 border-dashed border-brown-300/50 dark:border-amber-900/60 flex items-center justify-center text-brown-600 dark:text-amber-100/60 hover:border-coral-400 hover:border-solid dark:hover:border-amber-500 hover:text-coral-600 dark:hover:text-amber-400 hover:bg-coral-50/50 dark:hover:bg-amber-900/20 hover:scale-110 hover:shadow-sm active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-coral-400"
-                        style={{
-                          fontFamily: "var(--font-hand)",
-                          fontSize: 26,
-                          lineHeight: 1,
-                        }}
-                        aria-label="Increase quantity"
-                      >
-                        +
-                      </button>
-                      {product.stockCount < 10 && product.inStock && (
-                        <span
-                          className="text-amber-700 dark:text-amber-400"
-                          style={{
-                            fontFamily: "var(--font-hand)",
-                            fontSize: 20,
-                          }}
-                        >
-                          only {product.stockCount} left!
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* ── Order Summary ── */}
-                  <div className="mt-8 pt-6 border-t border-dashed border-amber-200/50 dark:border-amber-900/20">
-                    {/* Paper-tear top edge */}
-                    <div
-                      className="h-5 w-full"
-                      style={{
-                        background: "#fef3c7",
-                        clipPath:
-                          "polygon(0% 100%,3% 25%,5% 60%,9% 40%,11% 75%,14% 20%,17% 55%,19% 35%,22% 70%,25% 30%,27% 65%,31% 45%,33% 70%,36% 25%,40% 60%,42% 35%,45% 75%,47% 20%,50% 55%,53% 40%,55% 70%,58% 25%,61% 60%,63% 30%,67% 70%,69% 35%,72% 65%,74% 25%,77% 55%,80% 40%,83% 70%,85% 30%,88% 65%,91% 20%,93% 55%,96% 35%,98% 65%,100% 100%)",
-                      }}
-                    />
-                    <div
-                      style={{
-                        background: "#fef3c7",
-                        boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
-                      }}
-                    >
-                      <div className="px-5 pt-3 pb-4">
-                        {/* Header row: label + product name */}
-                        <div className="flex items-start justify-between gap-3 mb-2.5">
                           <p
-                            className="text-amber-700/80 shrink-0 mt-0.5"
+                            className="font-bold text-amber-900 dark:text-amber-100 leading-snug"
                             style={{
                               fontFamily: "var(--font-hand)",
-                              fontSize: 19,
-                            }}
-                          >
-                            ✦ your order
-                          </p>
-                          <p
-                            className="text-amber-900 font-bold text-right leading-snug"
-                            style={{
-                              fontFamily: "var(--font-hand)",
-                              fontSize: 24,
+                              fontSize: 21,
                             }}
                           >
                             {product.name}
                           </p>
                         </div>
+                        <div className="text-right shrink-0 pt-1">
+                          <span
+                            className="font-black text-brown-900 dark:text-amber-50"
+                            style={{
+                              fontFamily: "var(--font-serif)",
+                              fontSize: 21,
+                              letterSpacing: "-0.01em",
+                            }}
+                          >
+                            {formatPrice(effectivePrice)}
+                          </span>
+                          {product.compareAtPrice &&
+                            effectivePrice === product.price && (
+                              <p
+                                className="text-amber-700/60 dark:text-amber-100/50 line-through"
+                                style={{
+                                  fontFamily: "var(--font-serif)",
+                                  fontSize: 13,
+                                }}
+                              >
+                                {formatPrice(product.compareAtPrice)}
+                              </p>
+                            )}
+                        </div>
+                      </div>
 
-                        {/* Customization rows — only if present */}
+                      {/* ── Customisation options ── */}
+                      {product.customizable &&
+                        !!product.customizationOptions?.length && (
+                          <div className="space-y-5 mb-1">
+                            <div className="border-t border-dashed border-amber-400/60 dark:border-amber-700/40" />
+                            {product.customizationOptions.map((opt) => (
+                              <div key={opt.label}>
+                                <div className="flex items-center gap-2 mb-3">
+                                  {opt.type === "text" ? (
+                                    <PenLine
+                                      size={16}
+                                      className="text-amber-700 dark:text-amber-400 shrink-0"
+                                    />
+                                  ) : opt.type === "color" ? (
+                                    <Palette
+                                      size={16}
+                                      className="text-amber-700 dark:text-amber-400 shrink-0"
+                                    />
+                                  ) : (
+                                    <MousePointerClick
+                                      size={16}
+                                      className="text-amber-700 dark:text-amber-400 shrink-0"
+                                    />
+                                  )}
+                                  <span
+                                    className="text-amber-900 dark:text-amber-100 font-semibold"
+                                    style={{
+                                      fontFamily: "var(--font-serif)",
+                                      fontStyle: "italic",
+                                      fontSize: 18,
+                                    }}
+                                  >
+                                    {opt.label}
+                                  </span>
+                                  {opt.type === "text" && (
+                                    <span
+                                      className="text-amber-700/50 dark:text-amber-100/40 ml-0.5"
+                                      style={{
+                                        fontFamily: "var(--font-serif)",
+                                        fontStyle: "italic",
+                                        fontSize: 13,
+                                      }}
+                                    >
+                                      — we&apos;ll inscribe it by hand
+                                    </span>
+                                  )}
+                                </div>
+
+                                {opt.type === "select" && opt.options ? (
+                                  <div className="flex flex-wrap gap-2">
+                                    {opt.options.map((o) => {
+                                      const sel =
+                                        customizations[opt.label] === o;
+                                      return (
+                                        <button
+                                          key={o}
+                                          type="button"
+                                          onClick={() =>
+                                            setCustomizations((p) => ({
+                                              ...p,
+                                              [opt.label]: o,
+                                            }))
+                                          }
+                                          className={`transition-all px-4 py-1.5 rounded-full border-2 ${
+                                            sel
+                                              ? "scale-105 shadow-[0_3px_10px_rgba(232,93,74,0.35)] text-white border-transparent bg-gradient-to-br from-[#e85d4a] to-[#c94535]"
+                                              : "hover:scale-105 hover:shadow-sm active:scale-95 text-[#78350f] dark:text-amber-100 bg-white/70 dark:bg-black/20 border-amber-700/30 dark:border-amber-700/40 shadow-[inset_0_1px_3px_rgba(0,0,0,0.05)]"
+                                          }`}
+                                          style={{
+                                            fontFamily: "var(--font-hand)",
+                                            fontSize: 21,
+                                            fontWeight: sel ? 700 : 500,
+                                          }}
+                                        >
+                                          {o}
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                ) : opt.type === "text" ? (
+                                  <textarea
+                                    placeholder="Scribble your message here..."
+                                    rows={2}
+                                    className="w-full bg-white/50 dark:bg-black/20 border-2 border-dashed border-amber-400/50 dark:border-amber-700/40 focus:outline-none focus:border-amber-700 dark:focus:border-amber-500 focus:border-solid hover:border-amber-500 dark:hover:border-amber-600 hover:border-solid text-brown-900 dark:text-amber-100 placeholder:text-amber-800/40 dark:placeholder:text-amber-100/30 placeholder:italic placeholder:font-serif resize-none overflow-hidden rounded-xl px-4 py-3 transition-all"
+                                    style={{
+                                      fontFamily: "var(--font-hand)",
+                                      fontSize: 22,
+                                      lineHeight: "30px",
+                                    }}
+                                    value={customizations[opt.label] || ""}
+                                    onChange={(e) => {
+                                      e.target.style.height = "auto";
+                                      e.target.style.height =
+                                        e.target.scrollHeight + "px";
+                                      setCustomizations((p) => ({
+                                        ...p,
+                                        [opt.label]: e.target.value,
+                                      }));
+                                    }}
+                                  />
+                                ) : (
+                                  <div className="flex items-center gap-3">
+                                    <div className="relative w-10 h-10 rounded-xl overflow-hidden border-2 border-dashed border-amber-400/60 dark:border-amber-700/40 shadow-sm shrink-0 cursor-pointer hover:border-amber-700 dark:hover:border-amber-500 hover:border-solid hover:scale-110 active:scale-95 transition-all">
+                                      <input
+                                        type="color"
+                                        className="absolute -top-2 -left-2 w-14 h-14 cursor-pointer"
+                                        value={
+                                          customizations[opt.label] || "#d97706"
+                                        }
+                                        onChange={(e) =>
+                                          setCustomizations((p) => ({
+                                            ...p,
+                                            [opt.label]: e.target.value,
+                                          }))
+                                        }
+                                      />
+                                    </div>
+                                    <span
+                                      className="text-[#78350f] dark:text-amber-100"
+                                      style={{
+                                        fontFamily: "var(--font-hand)",
+                                        fontSize: 22,
+                                        background: customizations[opt.label]
+                                          ? markerHighlight
+                                          : "transparent",
+                                        backgroundSize: "100% 100%",
+                                        padding: "0 5px",
+                                      }}
+                                    >
+                                      {customizations[opt.label] ||
+                                        "tap swatch to pick"}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                      {/* ── Quantity ── */}
+                      <div className="border-t border-dashed border-amber-400/60 dark:border-amber-700/40 pt-4 mt-5 mb-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-2">
+                              <ShoppingCart
+                                size={17}
+                                className="text-amber-700 dark:text-amber-400 shrink-0"
+                              />
+                              <span
+                                className="text-amber-900 dark:text-amber-100 font-semibold shrink-0"
+                                style={{
+                                  fontFamily: "var(--font-serif)",
+                                  fontStyle: "italic",
+                                  fontSize: 18,
+                                }}
+                              >
+                                Quantity
+                              </span>
+                            </div>
+                            {product.stockCount < 10 && product.inStock && (
+                              <div className="hidden sm:block">
+                                <span
+                                  className="inline-flex items-center justify-center px-2 py-0.5 border-2 border-dashed border-coral-400/80 dark:border-coral-500/60 bg-coral-50/50 dark:bg-coral-900/20 text-coral-700 dark:text-coral-400 rounded-sm -rotate-2 shadow-sm"
+                                  style={{
+                                    fontFamily: "var(--font-hand)",
+                                    fontSize: 16,
+                                    fontWeight: 700,
+                                    letterSpacing: "0.05em",
+                                  }}
+                                >
+                                  Only {product.stockCount} left!
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto">
+                            {product.stockCount < 10 && product.inStock && (
+                              <div className="sm:hidden">
+                                <span
+                                  className="inline-flex items-center justify-center px-2 py-0.5 border-2 border-dashed border-coral-400/80 dark:border-coral-500/60 bg-coral-50/50 dark:bg-coral-900/20 text-coral-700 dark:text-coral-400 rounded-sm -rotate-2 shadow-sm"
+                                  style={{
+                                    fontFamily: "var(--font-hand)",
+                                    fontSize: 16,
+                                    fontWeight: 700,
+                                    letterSpacing: "0.05em",
+                                  }}
+                                >
+                                  Only {product.stockCount} left!
+                                </span>
+                              </div>
+                            )}
+                            <div className="flex items-center gap-1 border-2 border-coral-200/60 dark:border-amber-800/40 dark:bg-black/10 rounded-2xl p-1.5 shadow-[inset_0_1px_3px_rgba(0,0,0,0.02)]">
+                              <button
+                                onClick={() =>
+                                  setQuantity(Math.max(1, quantity - 1))
+                                }
+                                className="w-10 h-10 rounded-xl flex items-center justify-center text-coral-800/60 dark:text-amber-100/60 hover:bg-white dark:hover:bg-amber-900/40 hover:shadow-[0_2px_8px_rgba(232,93,74,0.15)] dark:hover:shadow-[0_2px_8px_rgba(0,0,0,0.2)] hover:text-coral-600 dark:hover:text-amber-300 active:scale-95 transition-all focus:outline-none"
+                                style={{
+                                  fontFamily: "var(--font-hand)",
+                                  fontSize: 32,
+                                  lineHeight: 1,
+                                }}
+                                aria-label="Decrease quantity"
+                              >
+                                −
+                              </button>
+                              <div className="relative flex items-center justify-center min-w-[52px]">
+                                <span
+                                  className="font-bold text-coral-700 dark:text-amber-300 z-10"
+                                  style={{
+                                    fontFamily: "var(--font-hand)",
+                                    fontSize: 32,
+                                    paddingBottom: "2px",
+                                  }}
+                                >
+                                  {quantity}
+                                </span>
+                              </div>
+                              <button
+                                onClick={() =>
+                                  setQuantity(
+                                    Math.min(product.stockCount, quantity + 1),
+                                  )
+                                }
+                                className="w-10 h-10 rounded-xl flex items-center justify-center text-coral-800/60 dark:text-amber-100/60 hover:bg-white dark:hover:bg-amber-900/40 hover:shadow-[0_2px_8px_rgba(232,93,74,0.15)] dark:hover:shadow-[0_2px_8px_rgba(0,0,0,0.2)] hover:text-coral-600 dark:hover:text-amber-300 active:scale-95 transition-all focus:outline-none"
+                                style={{
+                                  fontFamily: "var(--font-hand)",
+                                  fontSize: 32,
+                                  lineHeight: 1,
+                                }}
+                                aria-label="Increase quantity"
+                              >
+                                +
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* ── Total + selections recap ── */}
+                      <div className="border-t border-dashed border-amber-500/60 dark:border-amber-700/40 pt-3">
                         {product.customizable &&
                           product.customizationOptions?.some(
                             (opt) => !!customizations[opt.label],
                           ) && (
-                            <div className="mb-2.5 pl-3 border-l-2 border-amber-300/70 space-y-1.5">
+                            <div className="mb-3 pl-3 border-l-2 border-amber-300/70 dark:border-amber-700/50 space-y-1">
                               {product.customizationOptions?.map((opt) => {
                                 const val = customizations[opt.label];
                                 if (!val) return null;
@@ -1225,11 +1228,11 @@ export default function ProductDetailPage() {
                                     className="flex items-center gap-2"
                                   >
                                     <span
-                                      className="text-amber-800/70 shrink-0"
+                                      className="text-amber-800/70 dark:text-amber-100/60 shrink-0"
                                       style={{
                                         fontFamily: "var(--font-serif)",
                                         fontStyle: "italic",
-                                        fontSize: 16,
+                                        fontSize: 15,
                                       }}
                                     >
                                       {opt.label}:
@@ -1237,11 +1240,11 @@ export default function ProductDetailPage() {
                                     {opt.type === "color" ? (
                                       <span className="inline-flex items-center gap-1.5">
                                         <span
-                                          className="inline-block w-3.5 h-3.5 rounded-sm border border-amber-400/60 shadow-sm"
+                                          className="inline-block w-3.5 h-3.5 rounded-sm border border-amber-400/60 dark:border-amber-600/60"
                                           style={{ background: val }}
                                         />
                                         <span
-                                          className="font-bold text-amber-900"
+                                          className="font-bold text-amber-900 dark:text-amber-100"
                                           style={{
                                             fontFamily: "var(--font-hand)",
                                             fontSize: 20,
@@ -1252,7 +1255,7 @@ export default function ProductDetailPage() {
                                       </span>
                                     ) : (
                                       <span
-                                        className="font-bold text-amber-900"
+                                        className="font-bold text-amber-900 dark:text-amber-100"
                                         style={{
                                           fontFamily: "var(--font-hand)",
                                           fontSize: 20,
@@ -1266,20 +1269,18 @@ export default function ProductDetailPage() {
                               })}
                             </div>
                           )}
-
-                        {/* Total line */}
-                        <div className="mt-2.5 pt-2.5  flex items-baseline justify-between gap-2">
+                        <div className="flex items-baseline justify-between">
                           <span
-                            className="text-amber-800/80 shrink-0"
+                            className="text-amber-800/80 dark:text-amber-100/70"
                             style={{
                               fontFamily: "var(--font-hand)",
-                              fontSize: 18,
+                              fontSize: 21,
                             }}
                           >
                             {formatPrice(effectivePrice)} × {quantity}
                           </span>
                           <span
-                            className="font-black text-coral-600 tabular-nums"
+                            className="font-black text-coral-600 dark:text-amber-400 tabular-nums"
                             style={{
                               fontFamily: "var(--font-serif)",
                               fontSize: "clamp(24px,2.5vw,30px)",
@@ -1291,16 +1292,15 @@ export default function ProductDetailPage() {
                         </div>
                       </div>
                     </div>
-                    {/* Paper-tear bottom edge */}
-                    <div
-                      className="h-5 w-full"
-                      style={{
-                        background: "#fef3c7",
-                        clipPath:
-                          "polygon(0% 0%,3% 75%,5% 40%,9% 60%,11% 25%,14% 80%,17% 45%,19% 65%,22% 30%,25% 70%,27% 35%,31% 55%,33% 80%,36% 30%,40% 60%,42% 75%,45% 25%,47% 80%,50% 45%,53% 60%,55% 30%,58% 75%,61% 40%,63% 70%,67% 30%,69% 65%,72% 35%,74% 75%,77% 45%,80% 60%,83% 30%,85% 70%,88% 80%,91% 25%,93% 55%,96% 65%,98% 35%,100% 0%)",
-                      }}
-                    />
                   </div>
+                  {/* Paper-tear bottom edge */}
+                  <div
+                    className="h-5 w-full bg-[#fef3c7] dark:bg-[#231d17] transition-colors duration-300"
+                    style={{
+                      clipPath:
+                        "polygon(0% 0%,3% 75%,5% 40%,9% 60%,11% 25%,14% 80%,17% 45%,19% 65%,22% 30%,25% 70%,27% 35%,31% 55%,33% 80%,36% 30%,40% 60%,42% 75%,45% 25%,47% 80%,50% 45%,53% 60%,55% 30%,58% 75%,61% 40%,63% 70%,67% 30%,69% 65%,72% 35%,74% 75%,77% 45%,80% 60%,83% 30%,85% 70%,88% 80%,91% 25%,93% 55%,96% 65%,98% 35%,100% 0%)",
+                    }}
+                  />
 
                   {/* ── Primary actions (inside notebook) ── */}
                   <div className="mt-8 flex gap-3 items-stretch">

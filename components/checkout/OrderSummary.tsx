@@ -58,11 +58,22 @@ export default function OrderSummary({
                   style={{ width: 38, height: 38 }}
                 >
                   {image ? (
-                    <img
-                      src={image}
-                      alt={item.product.name}
-                      className="w-full h-full object-cover"
-                    />
+                    image.match(/\.(mp4|webm|ogg)(\?.*)?$/i) ? (
+                      <video
+                        src={image}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <img
+                        src={image}
+                        alt={item.product.name}
+                        className="w-full h-full object-cover"
+                      />
+                    )
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-lg">
                       🎁

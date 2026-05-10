@@ -104,7 +104,11 @@ export default async function CategoryLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
         />
       )}
-      <CategoryProvider category={category} products={products} allCategories={cats ?? []}>
+      <CategoryProvider
+        category={category}
+        products={products}
+        allCategories={cats ?? []}
+      >
         {children}
       </CategoryProvider>
     </>
