@@ -17,10 +17,12 @@ export default function ProductCarousel({
   const scrollRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [canScroll, setCanScroll] = useState(false);
+  const showRightFade = canScroll && scrollProgress < 98;
+  const showLeftFade = canScroll && scrollProgress > 2;
 
   const scroll = (direction: "left" | "right") => {
     if (!scrollRef.current) return;
-    const amount = 320;
+    const amount = scrollRef.current.clientWidth;
     scrollRef.current.scrollBy({
       left: direction === "left" ? -amount : amount,
       behavior: "smooth",
@@ -66,11 +68,27 @@ export default function ProductCarousel({
         {/* Scroll left button */}
         <button
           onClick={() => scroll("left")}
-          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 sm:-translate-x-5 z-10 w-10 h-10 bg-white dark:bg-[#1a1830] rounded-full shadow-lg border border-cream-200 dark:border-amber-900/30 flex items-center justify-center text-brown-700 dark:text-amber-200 hover:bg-amber-50 dark:hover:bg-amber-900/40 transition-all opacity-0 group-hover/carousel:opacity-100"
+          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 sm:-translate-x-5 z-20 w-10 h-10 bg-white dark:bg-[#1a1830] rounded-full shadow-lg border border-cream-200 dark:border-amber-900/30 flex items-center justify-center text-brown-700 dark:text-amber-200 hover:bg-amber-50 dark:hover:bg-amber-900/40 transition-all opacity-100 lg:opacity-0 lg:group-hover/carousel:opacity-100"
           aria-label="Scroll left"
         >
           <ChevronLeft size={18} />
         </button>
+
+        {/* Left fade overlay */}
+        <div
+          className={`absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[#fdf8ef] to-transparent pointer-events-none transition-opacity duration-300 z-10 dark:from-[#1a1612] ${
+            showLeftFade ? "opacity-100" : "opacity-0"
+          }`}
+          aria-hidden="true"
+        />
+
+        {/* Right fade overlay */}
+        <div
+          className={`absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[#fdf8ef] to-transparent pointer-events-none transition-opacity duration-300 z-10 dark:from-[#1a1612] ${
+            showRightFade ? "opacity-100" : "opacity-0"
+          }`}
+          aria-hidden="true"
+        />
 
         {/* Scrollable row */}
         <div
@@ -80,7 +98,10 @@ export default function ProductCarousel({
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {products.map((product) => (
-            <div key={product.id} className="flex-none w-44 sm:w-64 snap-start">
+            <div
+              key={product.id}
+              className="flex-none w-[200px] sm:w-[calc(33.333%-14px)] lg:w-[calc(25%-15px)] snap-start"
+            >
               <ProductCard product={product} />
             </div>
           ))}
@@ -89,7 +110,7 @@ export default function ProductCarousel({
         {/* Scroll right button */}
         <button
           onClick={() => scroll("right")}
-          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 sm:translate-x-5 z-10 w-10 h-10 bg-white dark:bg-[#1a1830] rounded-full shadow-lg border border-cream-200 dark:border-amber-900/30 flex items-center justify-center text-brown-700 dark:text-amber-200 hover:bg-amber-50 dark:hover:bg-amber-900/40 transition-all opacity-0 group-hover/carousel:opacity-100"
+          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 sm:translate-x-5 z-20 w-10 h-10 bg-white dark:bg-[#1a1830] rounded-full shadow-lg border border-cream-200 dark:border-amber-900/30 flex items-center justify-center text-brown-700 dark:text-amber-200 hover:bg-amber-50 dark:hover:bg-amber-900/40 transition-all opacity-100 lg:opacity-0 lg:group-hover/carousel:opacity-100"
           aria-label="Scroll right"
         >
           <ChevronRight size={18} />

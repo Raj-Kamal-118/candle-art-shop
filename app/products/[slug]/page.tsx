@@ -45,6 +45,7 @@ import Breadcrumb from "@/components/ui/Breadcrumb";
 import StickyNote from "@/components/ui/StickyNote";
 import PostageStamp from "@/components/craft/PostageStamp";
 import ProductCard from "@/components/products/ProductCard";
+import ProductCarousel from "@/components/products/ProductCarousel";
 import Testimonials from "@/components/home/Testimonials";
 import HandDrawnStars from "@/components/ui/HandDrawnStars";
 
@@ -783,30 +784,47 @@ export default function ProductDetailPage() {
                         <Package size={14} />
                       )}
                     </div>
-                    <div>
-                      <h3
-                        style={{
-                          fontFamily: "var(--font-hand)",
-                          fontSize: 30,
-                          lineHeight: 1.1,
-                          color: "var(--home-text)",
-                        }}
-                      >
-                        {product.customizable &&
-                        product.customizationOptions?.length
-                          ? "Make it Yours"
-                          : "Your Order"}
-                      </h3>
-                      <p
-                        className="mt-1 text-brown-500 dark:text-amber-100/70"
-                        style={{ fontFamily: "var(--font-hand)", fontSize: 19 }}
-                      >
-                        {product.customizable &&
-                        product.customizationOptions?.length
-                          ? `Complete ${product.customizationOptions.length + 1} quick step${product.customizationOptions.length > 0 ? "s" : ""} below to personalise your piece, then add to basket.`
-                          : "Select how many you'd like and add to your basket."}
-                      </p>
-                    </div>
+
+                    <h3
+                      style={{
+                        fontFamily: "var(--font-hand)",
+                        fontSize: 26,
+                        lineHeight: 1.3,
+                        color: "var(--home-text)",
+                      }}
+                      className="pt-1"
+                    >
+                      {product.customizable &&
+                      product.customizationOptions?.length ? (
+                        <>
+                          A few quick steps to make this piece{" "}
+                          <span
+                            className="text-coral-600 dark:text-amber-400"
+                            style={{
+                              fontFamily: "var(--font-script)",
+                              fontSize: "1.1em",
+                            }}
+                          >
+                            uniquely yours
+                          </span>
+                          .
+                        </>
+                      ) : (
+                        <>
+                          Select your quantity and add it to your{" "}
+                          <span
+                            className="text-coral-600 dark:text-amber-400"
+                            style={{
+                              fontFamily: "var(--font-script)",
+                              fontSize: "1.1em",
+                            }}
+                          >
+                            basket
+                          </span>
+                          .
+                        </>
+                      )}
+                    </h3>
                   </div>
 
                   {/* ── Customization options ── */}
@@ -814,9 +832,9 @@ export default function ProductDetailPage() {
                     product.customizationOptions?.map((opt, stepIdx) => (
                       <div key={opt.label} className="mb-10">
                         {/* Step header row */}
-                        <div className="flex items-center gap-2.5 mb-2">
+                        <div className="flex items-center gap-2.5 mb-4">
                           <span
-                            className="w-7 h-7 rounded-full flex items-center justify-center text-white text-[13px] font-black shrink-0 shadow"
+                            className="w-7 h-7 rounded-full flex items-center justify-center text-white text-[13px] font-black shrink-0 shadow-[0_0_12px_rgba(232,93,74,0.6)]"
                             style={{
                               background:
                                 "linear-gradient(135deg,#e85d4a 0%,#c94535 100%)",
@@ -833,11 +851,8 @@ export default function ProductDetailPage() {
                           >
                             {opt.label}
                           </span>
-                        </div>
-                        {/* Instruction line */}
-                        <div className="mb-4 pl-10">
                           <span
-                            className="inline-flex items-center gap-2 bg-amber-50 dark:bg-amber-950/40 border border-dashed border-amber-300/70 dark:border-amber-700/40 rounded-lg px-3 py-1.5 text-amber-800 dark:text-amber-300/80"
+                            className="inline-flex items-center gap-2 ml-1.5 bg-amber-50 dark:bg-amber-950/40  border-amber-300/70 dark:border-amber-700/40 rounded-lg px-3 py-1.5 text-amber-800 dark:text-amber-300/80"
                             style={{
                               fontFamily: "var(--font-hand)",
                               fontSize: 17,
@@ -873,9 +888,8 @@ export default function ProductDetailPage() {
                             )}
                           </span>
                         </div>
-
                         {opt.type === "select" && opt.options ? (
-                          <div className="flex flex-wrap gap-x-3 gap-y-2 pl-1">
+                          <div className="flex flex-wrap gap-x-3 gap-y-3 pl-10">
                             {opt.options.map((o) => {
                               const sel = customizations[opt.label] === o;
                               return (
@@ -888,21 +902,23 @@ export default function ProductDetailPage() {
                                       [opt.label]: o,
                                     }))
                                   }
+                                  className={`transition-all px-4 py-1 rounded-xl border-2 ${
+                                    sel
+                                      ? "scale-110 shadow-sm border-transparent"
+                                      : "border-dashed border-brown-300/50 dark:border-amber-900/40 hover:border-coral-400 hover:border-solid dark:hover:border-amber-500 hover:bg-amber-50/50 dark:hover:bg-amber-900/20 hover:scale-110 hover:shadow-sm active:scale-95"
+                                  }`}
                                   style={{
                                     fontFamily: "var(--font-hand)",
-                                    fontSize: 26,
+                                    fontSize: 24,
                                     lineHeight: 1.5,
-                                    padding: "0 5px",
-                                    borderRadius: 1,
                                     color: sel
                                       ? "#78350f"
-                                      : "rgba(92,64,40,0.48)",
+                                      : "rgba(92,64,40,0.65)",
                                     fontWeight: sel ? 700 : 400,
                                     background: sel
                                       ? markerHighlight
                                       : "transparent",
                                     backgroundSize: "100% 100%",
-                                    transition: "all 0.14s ease",
                                   }}
                                 >
                                   {o}
@@ -911,33 +927,38 @@ export default function ProductDetailPage() {
                             })}
                           </div>
                         ) : opt.type === "text" ? (
-                          <textarea
-                            placeholder="Scribble your message here..."
-                            rows={2}
-                            className="w-full bg-transparent border-b-2 border-dashed border-amber-200 dark:border-amber-900/40 focus:outline-none focus:border-coral-400 dark:focus:border-amber-500 text-brown-900 dark:text-amber-100 placeholder:text-brown-300/50 dark:placeholder:text-amber-100/25 placeholder:italic placeholder:font-serif resize-none overflow-hidden"
-                            style={{
-                              fontFamily: "var(--font-hand)",
-                              fontSize: 26,
-                              paddingBottom: 4,
-                              lineHeight: "32px",
-                            }}
-                            value={customizations[opt.label] || ""}
-                            onChange={(e) => {
-                              e.target.style.height = "auto";
-                              e.target.style.height =
-                                e.target.scrollHeight + "px";
-                              setCustomizations((p) => ({
-                                ...p,
-                                [opt.label]: e.target.value,
-                              }));
-                            }}
-                          />
+                          <div className="pl-10 pr-2 sm:pr-8">
+                            <textarea
+                              placeholder="Scribble your message here..."
+                              rows={2}
+                              className={`w-full bg-white/60 dark:bg-black/20 border-2 focus:outline-none hover:border-coral-400 hover:border-solid focus:border-coral-400 focus:border-solid dark:hover:border-amber-500 dark:focus:border-amber-500 text-brown-900 dark:text-amber-100 placeholder:text-brown-300/60 dark:placeholder:text-amber-100/30 placeholder:italic placeholder:font-serif resize-none overflow-hidden rounded-xl px-4 py-3 transition-all shadow-sm ${
+                                customizations[opt.label]
+                                  ? "border-dashed border-brown-300/50 dark:border-amber-900/40"
+                                  : "border-dashed border-brown-300/50 dark:border-amber-900/40"
+                              }`}
+                              style={{
+                                fontFamily: "var(--font-hand)",
+                                fontSize: 24,
+                                lineHeight: "32px",
+                              }}
+                              value={customizations[opt.label] || ""}
+                              onChange={(e) => {
+                                e.target.style.height = "auto";
+                                e.target.style.height =
+                                  e.target.scrollHeight + "px";
+                                setCustomizations((p) => ({
+                                  ...p,
+                                  [opt.label]: e.target.value,
+                                }));
+                              }}
+                            />
+                          </div>
                         ) : (
-                          <div className="flex items-center gap-3 pl-1">
-                            <div className="relative w-9 h-9 rounded-lg overflow-hidden border-2 border-amber-200 dark:border-amber-900/40 shadow-inner shrink-0">
+                          <div className="flex items-center gap-4 pl-10">
+                            <div className="relative w-11 h-11 rounded-xl overflow-hidden border-2 border-dashed border-brown-400/60 dark:border-amber-700/60 shadow-sm shrink-0 cursor-pointer hover:border-coral-500 hover:border-solid hover:scale-110 active:scale-95 transition-all">
                               <input
                                 type="color"
-                                className="absolute -top-2 -left-2 w-14 h-14 cursor-pointer"
+                                className="absolute -top-2 -left-2 w-16 h-16 cursor-pointer"
                                 value={customizations[opt.label] || "#d97706"}
                                 onChange={(e) =>
                                   setCustomizations((p) => ({
@@ -968,12 +989,13 @@ export default function ProductDetailPage() {
                     ))}
 
                   {/* ── Quantity stepper ── */}
-                  <div className="mt-2 pt-6 border-t border-dashed border-red-200/50 dark:border-red-700/20">
-                    <div className="flex items-center gap-2.5 mb-2">
-                      {product.customizable &&
-                      product.customizationOptions?.length ? (
+                  <div
+                    className={`mt-2 ${product.customizable && product.customizationOptions?.length ? "pt-6 border-t border-dashed border-red-200/50 dark:border-red-700/20" : ""}`}
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-4">
+                      <div className="flex items-center gap-2.5 shrink-0">
                         <span
-                          className="w-7 h-7 rounded-full flex items-center justify-center text-white text-[13px] font-black shrink-0 shadow"
+                          className="w-7 h-7 rounded-full flex items-center justify-center text-white text-[13px] font-black shrink-0 shadow-[0_0_12px_rgba(22,163,74,0.6)]"
                           style={{
                             background:
                               "linear-gradient(135deg,#16a34a 0%,#15803d 100%)",
@@ -981,42 +1003,40 @@ export default function ProductDetailPage() {
                         >
                           {(product.customizationOptions?.length ?? 0) + 1}
                         </span>
-                      ) : null}
-                      <span
-                        className="inline-block px-2.5 py-0.5 rounded text-white text-[13px] font-bold uppercase tracking-wider"
-                        style={{
-                          background: "#16a34a",
-                          fontFamily: "var(--font-serif)",
-                        }}
-                      >
-                        Quantity
-                      </span>
-                    </div>
-                    <div className="mb-4 pl-10">
-                      <span
-                        className="inline-block bg-amber-50 dark:bg-amber-950/40 border border-dashed border-amber-300/70 dark:border-amber-700/40 rounded-lg px-3 py-1.5 text-amber-800 dark:text-amber-300/80"
-                        style={{
-                          fontFamily: "var(--font-hand)",
-                          fontSize: 17,
-                          lineHeight: 1.5,
-                        }}
-                      >
-                        <span className="inline-flex items-center gap-2">
+                        <span
+                          className="inline-block px-2.5 py-0.5 rounded text-white text-[13px] font-bold uppercase tracking-wider"
+                          style={{
+                            background: "#16a34a",
+                            fontFamily: "var(--font-serif)",
+                          }}
+                        >
+                          Quantity
+                        </span>
+                      </div>
+                      <div className="hidden sm:block">
+                        <span
+                          className="inline-flex items-center gap-2 bg-amber-50 dark:bg-amber-950/40  rounded-lg px-3 py-1.5 text-amber-800 dark:text-amber-300/80"
+                          style={{
+                            fontFamily: "var(--font-hand)",
+                            fontSize: 17,
+                            lineHeight: 1.5,
+                          }}
+                        >
                           <ShoppingCart
                             size={14}
                             className="shrink-0 text-amber-600"
                           />
                           How many would you like? Tap + or −
                         </span>
-                      </span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-4 pl-1">
+                    <div className="flex items-center gap-4 pl-10">
                       <button
                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                        className="w-9 h-9 rounded-full border-2 border-brown-300/50 dark:border-amber-900/60 flex items-center justify-center text-brown-600 dark:text-amber-100/60 hover:border-coral-400 hover:text-coral-600 dark:hover:text-amber-400 transition-all"
+                        className="w-10 h-10 rounded-full border-2 border-dashed border-brown-300/50 dark:border-amber-900/60 flex items-center justify-center text-brown-600 dark:text-amber-100/60 hover:border-coral-400 hover:border-solid dark:hover:border-amber-500 hover:text-coral-600 dark:hover:text-amber-400 hover:bg-coral-50/50 dark:hover:bg-amber-900/20 hover:scale-110 hover:shadow-sm active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-coral-400"
                         style={{
                           fontFamily: "var(--font-hand)",
-                          fontSize: 22,
+                          fontSize: 26,
                           lineHeight: 1,
                         }}
                         aria-label="Decrease quantity"
@@ -1046,10 +1066,10 @@ export default function ProductDetailPage() {
                             Math.min(product.stockCount, quantity + 1),
                           )
                         }
-                        className="w-9 h-9 rounded-full border-2 border-brown-300/50 dark:border-amber-900/60 flex items-center justify-center text-brown-600 dark:text-amber-100/60 hover:border-coral-400 hover:text-coral-600 dark:hover:text-amber-400 transition-all"
+                        className="w-10 h-10 rounded-full border-2 border-dashed border-brown-300/50 dark:border-amber-900/60 flex items-center justify-center text-brown-600 dark:text-amber-100/60 hover:border-coral-400 hover:border-solid dark:hover:border-amber-500 hover:text-coral-600 dark:hover:text-amber-400 hover:bg-coral-50/50 dark:hover:bg-amber-900/20 hover:scale-110 hover:shadow-sm active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-coral-400"
                         style={{
                           fontFamily: "var(--font-hand)",
-                          fontSize: 22,
+                          fontSize: 26,
                           lineHeight: 1,
                         }}
                         aria-label="Increase quantity"
@@ -1413,6 +1433,12 @@ export default function ProductDetailPage() {
           />
         )}
 
+        {/* Featured products (Moved above care guides) */}
+        <FeaturedProductsSection
+          currentProductId={product.id}
+          categoryId={product.categoryId}
+        />
+
         {/* Category-specific care guide */}
         {category?.slug === "scented-candles" && <BurnGuideSection />}
         {category?.slug === "key-chain" && <KeyChainGuideSection />}
@@ -1450,12 +1476,6 @@ export default function ProductDetailPage() {
             />
           );
         })()}
-
-        {/* Featured products */}
-        <FeaturedProductsSection
-          currentProductId={product.id}
-          categoryId={product.categoryId}
-        />
       </div>
     </div>
   );
@@ -2554,7 +2574,7 @@ function BespokeSection() {
             className="relative bg-[#fdfbf7] dark:bg-[#1c1710] border border-cream-200 dark:border-amber-900/30 rounded-2xl p-6 shadow-sm"
           >
             <div
-              className="absolute -top-4 -left-1 w-8 h-8 rounded-full flex items-center justify-center text-white text-[12px] font-black shadow"
+              className="absolute -top-4 -left-1 w-8 h-8 rounded-full flex items-center justify-center text-white text-[12px] font-black shadow-[0_0_12px_rgba(232,93,74,0.6)]"
               style={{ background: "linear-gradient(135deg,#e85d4a,#c94535)" }}
             >
               {i + 1}
@@ -2865,20 +2885,26 @@ function FeaturedProductsSection({
         </Link>
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-        {products.map((p, i) => (
-          <motion.div
-            key={p.id}
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.35, delay: i * 0.06 }}
-          >
-            <ProductCard product={p} />
-          </motion.div>
-        ))}
-      </div>
+      {/* Grid or Slider */}
+      {products.length > 4 ? (
+        <div className="-mx-2 sm:mx-0">
+          <ProductCarousel products={products} />
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+          {products.map((p, i) => (
+            <motion.div
+              key={p.id}
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.35, delay: i * 0.06 }}
+            >
+              <ProductCard product={p} />
+            </motion.div>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

@@ -52,7 +52,7 @@ export default function Testimonials({
   className = "bg-[var(--home-bg)] dark:bg-[#100e0a] overflow-hidden",
   style = { borderTop: "1px solid var(--home-border)", padding: "96px 0" },
   averageRating = 4.8,
-  totalReviews = 124,
+  totalReviews = 10,
   showHeaderDetails = false,
   limit = 6,
 }: {

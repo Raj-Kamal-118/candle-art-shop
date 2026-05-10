@@ -375,9 +375,9 @@ function CheckoutContent() {
                   <div
                     className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 ${
                       isActive
-                        ? "bg-coral-600 dark:bg-coral-500 text-white shadow-sm shadow-coral-200 dark:shadow-coral-900/30"
+                        ? "bg-coral-600 dark:bg-coral-500 text-white shadow-[0_0_12px_rgba(232,93,74,0.6)]"
                         : isPast
-                          ? "bg-forest-700/80 dark:bg-forest-600/80 text-white"
+                          ? "bg-forest-700/80 dark:bg-forest-600/80 text-white shadow-[0_0_12px_rgba(22,163,74,0.4)]"
                           : "bg-cream-100 dark:bg-[#1a1830] text-brown-300 dark:text-amber-100/30 border border-dashed border-brown-200 dark:border-amber-900/30"
                     }`}
                   >
