@@ -747,7 +747,7 @@ export default function ProductDetailPage() {
                   >
                     <div
                       dangerouslySetInnerHTML={{ __html: product.description }}
-                      className="prose dark:prose-invert max-w-none text-brown-800 dark:text-amber-100/90 [&>p]:mt-0 [&>p]:mb-[28px] [&>ul]:pl-5 [&>ul>li]:mb-1 [&>ol]:pl-5 [&>ol>li]:mb-1 [&>h2]:font-bold [&>h3]:font-semibold [&_strong]:bg-amber-100 [&_strong]:dark:bg-amber-800/30 [&_strong]:rounded-sm [&_strong]:px-1 [&_strong]:py-0.5 [&_strong]:text-brown-900 [&_strong]:dark:text-amber-100 [&_em]:text-coral-700 [&_em]:dark:text-amber-400 [&_em]:not-italic [&_em]:border-b [&_em]:border-dashed [&_em]:border-coral-400/60"
+                      className="prose dark:prose-invert max-w-none text-brown-800 dark:text-amber-100/90 [&>p]:mt-0 [&>p]:mb-[28px] [&>ul]:pl-5 [&>ul>li]:mb-1 [&>ol]:pl-5 [&>ol>li]:mb-1 [&>h2]:font-bold [&>h3]:font-semibold [&_strong]:font-bold [&_strong]:text-coral-700 [&_strong]:dark:text-amber-400 [&_em]:text-coral-700 [&_em]:dark:text-amber-400 [&_em]:not-italic [&_em]:border-b [&_em]:border-dashed [&_em]:border-coral-400/60"
                       style={{
                         fontFamily: "var(--font-hand)",
                         fontSize: "24px",
@@ -1607,7 +1607,7 @@ function ProductTabs({
               onClick={() => setActive(i)}
               className={`relative px-6 border transition-all ${
                 isActive
-                  ? "bg-[#fdfbf7] dark:bg-[#1c1710] border-cream-200 dark:border-amber-900/30 border-b-transparent text-coral-600 dark:text-amber-400 z-20 shadow-[0_-4px_6px_-2px_rgba(0,0,0,0.05)]"
+                  ? "bg-[#fdfbf7] dark:bg-[#1c1710] border-cream-200 dark:border-amber-900/30 border-b-transparent text-brown-600 dark:text-amber-200/75 z-20 shadow-[0_-4px_6px_-2px_rgba(0,0,0,0.05)]"
                   : "bg-[#f5ecda] dark:bg-amber-950/40 border-cream-200 dark:border-amber-900/30 text-brown-600 dark:text-amber-200/75 hover:bg-[#eaddc1] dark:hover:bg-amber-900/60 z-0"
               }`}
               style={{
@@ -1765,7 +1765,7 @@ function ProductTabs({
               </div>
             )}
             <div
-              className="prose dark:prose-invert max-w-none text-brown-800 dark:text-amber-100/90 [&>p]:mt-0 [&>p]:mb-[32px] [&_strong]:bg-amber-100 [&_strong]:dark:bg-amber-800/30 [&_strong]:rounded-sm [&_strong]:px-1 [&_strong]:py-0.5 [&_strong]:text-brown-900 [&_strong]:dark:text-amber-100 [&_em]:text-coral-700 [&_em]:dark:text-amber-400 [&_em]:not-italic [&_em]:border-b [&_em]:border-dashed [&_em]:border-coral-400/60"
+              className="prose dark:prose-invert max-w-none text-brown-800 dark:text-amber-100/90 [&>p]:mt-0 [&>p]:mb-[32px] [&_strong]:font-bold [&_strong]:text-coral-700 [&_strong]:dark:text-amber-400 [&_em]:text-coral-700 [&_em]:dark:text-amber-400 [&_em]:not-italic [&_em]:border-b [&_em]:border-dashed [&_em]:border-coral-400/60"
               style={{
                 fontFamily: "var(--font-hand)",
                 fontSize: "24px",
