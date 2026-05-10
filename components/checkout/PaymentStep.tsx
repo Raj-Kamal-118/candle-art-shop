@@ -35,11 +35,17 @@ export default function PaymentStep({
   const [screenshot, setScreenshot] = useState<string | null>(null);
 
   // Using a placeholder UPI ID - update to your actual merchant UPI ID
-  const upiId = "9504536836@ybl";
-  const upiString = encodeURIComponent(
-    `upi://pay?pa=${upiId}&pn=Artisan House&am=${total}&cu=INR`,
-  );
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${upiString}`;
+  const upiId = "arisanhouse.in@axl";
+
+  // PhonePe is strict about valid URI formats.
+  // 1. Encode spaces in the payee name (%20)
+  // 2. Format amount to exactly 2 decimal places
+  // 3. Merchant UPI IDs require an 'mc' (Merchant Category Code) on PhonePe
+  const payeeName = encodeURIComponent("Artisan House");
+  const rawUpiString = `upi://pay?pa=${upiId}&pn=${payeeName}&mc=5999&am=${total.toFixed(2)}&cu=INR`;
+
+  // URL-encode the final valid URI for the QR generator API
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(rawUpiString)}`;
 
   return (
     <div className="space-y-6">
@@ -119,6 +125,10 @@ export default function PaymentStep({
                         <span className="font-mono bg-white/60 dark:bg-black/20 px-1 py-0.5 rounded">
                           {upiId}
                         </span>
+                      </span>
+                      <span className="text-[11px] text-amber-700 dark:text-amber-400/80 mt-1.5 block italic">
+                        * You may see the name Shreya Rastogi (our artisan who
+                        handles finance). She will verify the amount.
                       </span>
                     </p>
                     <div className="space-y-1.5">

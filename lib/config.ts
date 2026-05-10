@@ -7,5 +7,5 @@ export const SITE_CONFIG = {
     whatsappUrl: "https://wa.me/919519486785",
     studio: "Varanasi, India",
   },
-  upiId: process.env.NEXT_PUBLIC_UPI_ID || "9504536836@ybl",
+  upiId: process.env.NEXT_PUBLIC_UPI_ID || "arisanhouse.in@axl",
 };
