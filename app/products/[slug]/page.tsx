@@ -34,6 +34,8 @@ import {
   Quote,
   PartyPopper,
   Smile,
+  MapPin,
+  Tag,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Product } from "@/lib/types";
@@ -41,6 +43,7 @@ import { useStore } from "@/lib/store";
 import { formatPrice, getVariantPrice } from "@/lib/utils";
 import { useProductData } from "./ProductProvider";
 import Tape, { tapeForIndex } from "@/components/craft/Tape";
+import ManilaTagNote from "@/components/ui/ManilaTagNote";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import StickyNote from "@/components/ui/StickyNote";
 import PostageStamp from "@/components/craft/PostageStamp";
@@ -63,6 +66,79 @@ const ICONS: Record<string, React.ElementType> = {
   heart: Heart,
 };
 
+const allCardboardNotes = [
+  {
+    id: "makers-note",
+    title: "Maker's Note",
+    icon: <Sparkles size={18} className="text-amber-600 drop-shadow-lg" />,
+    content: (
+      <>
+        Each piece is hand-poured and crafted in small batches in our Varanasi
+        studio. We use <strong>100% natural materials</strong> and premium
+        phthalate-free fragrances for a clean, beautiful experience.
+      </>
+    ),
+  },
+  {
+    id: "our-promise",
+    title: "Our Promise",
+    icon: <Leaf size={18} className="text-green-600 drop-shadow-lg" />,
+    content: (
+      <ul className="space-y-1.5 pl-4 list-disc marker:text-green-500 mt-1">
+        <li>Sustainable materials sourced locally.</li>
+        <li>Plastic-free packaging that's kind to the earth.</li>
+        <li>Every purchase supports independent artisans in Varanasi.</li>
+      </ul>
+    ),
+  },
+  {
+    id: "varanasi-delivery",
+    title: "Varanasi Delivery",
+    icon: <MapPin size={18} className="text-sky-600 drop-shadow-lg" />,
+    content: (
+      <>
+        Ordering from Varanasi? Enjoy{" "}
+        <strong className="text-sky-600 dark:text-sky-400 uppercase tracking-widest text-[13px] border border-sky-300 dark:border-sky-800 px-1 py-0.5 rounded mx-1 bg-sky-50 dark:bg-sky-900/30">
+          FREE
+        </strong>
+        , same-day delivery across the city for all our in-stock items.
+      </>
+    ),
+  },
+  {
+    id: "welcome-10",
+    title: "Welcome Discount",
+    icon: <Tag size={18} className="text-fuchsia-600 drop-shadow-lg" />,
+    content: (
+      <>
+        New to Artisan House? Use code{" "}
+        <span className="bg-fuchsia-100 dark:bg-fuchsia-900/30 text-fuchsia-800 dark:text-fuchsia-300 px-1.5 py-0.5 rounded font-sans font-bold text-xs mx-1 border border-fuchsia-200 dark:border-fuchsia-800 shadow-sm">
+          WELCOME10
+        </span>{" "}
+        at checkout for <strong>10% off</strong> your very first handcrafted
+        order.
+      </>
+    ),
+  },
+  {
+    id: "free-shipping",
+    title: "Shipping Details",
+    icon: <Truck size={18} className="text-orange-600 drop-shadow-lg" />,
+    content: (
+      <>
+        We offer{" "}
+        <strong className="text-orange-600 dark:text-orange-400 uppercase tracking-widest text-[13px] border border-orange-300 dark:border-orange-800 px-1 py-0.5 rounded mx-1 bg-orange-50 dark:bg-orange-900/30">
+          FREE SHIPPING
+        </strong>{" "}
+        anywhere in India on all orders over ₹1000. Packed safely with
+        eco-friendly materials.
+      </>
+    ),
+  },
+];
+
+const NOTE_TILTS = [-1.5, 2.5, -0.5, 1.5, -2];
+
 export default function ProductDetailPage() {
   const router = useRouter();
   const { addToCart, addToFavorites, removeFromFavorites, isFavorite } =
@@ -74,6 +150,8 @@ export default function ProductDetailPage() {
   const [customizations, setCustomizations] = useState<Record<string, string>>(
     {},
   );
+  const [displayNotes, setDisplayNotes] = useState<any[]>([]);
+  const [isDescExpanded, setIsDescExpanded] = useState(false);
 
   useEffect(() => {
     if (!product?.customizationOptions) return;
@@ -87,6 +165,19 @@ export default function ProductDetailPage() {
       return Object.keys(defaults).length ? { ...defaults, ...prev } : prev;
     });
   }, [product]);
+
+  useEffect(() => {
+    // Robust Fisher-Yates shuffle
+    const shuffled = [...allCardboardNotes];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
+    if (product?.customizable) setDisplayNotes(shuffled);
+    else setDisplayNotes(shuffled.slice(0, 3));
+  }, [product?.customizable]);
+
   const [addedToCart, setAddedToCart] = useState(false);
 
   // SVG highlighter with zigzag left/right edges — mimics a real marker stroke
@@ -399,47 +490,17 @@ export default function ProductDetailPage() {
             </div>
 
             {/* ── Left Column Fillers (Desktop only) ── */}
-            <div className="hidden lg:flex flex-col gap-12 mt-16 px-4 xl:px-8">
-              <StickyNote
-                type="Maker's Note"
-                text="Each piece is hand-poured and crafted in small batches in our Varanasi studio. We use 100% natural materials and premium phthalate-free fragrances for a clean, beautiful experience."
-                isAbsolute={false}
-                showPin={true}
-                bgColor="#fef3c7"
-                pinColor="#d97706"
-                icon={
-                  <Sparkles
-                    size={16}
-                    className="text-amber-600 drop-shadow-sm"
-                  />
-                }
-                positionClass="w-full"
-              />
-
-              <StickyNote
-                isAbsolute={false}
-                showPin={true}
-                bgColor="#f0fdf4"
-                pinColor="#16a34a"
-                positionClass="w-11/12 ml-auto"
-              >
-                <div className="flex items-center gap-1.5 mb-2">
-                  <Leaf
-                    size={16}
-                    className="text-green-600 shrink-0 drop-shadow-sm"
-                  />
-                  <div className="text-[10px] font-black tracking-[0.15em] uppercase text-green-900/60 dark:text-green-900/80 leading-tight">
-                    Our Promise
-                  </div>
-                </div>
-                <ul className="font-serif italic text-[14px] text-green-900 space-y-2 pl-4 list-disc marker:text-green-500">
-                  <li>Sustainable materials sourced from local vendors.</li>
-                  <li>Plastic-free packaging that's kind to the earth.</li>
-                  <li>
-                    Every purchase supports independent artisans in Varanasi.
-                  </li>
-                </ul>
-              </StickyNote>
+            <div className="hidden lg:flex flex-col gap-12 mt-16 pr-4 xl:pr-8">
+              {displayNotes.map((noteProps, idx) => (
+                <ManilaTagNote
+                  key={noteProps.id}
+                  title={noteProps.title}
+                  icon={noteProps.icon}
+                  delay={idx * 0.15}
+                >
+                  {noteProps.content}
+                </ManilaTagNote>
+              ))}
             </div>
           </div>
 
@@ -682,15 +743,34 @@ export default function ProductDetailPage() {
 
                   {/* ── Description ── */}
                   <div
-                    dangerouslySetInnerHTML={{ __html: product.description }}
-                    className="prose dark:prose-invert max-w-none text-brown-800 dark:text-amber-100/90 [&>p]:mt-0 [&>p]:mb-[28px] [&>ul]:pl-5 [&>ul>li]:mb-1 [&>ol]:pl-5 [&>ol>li]:mb-1 [&>h2]:font-bold [&>h3]:font-semibold [&_strong]:bg-amber-100 [&_strong]:dark:bg-amber-800/30 [&_strong]:rounded-sm [&_strong]:px-1 [&_strong]:py-0.5 [&_strong]:text-brown-900 [&_strong]:dark:text-amber-100 [&_em]:text-coral-700 [&_em]:dark:text-amber-400 [&_em]:not-italic [&_em]:border-b [&_em]:border-dashed [&_em]:border-coral-400/60"
-                    style={{
-                      fontFamily: "var(--font-hand)",
-                      fontSize: "24px",
-                      lineHeight: "28px",
-                      letterSpacing: "0.02em",
-                    }}
-                  />
+                    className={`relative ${!isDescExpanded ? "max-h-[250px] overflow-hidden md:max-h-none" : ""}`}
+                  >
+                    <div
+                      dangerouslySetInnerHTML={{ __html: product.description }}
+                      className="prose dark:prose-invert max-w-none text-brown-800 dark:text-amber-100/90 [&>p]:mt-0 [&>p]:mb-[28px] [&>ul]:pl-5 [&>ul>li]:mb-1 [&>ol]:pl-5 [&>ol>li]:mb-1 [&>h2]:font-bold [&>h3]:font-semibold [&_strong]:bg-amber-100 [&_strong]:dark:bg-amber-800/30 [&_strong]:rounded-sm [&_strong]:px-1 [&_strong]:py-0.5 [&_strong]:text-brown-900 [&_strong]:dark:text-amber-100 [&_em]:text-coral-700 [&_em]:dark:text-amber-400 [&_em]:not-italic [&_em]:border-b [&_em]:border-dashed [&_em]:border-coral-400/60"
+                      style={{
+                        fontFamily: "var(--font-hand)",
+                        fontSize: "24px",
+                        lineHeight: "28px",
+                        letterSpacing: "0.02em",
+                      }}
+                    />
+                    {!isDescExpanded && (
+                      <div className="md:hidden absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#fdfbf7] dark:from-[#1c1710] to-transparent pointer-events-none" />
+                    )}
+                  </div>
+                  <div className="md:hidden mt-2 mb-6 text-center relative z-10">
+                    <button
+                      onClick={() => setIsDescExpanded(!isDescExpanded)}
+                      className="inline-flex items-center gap-1.5 text-coral-600 dark:text-amber-400 font-serif italic text-lg font-semibold"
+                    >
+                      {isDescExpanded ? "Read less" : "Read more"}
+                      <ChevronDown
+                        size={16}
+                        className={`transition-transform ${isDescExpanded ? "rotate-180" : ""}`}
+                      />
+                    </button>
+                  </div>
 
                   {/* ── Perfect for — tag chips from product tags ── */}
                   {product.tags.length > 0 && (
@@ -1349,13 +1429,13 @@ export default function ProductDetailPage() {
                   )}
 
                   {/* ── Trust stamps (inside notebook) ── */}
-                  <div className="flex flex-wrap justify-center gap-5 mt-6 pt-6 border-t border-dashed border-red-200/40 dark:border-red-700/20">
+                  <div className="flex justify-center gap-0 sm:gap-6 mt-6 pt-6 border-t border-dashed border-red-200/40 dark:border-red-700/20">
                     <PostageStamp
                       label="Shipping"
                       denom={
-                        <span className="flex items-center justify-center gap-1.5 mt-0.5">
+                        <span className="flex items-center justify-center gap-1 sm:gap-1.5 mt-0.5">
                           <Truck
-                            size={14}
+                            size={12}
                             strokeWidth={2}
                             className="opacity-80"
                           />
@@ -1363,14 +1443,14 @@ export default function ProductDetailPage() {
                         </span>
                       }
                       kind="cream"
-                      className="hover:scale-105 transition-transform duration-300"
+                      className="scale-[0.75] hover:scale-[0.8] -mx-3 sm:mx-0 sm:scale-100 sm:hover:scale-105 origin-bottom transition-all duration-300"
                     />
                     <PostageStamp
                       label="Secure Pay"
                       denom={
-                        <span className="flex items-center justify-center gap-1.5 mt-0.5">
+                        <span className="flex items-center justify-center gap-1 sm:gap-1.5 mt-0.5">
                           <Shield
-                            size={14}
+                            size={12}
                             strokeWidth={2}
                             className="opacity-80"
                           />
@@ -1378,14 +1458,14 @@ export default function ProductDetailPage() {
                         </span>
                       }
                       kind="mint"
-                      className="hover:scale-105 transition-transform duration-300"
+                      className="scale-[0.75] hover:scale-[0.8] -mx-3 sm:mx-0 sm:scale-100 sm:hover:scale-105 origin-bottom transition-all duration-300"
                     />
                     <PostageStamp
                       label="Returns"
                       denom={
-                        <span className="flex items-center justify-center gap-1.5 mt-0.5">
+                        <span className="flex items-center justify-center gap-1 sm:gap-1.5 mt-0.5">
                           <RotateCcw
-                            size={14}
+                            size={12}
                             strokeWidth={2}
                             className="opacity-80"
                           />
@@ -1393,7 +1473,7 @@ export default function ProductDetailPage() {
                         </span>
                       }
                       kind="gold"
-                      className="hover:scale-105 transition-transform duration-300"
+                      className="scale-[0.75] hover:scale-[0.8] -mx-3 sm:mx-0 sm:scale-100 sm:hover:scale-105 origin-bottom transition-all duration-300"
                     />
                   </div>
                 </div>
