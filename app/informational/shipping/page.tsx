@@ -8,6 +8,7 @@ import {
   Ban,
   AlertCircle,
   CreditCard,
+  ShieldAlert,
   Phone,
 } from "lucide-react";
 import SecondaryHeader from "@/components/layout/SecondaryHeader";
@@ -91,11 +92,30 @@ const returnSections = [
     body: `<p>Orders once placed <strong>cannot be cancelled</strong>. Please review your cart carefully before completing payment.</p>`,
   },
   {
+    Icon: ShieldAlert,
+    heading: "Limitation of Liability",
+    body: `<p>Artisan House shall not be liable for:</p>
+<ul class="list-disc pl-5 space-y-1 mt-2">
+  <li>Incorrect product selection by the customer</li>
+  <li>Handmade variations in products</li>
+  <li>Delivery delays caused by logistics partners</li>
+  <li>Product misuse</li>
+  <li>Any indirect or consequential losses</li>
+</ul>
+<p>Our total liability shall not exceed the amount paid for the specific order.</p>`,
+  },
+  {
     Icon: Phone,
-    heading: "Contact for Queries",
-    body: `<p>For any shipping or payment-related queries:</p>
+    heading: "Contact for Refund Requests",
+    body: `<p>For duplicate payment refund requests only:</p>
 <p>📞 <a href="tel:+919519486785" class="text-coral-700 dark:text-coral-400 font-semibold hover:underline">+91 95194 86785</a><br/>
-📧 <a href="mailto:artisanhouse.in@gmail.com" class="text-coral-700 dark:text-coral-400 font-semibold hover:underline">artisanhouse.in@gmail.com</a></p>`,
+📧 <a href="mailto:artisanhouse.in@gmail.com" class="text-coral-700 dark:text-coral-400 font-semibold hover:underline">artisanhouse.in@gmail.com</a></p>
+<p>Please include the following in your email:</p>
+<ul class="list-disc pl-5 space-y-1 mt-1">
+  <li>Order ID</li>
+  <li>Transaction ID</li>
+  <li>Payment proof (screenshot or bank statement)</li>
+</ul>`,
   },
 ];
 
