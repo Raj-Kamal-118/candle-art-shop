@@ -83,7 +83,7 @@ const returnSections = [
     Icon: CreditCard,
     heading: "Refunds — Duplicate Transactions Only",
     body: `<p>Refunds are processed <strong>only</strong> in one case: if a customer is charged more than once for the same order due to a payment gateway error or technical issue.</p>
-<p>In such cases, the duplicate transaction will be verified and the excess amount refunded to the original payment method within <strong>7–10 business days</strong>. No other refund requests will be accepted.</p>
+<p>In such cases, the duplicate transaction will be verified and the excess amount credited to the original payment method within <strong>7–10 business days</strong>. No other refund requests will be accepted.</p>
 <p>To raise a duplicate payment refund, email <a href="mailto:artisanhouse.in@gmail.com" class="text-coral-700 dark:text-coral-400 font-semibold hover:underline">artisanhouse.in@gmail.com</a> with your Order ID, Transaction ID, and payment proof.</p>`,
   },
   {

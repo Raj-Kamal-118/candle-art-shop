@@ -62,12 +62,12 @@ const sections = [
   {
     Icon: Truck,
     heading: "Shipping & Delivery",
-    body: `<p>Orders are processed and shipped as per our <a href="/informational/shipping" class="text-coral-700 dark:text-coral-400 font-semibold hover:underline">Shipping Policy</a>.</p>`,
+    body: `<p>Orders are processed and shipped as per our Shipping Policy.</p>`,
   },
   {
     Icon: RefreshCw,
     heading: "Returns & Refunds",
-    body: `<p>Returns and refunds are governed by our <a href="/informational/shipping" class="text-coral-700 dark:text-coral-400 font-semibold hover:underline">Return &amp; Refund Policy</a>. We follow a strict no-return, no-exchange policy. Refunds are only issued for duplicate transactions.</p>`,
+    body: `<p>Returns and refunds are governed by our Return &amp; Refund Policy. We follow a strict no-return, no-exchange policy. Refunds are only issued for duplicate transactions.</p>`,
   },
   {
     Icon: ImageIcon,
