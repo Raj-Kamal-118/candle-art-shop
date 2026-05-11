@@ -22,14 +22,14 @@ export const metadata: Metadata = {
 const shippingOptions = [
   {
     Icon: Package,
-    name: "Standard",
+    name: "Standard Delivery",
     time: "3–5 business days",
     price: "Free over ₹2,499 · ₹149 below",
     desc: "Our default. Hand-packed with a thank-you note.",
   },
   {
     Icon: Zap,
-    name: "Express",
+    name: "Express Delivery",
     time: "1–2 business days",
     price: "₹299 flat",
     desc: "For when the moment can't wait.",
