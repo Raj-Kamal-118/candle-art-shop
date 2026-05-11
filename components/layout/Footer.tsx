@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Instagram, Youtube, Mail, Phone, MessageCircle } from "lucide-react";
+import { Instagram, Youtube, Mail, MessageCircle } from "lucide-react";
 import ArtisanLogo from "@/components/ui/ArtisanLogo";
 
 export default function Footer() {
@@ -108,11 +108,9 @@ export default function Footer() {
               {[
                 { href: "/informational/about", label: "About Us" },
                 { href: "/informational/faq", label: "FAQ" },
-                { href: "/informational/shipping", label: "Shipping Policy" },
-                { href: "/informational/returns", label: "Return Policy" },
                 {
-                  href: "/informational/refund",
-                  label: "Refund & Cancellation Policy",
+                  href: "/informational/shipping",
+                  label: "Shipping, Returns & Refunds",
                 },
                 { href: "/informational/contact", label: "Contact Us" },
               ].map((link) => (
