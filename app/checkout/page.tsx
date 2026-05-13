@@ -335,7 +335,7 @@ function CheckoutContent() {
       } else {
         setRedirecting(true);
         clearCart();
-        router.replace(`/order/${order.id}`);
+        router.replace(`/order/${currentOrderId}`);
         return;
       }
     } catch (error) {
