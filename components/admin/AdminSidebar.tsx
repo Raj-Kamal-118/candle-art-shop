@@ -11,6 +11,7 @@ import {
   LogOut,
   Layers,
   MessageSquare,
+  HelpCircle,
   Gift,
 } from "lucide-react";
 import ArtisanLogo from "../ui/ArtisanLogo";
@@ -25,6 +26,7 @@ const navItems = [
   { href: "/admin/gift-sets", label: "Gift Sets", icon: Gift },
   { href: "/admin/quotes", label: "Quotes", icon: MessageSquare },
   { href: "/admin/reviews", label: "Reviews", icon: MessageSquare },
+  { href: "/admin/queries", label: "Customer Queries", icon: HelpCircle },
 ];
 
 export default function AdminSidebar() {

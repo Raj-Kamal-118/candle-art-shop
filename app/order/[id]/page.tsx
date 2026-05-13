@@ -16,6 +16,7 @@ import {
   Star,
   Sparkles,
   Printer,
+  Gift,
 } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import SecondaryHeader from "@/components/layout/SecondaryHeader";
@@ -40,6 +41,10 @@ type Order = {
   discountCode?: string;
   payment_method?: string;
   paymentMethod?: string;
+  is_gift?: boolean;
+  isGift?: boolean;
+  gift_details?: any;
+  giftDetails?: any;
 };
 
 function formatRange(createdAt?: string) {
@@ -91,6 +96,15 @@ export default function OrderSuccessPage() {
   const createdAt = order?.created_at || order?.createdAt;
   const arriving = formatRange(createdAt);
 
+  const giftDetails = order?.gift_details || order?.giftDetails || {};
+  const isGift = order?.is_gift || order?.isGift || false;
+  const giftWrapFee = giftDetails?.wrapFee || 0;
+  const greetingCardFee = giftDetails?.greetingCardFee || 0;
+  const giftWrap = giftDetails?.wrap || false;
+  const greetingCard = giftDetails?.greetingCard || "none";
+  const giftMessage = giftDetails?.message || "";
+  const giftNoteColor = giftDetails?.noteColor || "#fef3c7";
+
   // Check if order is within 1 hour of placement
   const orderTime = new Date(createdAt || new Date()).getTime();
   const diffHours = (new Date().getTime() - orderTime) / (1000 * 60 * 60);
@@ -98,7 +112,9 @@ export default function OrderSuccessPage() {
   const isPaymentVerification = order?.status === "payment_verification";
   const canCancel =
     diffHours < 1 &&
-    (order?.status === "pending" || order?.status === "payment_verification" || !order?.status) &&
+    (order?.status === "pending" ||
+      order?.status === "payment_verification" ||
+      !order?.status) &&
     !isCancelled;
 
   const handleCancelOrder = async () => {
@@ -226,24 +242,37 @@ export default function OrderSuccessPage() {
                 <div className="bg-amber-50 dark:bg-amber-900/10 rounded-[20px] p-6 sm:p-8 border-2 border-amber-400 dark:border-amber-700/60 flex flex-col gap-4 text-left shadow-sm">
                   <div className="flex items-start gap-4">
                     <div className="w-10 h-10 bg-amber-100 dark:bg-amber-900/40 rounded-full flex items-center justify-center shrink-0 mt-0.5">
-                      <AlertTriangle size={20} className="text-amber-600 dark:text-amber-400" />
+                      <AlertTriangle
+                        size={20}
+                        className="text-amber-600 dark:text-amber-400"
+                      />
                     </div>
                     <div className="flex-1">
                       <h3 className="font-serif text-xl font-bold text-amber-900 dark:text-amber-100 mb-1">
                         Payment Verification Pending
                       </h3>
                       <p className="text-[15px] text-amber-800/80 dark:text-amber-100/70 leading-relaxed">
-                        We've received your UPI payment details and are manually verifying your transaction. Your order will move to processing as soon as we confirm the payment — usually within a few hours.
+                        We've received your UPI payment details and are manually
+                        verifying your transaction. Your order will move to
+                        processing as soon as we confirm the payment — usually
+                        within a few hours.
                       </p>
                     </div>
                   </div>
                   <div className="ml-14 bg-white/60 dark:bg-black/20 rounded-xl p-4 border border-amber-200 dark:border-amber-800/40 text-sm space-y-1.5">
-                    <p className="text-amber-800 dark:text-amber-200 font-medium">What happens next:</p>
+                    <p className="text-amber-800 dark:text-amber-200 font-medium">
+                      What happens next:
+                    </p>
                     <ul className="text-amber-700/80 dark:text-amber-100/60 space-y-1 list-disc list-inside">
                       <li>We verify your UPI payment in our records</li>
-                      <li>You'll receive an order confirmation email once verified</li>
+                      <li>
+                        You'll receive an order confirmation email once verified
+                      </li>
                       <li>We start crafting your pieces after confirmation</li>
-                      <li>If there's an issue, we'll contact you via phone or WhatsApp</li>
+                      <li>
+                        If there's an issue, we'll contact you via phone or
+                        WhatsApp
+                      </li>
                     </ul>
                   </div>
                 </div>
@@ -551,11 +580,25 @@ export default function OrderSuccessPage() {
                           : formatPrice(order.shipping || 0)}
                       </span>
                     </div>
+                    {giftWrapFee > 0 && (
+                      <div className="flex justify-between text-brown-600 dark:text-amber-100/70">
+                        <span>Gift Wrap</span>
+                        <span>{formatPrice(giftWrapFee)}</span>
+                      </div>
+                    )}
+                    {greetingCardFee > 0 && (
+                      <div className="flex justify-between text-brown-600 dark:text-amber-100/70">
+                        <span>Greeting Card</span>
+                        <span>{formatPrice(greetingCardFee)}</span>
+                      </div>
+                    )}
                     {Math.round(
                       (order.total || 0) -
                         (order.subtotal || 0) +
                         (order.discount || 0) -
-                        (order.shipping || 0),
+                        (order.shipping || 0) -
+                        giftWrapFee -
+                        greetingCardFee,
                     ) > 0 && (
                       <div className="flex justify-between text-brown-600 dark:text-amber-100/70">
                         <span>Cash on Delivery</span>
@@ -565,7 +608,9 @@ export default function OrderSuccessPage() {
                               (order.total || 0) -
                                 (order.subtotal || 0) +
                                 (order.discount || 0) -
-                                (order.shipping || 0),
+                                (order.shipping || 0) -
+                                giftWrapFee -
+                                greetingCardFee,
                             ),
                           )}
                         </span>
@@ -651,6 +696,47 @@ export default function OrderSuccessPage() {
                   </div>
                 )}
               </div>
+
+              {/* Gift Details */}
+              {isGift && (
+                <div className="bg-amber-50/50 dark:bg-amber-900/10 rounded-[20px] p-6 sm:p-8 text-left border border-amber-200/60 dark:border-amber-900/30 shadow-sm mt-8">
+                  <h3 className="font-serif text-lg font-bold text-amber-900 dark:text-amber-100 mb-4 flex items-center gap-2">
+                    <Gift
+                      size={20}
+                      className="text-amber-600 dark:text-amber-400"
+                    />
+                    Gift Details
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="text-[15px] text-amber-800 dark:text-amber-100/80">
+                      <span className="font-semibold">Premium Gift Wrap:</span>{" "}
+                      {giftWrap ? "Yes (+₹30)" : "No"}
+                    </div>
+                    <div className="text-[15px] text-amber-800 dark:text-amber-100/80 capitalize">
+                      <span className="font-semibold">Greeting Card:</span>{" "}
+                      {greetingCard && greetingCard !== "none"
+                        ? `${greetingCard} (+₹20)`
+                        : "None"}
+                    </div>
+                    {giftMessage && (
+                      <div className="mt-4">
+                        <p className="text-sm font-semibold text-amber-800 dark:text-amber-100/80 mb-2">
+                          Gift Message:
+                        </p>
+                        <div
+                          style={{
+                            backgroundColor: giftNoteColor,
+                            color: "#4a3320",
+                          }}
+                          className="text-sm italic p-4 rounded-xl border border-black/5 shadow-inner"
+                        >
+                          "{giftMessage}"
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
 
               {/* Need Help / Quick Actions Section */}
               <div className="bg-cream-50 dark:bg-amber-900/10 rounded-[20px] p-6 sm:p-8 border border-cream-200 dark:border-amber-900/30 flex flex-col gap-6 text-left shadow-sm print:hidden">

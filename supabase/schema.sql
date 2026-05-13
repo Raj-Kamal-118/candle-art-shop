@@ -106,6 +106,24 @@ ALTER TABLE orders ADD COLUMN IF NOT EXISTS user_id TEXT;
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS customer_phone TEXT;
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_screenshot_url TEXT;
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS is_test BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS is_gift BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS gift_details JSONB;
+
+CREATE TABLE public.order_issues (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    order_id TEXT NOT NULL REFERENCES public.orders(id),
+    customer_email TEXT NOT NULL,
+    customer_phone TEXT,
+    issue_type TEXT NOT NULL,
+    description TEXT NOT NULL,
+    image_url TEXT,
+    status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'contacted', 'resolving', 'resolved')),
+    admin_notes TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.order_issues ADD COLUMN IF NOT EXISTS admin_notes TEXT;
+ALTER TABLE public.order_issues ENABLE ROW LEVEL SECURITY;
 
 -- Service role bypasses RLS automatically, so no policies needed
 -- for the server-side Next.js app. Public (anon) access is blocked.

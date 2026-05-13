@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { ArrowRight, ShieldCheck, Package, RotateCcw } from "lucide-react";
-import { formatPrice, getShippingCost } from "@/lib/utils";
+import { useState, useEffect } from "react";
+import { ArrowRight, ShieldCheck, Package, RotateCcw, Tag } from "lucide-react";
+import { formatPrice, getShippingCost, calculateDiscount } from "@/lib/utils";
+import { DiscountCode } from "@/lib/types";
+import { useStore } from "@/lib/store";
 
 const FREE_SHIPPING_THRESHOLD = 999;
 const FREE_CARD_THRESHOLD = 1500;
@@ -17,11 +19,29 @@ export default function CartSummary({
   subtotal,
   showCheckoutButton = true,
 }: CartSummaryProps) {
+  const { currentUser } = useStore();
   const [discountInput, setDiscountInput] = useState("");
   const [appliedCode, setAppliedCode] = useState("");
-  const [discountAmount, setDiscountAmount] = useState(0);
+  const [appliedDiscount, setAppliedDiscount] = useState<DiscountCode | null>(
+    null,
+  );
   const [discountError, setDiscountError] = useState("");
   const [applying, setApplying] = useState(false);
+
+  useEffect(() => {
+    try {
+      const savedDiscount = sessionStorage.getItem("appliedDiscount");
+      if (savedDiscount) {
+        const parsed = JSON.parse(savedDiscount);
+        setAppliedDiscount(parsed.discount);
+        setAppliedCode(parsed.code);
+      }
+    } catch (e) {}
+  }, []);
+
+  const discountAmount = appliedDiscount
+    ? calculateDiscount(subtotal, appliedDiscount.type, appliedDiscount.value)
+    : 0;
 
   const netSubtotal = subtotal - discountAmount;
   const shipping = getShippingCost(netSubtotal);
@@ -43,20 +63,26 @@ export default function CartSummary({
       const res = await fetch("/api/discounts/validate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: discountInput, subtotal }),
+        body: JSON.stringify({
+          code: discountInput,
+          subtotal,
+          userId: currentUser?.id,
+        }),
       });
       const data = await res.json();
       if (!res.ok) {
         setDiscountError(data.error || "Invalid code");
       } else {
-        const { discount } = data;
-        const amount =
-          discount.type === "percentage"
-            ? Math.round((subtotal * discount.value) / 100)
-            : discount.value;
-        setDiscountAmount(amount);
+        setAppliedDiscount(data.discount);
         setAppliedCode(discountInput.toUpperCase());
         setDiscountInput("");
+        sessionStorage.setItem(
+          "appliedDiscount",
+          JSON.stringify({
+            discount: data.discount,
+            code: discountInput.toUpperCase(),
+          }),
+        );
       }
     } catch {
       setDiscountError("Could not apply code. Please try again.");
@@ -67,8 +93,9 @@ export default function CartSummary({
 
   function handleRemoveDiscount() {
     setAppliedCode("");
-    setDiscountAmount(0);
+    setAppliedDiscount(null);
     setDiscountError("");
+    sessionStorage.removeItem("appliedDiscount");
   }
 
   return (
@@ -246,21 +273,35 @@ export default function CartSummary({
       </div>
 
       {/* ── Discount code ── */}
-      <div className="mt-4">
-        {appliedCode ? (
-          <div className="flex items-center justify-between px-4 py-2.5 bg-coral-50 dark:bg-coral-900/10 border border-dashed border-coral-300 dark:border-coral-700/40 rounded-full">
-            <span className="font-serif text-[13px]">
-              <strong className="font-mono text-coral-800 dark:text-coral-300">
+      <div className="mt-5 mb-2 bg-cream-50 dark:bg-amber-900/10 p-4 sm:p-5 rounded-2xl border border-[rgba(122,80,40,0.15)] dark:border-amber-900/30">
+        <h3 className="font-serif text-[18px] font-bold text-brown-900 dark:text-amber-100 mb-1 flex items-center gap-2">
+          <Tag size={16} className="text-amber-600 dark:text-amber-400" />
+          Got a{" "}
+          <span
+            className="text-[22px] text-coral-600 dark:text-amber-400"
+            style={{ fontFamily: "var(--font-script)" }}
+          >
+            code?
+          </span>
+        </h3>
+        <p className="font-serif italic text-[12px] text-brown-400 dark:text-amber-100/40 mb-4">
+          enter it below — we'll apply it to your order
+        </p>
+
+        {appliedDiscount ? (
+          <div className="flex items-center justify-between px-4 py-3 bg-coral-50 dark:bg-coral-900/10 border border-dashed border-coral-300 dark:border-coral-700/40 rounded-xl">
+            <div>
+              <p className="font-sans text-[14px] tracking-[0.06em] font-bold text-coral-800 dark:text-coral-300">
                 {appliedCode}
-              </strong>
-              <span className="italic text-coral-700 dark:text-coral-400 ml-2">
-                · {formatPrice(discountAmount)} saved
-              </span>
-            </span>
+              </p>
+              <p className="font-serif italic text-[13px] text-coral-600 dark:text-coral-400 mt-0.5">
+                −{formatPrice(discountAmount)} saved ✓
+              </p>
+            </div>
             <button
               onClick={handleRemoveDiscount}
-              className="text-coral-700 dark:text-coral-400 hover:text-coral-800 transition-colors ml-3 text-lg leading-none"
-              aria-label="Remove discount"
+              className="text-coral-700 dark:text-coral-400 hover:text-coral-800 transition-colors text-xl leading-none ml-3"
+              aria-label="Remove discount code"
             >
               ×
             </button>
@@ -271,25 +312,21 @@ export default function CartSummary({
               type="text"
               value={discountInput}
               onChange={(e) => setDiscountInput(e.target.value.toUpperCase())}
+              placeholder="your code here…"
+              className="w-full px-3 py-2 text-sm border border-[rgba(122,80,40,0.3)] dark:border-amber-900/40 rounded-lg bg-white dark:bg-[#1a1830] text-brown-900 dark:text-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-400"
               onKeyDown={(e) => e.key === "Enter" && handleApply()}
-              placeholder="got a code?"
-              className="craft-code-input"
             />
             <button
               onClick={handleApply}
               disabled={applying || !discountInput.trim()}
-              className="px-4 py-2 border border-dashed border-[rgba(122,80,40,0.4)] dark:border-amber-900/40 rounded-lg text-brown-800 dark:text-amber-200 hover:border-coral-500 dark:hover:border-amber-400 hover:text-coral-700 dark:hover:text-amber-400 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-              style={{ fontFamily: "var(--font-serif)", fontSize: 13 }}
+              className="font-serif text-[13px] px-4 py-2 border border-dashed border-[rgba(122,80,40,0.4)] dark:border-amber-900/40 rounded-lg text-brown-800 dark:text-amber-200 hover:border-coral-500 hover:text-coral-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {applying ? "…" : "apply"}
             </button>
           </div>
         )}
         {discountError && (
-          <p
-            className="mt-2 text-xs font-medium text-coral-600 dark:text-coral-400"
-            style={{ fontFamily: "var(--font-serif)", fontStyle: "italic" }}
-          >
+          <p className="font-serif italic text-[13px] mt-2 text-coral-600 dark:text-coral-400">
             {discountError}
           </p>
         )}

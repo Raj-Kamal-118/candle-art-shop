@@ -1,5 +1,6 @@
 import { CartItem } from "@/lib/types";
 import { formatPrice } from "@/lib/utils";
+import { Gift } from "lucide-react";
 
 interface OrderSummaryProps {
   items: CartItem[];
@@ -7,6 +8,8 @@ interface OrderSummaryProps {
   discountCode?: string;
   codFee?: number;
   shipping: number;
+  giftWrapFee?: number;
+  greetingCardFee?: number;
 }
 
 export default function OrderSummary({
@@ -15,12 +18,15 @@ export default function OrderSummary({
   discountCode,
   codFee = 0,
   shipping,
+  giftWrapFee = 0,
+  greetingCardFee = 0,
 }: OrderSummaryProps) {
   const subtotal = items.reduce(
     (sum, item) => sum + (item.price ?? item.product.price) * item.quantity,
     0,
   );
-  const total = subtotal - discount + shipping + codFee;
+  const total =
+    subtotal - discount + shipping + codFee + giftWrapFee + greetingCardFee;
 
   return (
     <div className="bg-white dark:bg-[#1a1830] rounded-3xl border border-[rgba(122,80,40,0.18)] dark:border-amber-900/20 overflow-hidden shadow-[0_14px_30px_rgba(67,44,26,0.10),0_2px_6px_rgba(0,0,0,0.04)] dark:shadow-[0_14px_30px_rgba(0,0,0,0.25)]">
@@ -75,8 +81,8 @@ export default function OrderSummary({
                       />
                     )
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-lg">
-                      🎁
+                    <div className="w-full h-full flex items-center justify-center text-amber-600 dark:text-amber-400">
+                      <Gift size={20} />
                     </div>
                   )}
                 </div>
@@ -154,6 +160,28 @@ export default function OrderSummary({
             <span className="craft-dot-line" />
             <span className="font-bold text-brown-900 dark:text-amber-100">
               {formatPrice(codFee)}
+            </span>
+          </div>
+        )}
+        {giftWrapFee > 0 && (
+          <div className="font-serif text-[14px] flex items-baseline">
+            <span className="text-brown-600 dark:text-amber-100/60">
+              Gift Wrap
+            </span>
+            <span className="craft-dot-line" />
+            <span className="font-bold text-brown-900 dark:text-amber-100">
+              {formatPrice(giftWrapFee)}
+            </span>
+          </div>
+        )}
+        {greetingCardFee > 0 && (
+          <div className="font-serif text-[14px] flex items-baseline">
+            <span className="text-brown-600 dark:text-amber-100/60">
+              Greeting Card
+            </span>
+            <span className="craft-dot-line" />
+            <span className="font-bold text-brown-900 dark:text-amber-100">
+              {formatPrice(greetingCardFee)}
             </span>
           </div>
         )}

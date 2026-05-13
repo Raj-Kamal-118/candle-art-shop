@@ -14,7 +14,6 @@ import {
   CheckCircle,
   Truck,
   XCircle,
-  RotateCcw,
   MessageCircle,
   AlertTriangle,
   Star,
@@ -26,6 +25,8 @@ import {
   Settings,
   Heart,
   FileText,
+  HelpCircle,
+  Gift,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { Order, OrderItem, Address } from "@/lib/types";
@@ -35,6 +36,7 @@ import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import AddressForm from "@/components/checkout/AddressForm";
 import Receipt from "@/components/order/Receipt";
+import ReportIssueModal from "@/app/order/[id]/ReportIssueModal";
 
 const STATUS_CONFIG: Record<
   string,
@@ -45,6 +47,13 @@ const STATUS_CONFIG: Record<
     icon: <Clock size={14} />,
     color: "bg-yellow-100 text-yellow-800",
     message: "We've received your order and are warming up the wax. 🕯️",
+  },
+  payment_pending: {
+    label: "Payment Pending",
+    icon: <Clock size={14} />,
+    color: "bg-orange-100 text-orange-800",
+    message:
+      "We are waiting for your payment to complete. If it failed, please contact us. ⏳",
   },
   processing: {
     label: "Processing",
@@ -75,23 +84,23 @@ const STATUS_CONFIG: Record<
   },
   returning: {
     label: "Returning",
-    icon: <RotateCcw size={14} />,
+    icon: <Package size={14} />,
     color: "bg-orange-100 text-orange-800",
     message:
-      "Your return request is active. Once the items are received, we will initiate your refund.",
+      "Your query is active. Once our team reviews it, we will get in touch with you.",
   },
   partially_returning: {
     label: "Partial Return",
-    icon: <RotateCcw size={14} />,
+    icon: <Package size={14} />,
     color: "bg-orange-100 text-orange-800",
     message:
-      "A return request for some items is active. We will process your partial refund once received.",
+      "A query for some items is active. Our team will get in touch with you soon.",
   },
   returned: {
     label: "Returned",
     icon: <CheckCircle size={14} />,
     color: "bg-gray-100 text-gray-800",
-    message: "This order has been returned and refunded.",
+    message: "This order has been processed.",
   },
 };
 
@@ -128,13 +137,7 @@ export default function AccountPage() {
   const [editProfileName, setEditProfileName] = useState("");
   const [editProfilePhone, setEditProfilePhone] = useState("");
   const [savingProfile, setSavingProfile] = useState(false);
-  const [returnModalOrderId, setReturnModalOrderId] = useState<string | null>(
-    null,
-  );
-  const [returnSelections, setReturnSelections] = useState<
-    Record<number, boolean>
-  >({});
-  const [returningOrder, setReturningOrder] = useState(false);
+  const [reportIssueOrder, setReportIssueOrder] = useState<Order | null>(null);
 
   // Fetch server-side session on mount
   useEffect(() => {
@@ -214,39 +217,6 @@ export default function AccountPage() {
       }
     } finally {
       setCancelling(false);
-    }
-  };
-
-  const handleReturnOrder = async () => {
-    if (!returnModalOrderId) return;
-
-    const selectedIndices = Object.keys(returnSelections)
-      .filter((k) => returnSelections[parseInt(k)])
-      .map(Number);
-
-    if (selectedIndices.length === 0) {
-      showToast("Please select at least one item to return.");
-      return;
-    }
-
-    setReturningOrder(true);
-    try {
-      const res = await fetch(`/api/orders/${returnModalOrderId}/return`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ itemsToReturn: selectedIndices }),
-      });
-      if (res.ok) {
-        const updatedOrder = await res.json();
-        setOrders(
-          orders.map((o) => (o.id === returnModalOrderId ? updatedOrder : o)),
-        );
-        setReturnModalOrderId(null);
-        setReturnSelections({});
-        showToast("Return initiated successfully");
-      }
-    } finally {
-      setReturningOrder(false);
     }
   };
 
@@ -684,6 +654,19 @@ export default function AccountPage() {
             ) : (
               <div className="space-y-5">
                 {orders.map((order) => {
+                  const giftDetails =
+                    (order as any).gift_details ||
+                    (order as any).giftDetails ||
+                    {};
+                  const isGift =
+                    (order as any).is_gift || (order as any).isGift || false;
+                  const giftWrapFee = giftDetails?.wrapFee || 0;
+                  const greetingCardFee = giftDetails?.greetingCardFee || 0;
+                  const giftWrap = giftDetails?.wrap || false;
+                  const greetingCard = giftDetails?.greetingCard || "none";
+                  const giftMessage = giftDetails?.message || "";
+                  const giftNoteColor = giftDetails?.noteColor || "#fef3c7";
+
                   const status =
                     STATUS_CONFIG[order.status] || STATUS_CONFIG.pending;
                   const isExpanded = expandedOrder === order.id;
@@ -1015,11 +998,25 @@ export default function AccountPage() {
                                   : formatPrice(order.shipping)}
                               </span>
                             </div>
+                            {giftWrapFee > 0 && (
+                              <div className="flex justify-between text-[15px] text-brown-600 dark:text-amber-100/70">
+                                <span>Gift Wrap</span>
+                                <span>{formatPrice(giftWrapFee)}</span>
+                              </div>
+                            )}
+                            {greetingCardFee > 0 && (
+                              <div className="flex justify-between text-[15px] text-brown-600 dark:text-amber-100/70">
+                                <span>Greeting Card</span>
+                                <span>{formatPrice(greetingCardFee)}</span>
+                              </div>
+                            )}
                             {Math.round(
                               order.total -
                                 order.subtotal +
                                 order.discount -
-                                order.shipping,
+                                order.shipping -
+                                giftWrapFee -
+                                greetingCardFee,
                             ) > 0 && (
                               <div className="flex justify-between text-sm text-brown-500">
                                 <span>COD Handling</span>
@@ -1029,7 +1026,9 @@ export default function AccountPage() {
                                       order.total -
                                         order.subtotal +
                                         order.discount -
-                                        order.shipping,
+                                        order.shipping -
+                                        giftWrapFee -
+                                        greetingCardFee,
                                     ),
                                   )}
                                 </span>
@@ -1099,26 +1098,73 @@ export default function AccountPage() {
                             )}
                           </div>
 
-                          {/* Return Order Block */}
+                          {/* Gift Details */}
+                          {isGift && (
+                            <div className="mt-4 bg-amber-50/50 dark:bg-amber-900/10 rounded-2xl p-5 border border-amber-200/60 dark:border-amber-900/30 shadow-sm">
+                              <h4 className="text-[11px] font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                <Gift size={14} />
+                                Gift Details
+                              </h4>
+                              <div className="space-y-2 text-sm">
+                                <div className="text-brown-700 dark:text-amber-100/80">
+                                  <span className="font-semibold">
+                                    Premium Wrap:
+                                  </span>{" "}
+                                  {giftWrap ? "Yes" : "No"}
+                                </div>
+                                <div className="text-brown-700 dark:text-amber-100/80 capitalize">
+                                  <span className="font-semibold">
+                                    Greeting Card:
+                                  </span>{" "}
+                                  {greetingCard && greetingCard !== "none"
+                                    ? greetingCard
+                                    : "None"}
+                                </div>
+                                {giftMessage && (
+                                  <div className="mt-2">
+                                    <p className="text-xs font-semibold text-brown-700 dark:text-amber-100/80 mb-1">
+                                      Message:
+                                    </p>
+                                    <div
+                                      style={{
+                                        backgroundColor: giftNoteColor,
+                                        color: "#4a3320",
+                                      }}
+                                      className="text-sm italic p-3 rounded-lg border border-black/5 shadow-inner"
+                                    >
+                                      "{giftMessage}"
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Report Issue Block */}
                           {status.label === "Delivered" && (
-                            <div className="bg-cream-50 dark:bg-amber-900/10 rounded-2xl p-5 mt-4 border border-cream-200 dark:border-amber-900/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div className="bg-amber-50/60 dark:bg-amber-900/10 rounded-2xl p-5 mt-4 border border-amber-100 dark:border-amber-900/20 flex flex-col sm:flex-row items-center justify-between gap-4">
                               <div>
                                 <p className="text-[15px] font-bold text-brown-900 dark:text-amber-100">
-                                  Not completely satisfied?
+                                  Something not right?
                                 </p>
                                 <p className="text-sm text-brown-600 dark:text-amber-100/70 mt-0.5">
-                                  You can request a return within 7 days of
-                                  delivery.
+                                  We&apos;re a small team and we care deeply —
+                                  just let us know and we&apos;ll make it right.
+                                  🕯️
                                 </p>
                               </div>
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  setReturnModalOrderId(order.id);
+                                  setReportIssueOrder(order);
                                 }}
-                                className="w-full sm:w-auto shrink-0 inline-flex items-center justify-center gap-2 text-sm text-brown-800 dark:text-amber-100 bg-white dark:bg-[#1a1830] border border-brown-200 dark:border-amber-700/50 px-5 py-2.5 rounded-xl hover:bg-cream-100 dark:hover:bg-amber-900/40 font-semibold transition-all shadow-sm"
+                                className="w-full sm:w-auto shrink-0 inline-flex items-center justify-center gap-2 text-sm text-brown-800 dark:text-amber-100 bg-white dark:bg-[#1a1830] border border-amber-200 dark:border-amber-700/50 px-5 py-2.5 rounded-xl hover:bg-amber-50 dark:hover:bg-amber-900/40 font-semibold transition-all shadow-sm"
                               >
-                                <RotateCcw size={16} /> Return Order
+                                <HelpCircle
+                                  size={16}
+                                  className="text-amber-600"
+                                />{" "}
+                                Report an Issue
                               </button>
                             </div>
                           )}
@@ -1186,107 +1232,6 @@ export default function AccountPage() {
                 loading={cancelling}
               >
                 Yes, cancel it
-              </Button>
-            </div>
-          </div>
-        </Modal>
-
-        {/* Return Order Modal */}
-        <Modal
-          isOpen={!!returnModalOrderId}
-          onClose={() => {
-            if (returningOrder) return;
-            setReturnModalOrderId(null);
-            setReturnSelections({});
-          }}
-          title="Return Order"
-          size="md"
-        >
-          <div className="text-center sm:text-left space-y-4">
-            <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mx-auto sm:mx-0 mb-2">
-              <RotateCcw size={24} />
-            </div>
-            <h3 className="text-xl font-serif font-bold text-brown-900 dark:text-amber-100">
-              Return this order?
-            </h3>
-            <p className="text-[15px] text-brown-600 dark:text-amber-100/70 leading-relaxed">
-              We're sorry the pieces didn't work out for you. Once you initiate
-              a return, we will arrange a pickup from your delivery address.
-            </p>
-            <p className="text-sm font-medium text-brown-800 dark:text-amber-100/90 bg-cream-50 dark:bg-amber-900/20 p-4 rounded-xl border border-cream-100 dark:border-amber-900/30">
-              <strong className="font-bold">Refund Process:</strong> Once the
-              order is successfully returned to our studio, we will initiate
-              your refund immediately. It typically reflects in your original
-              payment method within 5-7 business days.
-            </p>
-
-            {/* Items selection UI */}
-            <div className="max-h-[35vh] overflow-y-auto space-y-3 bg-cream-50 dark:bg-amber-900/10 p-3 rounded-2xl border border-cream-100 dark:border-amber-900/30 text-left mt-4 shadow-inner">
-              <p className="text-[11px] font-bold text-brown-500 dark:text-amber-100/60 uppercase tracking-widest px-2 mb-1">
-                Select items to return:
-              </p>
-              {orders
-                .find((o) => o.id === returnModalOrderId)
-                ?.items.map((item: any, idx: number) => {
-                  const isReturned =
-                    item.return_status === "returned" ||
-                    item.return_status === "returning";
-                  return (
-                    <label
-                      key={idx}
-                      className={`flex items-center gap-4 p-3 rounded-xl border transition-all cursor-pointer ${isReturned ? "opacity-50 grayscale cursor-not-allowed border-cream-200 dark:border-amber-900/30" : returnSelections[idx] ? "bg-white dark:bg-[#1a1830] border-orange-400 shadow-sm" : "bg-white dark:bg-[#1a1830] border-transparent hover:border-orange-200 dark:hover:border-amber-700/50"}`}
-                    >
-                      <input
-                        type="checkbox"
-                        disabled={isReturned}
-                        className="w-4 h-4 accent-orange-600 rounded cursor-pointer shrink-0"
-                        checked={!!returnSelections[idx]}
-                        onChange={(e) =>
-                          setReturnSelections((prev) => ({
-                            ...prev,
-                            [idx]: e.target.checked,
-                          }))
-                        }
-                      />
-                      <img
-                        src={item.productImage || ""}
-                        className="w-12 h-12 rounded-lg object-cover border border-cream-100 dark:border-amber-900/30 shrink-0"
-                        alt={item.productName}
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-bold text-brown-900 dark:text-amber-100 truncate">
-                          {item.productName}
-                        </div>
-                        <div className="text-xs text-brown-500 dark:text-amber-100/60 mt-0.5">
-                          Qty: {item.quantity}
-                        </div>
-                      </div>
-                      <div className="text-[15px] font-bold text-brown-900 dark:text-amber-100 pl-2">
-                        {formatPrice(item.price * item.quantity)}
-                      </div>
-                    </label>
-                  );
-                })}
-            </div>
-            <p className="text-[13px] text-brown-500 dark:text-amber-100/60 mt-3 text-left italic font-medium px-1">
-              Note: Shipping and COD fees are strictly non-refundable.
-            </p>
-
-            <div className="pt-4 flex flex-col sm:flex-row gap-3">
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => setReturnModalOrderId(null)}
-                disabled={returningOrder}
-              >
-                Keep my order
-              </Button>
-              <Button
-                className="w-full bg-orange-600 hover:bg-orange-700 text-white shadow-orange-200 dark:shadow-none border-none"
-                onClick={handleReturnOrder}
-                loading={returningOrder}
-              >
-                Initiate Return
               </Button>
             </div>
           </div>
@@ -1461,6 +1406,16 @@ export default function AccountPage() {
         </AnimatePresence>
       </div>
       {printingOrder && <Receipt order={printingOrder} />}
+      {reportIssueOrder && (
+        <ReportIssueModal
+          isOpen={!!reportIssueOrder}
+          onClose={() => setReportIssueOrder(null)}
+          order={reportIssueOrder}
+          userName={user?.name}
+          userEmail={user?.email}
+          userPhone={user?.phone}
+        />
+      )}
     </>
   );
 }

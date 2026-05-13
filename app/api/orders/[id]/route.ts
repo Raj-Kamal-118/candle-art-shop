@@ -1,21 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
 import { requireAdmin } from "@/lib/auth-guard";
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
-const supabase = createClient(supabaseUrl, supabaseKey);
+import { supabase } from "@/lib/supabase";
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
+    const { id } = params;
     const { data, error } = await supabase
       .from("orders")
       .select("*")
-      .eq("id", params.id)
+      .eq("id", id)
       .maybeSingle();
 
     if (error) throw error;
@@ -46,6 +42,7 @@ export async function PATCH(
   const deny = requireAdmin(request);
   if (deny) return deny;
   try {
+    const { id } = params;
     const body = await request.json();
     const { status, paymentReference, isTest } = body;
 
@@ -53,7 +50,7 @@ export async function PATCH(
     const { data: currentOrder, error: fetchError } = await supabase
       .from("orders")
       .select("*")
-      .eq("id", params.id)
+      .eq("id", id)
       .maybeSingle();
 
     if (fetchError) throw fetchError;
@@ -67,7 +64,7 @@ export async function PATCH(
     const { data, error } = await supabase
       .from("orders")
       .update(updates)
-      .eq("id", params.id)
+      .eq("id", id)
       .select()
       .single();
 

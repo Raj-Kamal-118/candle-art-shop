@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import dynamic from "next/dynamic";
 import {
   Plus,
@@ -12,6 +13,22 @@ import {
   ChevronDown,
   ChevronUp,
   GripVertical,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  // Icons available for product characteristics
+  Flame, Leaf, Droplet, Droplets, Wind, Waves, Sun, Moon, Mountain, TreePine,
+  Flower2, Feather, Recycle, Globe, Clock, Timer, AlarmClock, Hourglass,
+  Ruler, Gauge, Scale, Maximize2, FlaskConical, Thermometer, Coffee, Palette,
+  Paintbrush, Scissors, PenLine, Type, Sparkles, Star, Gem, Crown, Award,
+  BadgeCheck, Shield, Zap, Layers, Box, Tag, Home, Heart, Gift,
+  // Materials
+  TreeDeciduous, Hammer, Wrench, Cog, Magnet, GlassWater, Shirt, BrickWall,
+  Wheat, Sprout, Dumbbell, Diamond, TreePalm, Bean, Cpu, Wine, HardHat,
+  // General / process
+  Compass, Flag, Trophy, Medal, Infinity, Calendar, Percent, BookOpen,
+  Anchor, Activity, Scroll, FileText, Snowflake, Battery, MapPin, Watch,
+  Microscope, Beaker, Pipette,
 } from "lucide-react";
 import {
   DndContext,
@@ -335,6 +352,208 @@ function CategoryGroup({
   );
 }
 
+// ─── Icon picker ──────────────────────────────────────────────────────────────
+
+const ICON_OPTIONS: { key: string; label: string; Icon: React.ElementType }[] = [
+  { key: "flame",       label: "Flame",       Icon: Flame },
+  { key: "leaf",        label: "Leaf",        Icon: Leaf },
+  { key: "droplet",     label: "Droplet",     Icon: Droplet },
+  { key: "droplets",    label: "Droplets",    Icon: Droplets },
+  { key: "wind",        label: "Wind",        Icon: Wind },
+  { key: "waves",       label: "Waves",       Icon: Waves },
+  { key: "sun",         label: "Sun",         Icon: Sun },
+  { key: "moon",        label: "Moon",        Icon: Moon },
+  { key: "mountain",    label: "Mountain",    Icon: Mountain },
+  { key: "treepine",    label: "Tree",        Icon: TreePine },
+  { key: "flower2",     label: "Flower",      Icon: Flower2 },
+  { key: "feather",     label: "Feather",     Icon: Feather },
+  { key: "recycle",     label: "Recycle",     Icon: Recycle },
+  { key: "globe",       label: "Globe",       Icon: Globe },
+  { key: "clock",       label: "Clock",       Icon: Clock },
+  { key: "timer",       label: "Timer",       Icon: Timer },
+  { key: "alarmclock",  label: "Alarm",       Icon: AlarmClock },
+  { key: "hourglass",   label: "Hourglass",   Icon: Hourglass },
+  { key: "ruler",       label: "Ruler",       Icon: Ruler },
+  { key: "gauge",       label: "Gauge",       Icon: Gauge },
+  { key: "scale",       label: "Scale",       Icon: Scale },
+  { key: "maximize2",   label: "Size",        Icon: Maximize2 },
+  { key: "flaskconical",label: "Flask",       Icon: FlaskConical },
+  { key: "thermometer", label: "Temp",        Icon: Thermometer },
+  { key: "coffee",      label: "Coffee",      Icon: Coffee },
+  { key: "palette",     label: "Palette",     Icon: Palette },
+  { key: "paintbrush",  label: "Brush",       Icon: Paintbrush },
+  { key: "scissors",    label: "Scissors",    Icon: Scissors },
+  { key: "penline",     label: "Pen",         Icon: PenLine },
+  { key: "type",        label: "Type",        Icon: Type },
+  { key: "sparkles",    label: "Sparkles",    Icon: Sparkles },
+  { key: "star",        label: "Star",        Icon: Star },
+  { key: "gem",         label: "Gem",         Icon: Gem },
+  { key: "crown",       label: "Crown",       Icon: Crown },
+  { key: "award",       label: "Award",       Icon: Award },
+  { key: "badgecheck",  label: "Certified",   Icon: BadgeCheck },
+  { key: "shield",      label: "Shield",      Icon: Shield },
+  { key: "zap",         label: "Zap",         Icon: Zap },
+  { key: "layers",      label: "Layers",      Icon: Layers },
+  { key: "package",     label: "Package",     Icon: Package },
+  { key: "box",         label: "Box",         Icon: Box },
+  { key: "tag",         label: "Tag",         Icon: Tag },
+  { key: "home",        label: "Home",        Icon: Home },
+  { key: "heart",       label: "Heart",       Icon: Heart },
+  { key: "gift",        label: "Gift",        Icon: Gift },
+  // Materials
+  { key: "treedeciduous", label: "Wood",      Icon: TreeDeciduous },
+  { key: "hammer",      label: "Iron",        Icon: Hammer },
+  { key: "wrench",      label: "Wrench",      Icon: Wrench },
+  { key: "cog",         label: "Metal",       Icon: Cog },
+  { key: "magnet",      label: "Magnet",      Icon: Magnet },
+  { key: "glasswater",  label: "Glass",       Icon: GlassWater },
+  { key: "shirt",       label: "Fabric",      Icon: Shirt },
+  { key: "brickwall",   label: "Stone",       Icon: BrickWall },
+  { key: "wheat",       label: "Grain",       Icon: Wheat },
+  { key: "sprout",      label: "Organic",     Icon: Sprout },
+  { key: "dumbbell",    label: "Heavy",       Icon: Dumbbell },
+  { key: "diamond",     label: "Crystal",     Icon: Diamond },
+  { key: "treepalm",    label: "Palm",        Icon: TreePalm },
+  { key: "bean",        label: "Bean",        Icon: Bean },
+  { key: "cpu",         label: "Synthetic",   Icon: Cpu },
+  { key: "wine",        label: "Glass jar",   Icon: Wine },
+  { key: "hardhat",     label: "Industrial",  Icon: HardHat },
+  // General / process
+  { key: "compass",     label: "Compass",     Icon: Compass },
+  { key: "flag",        label: "Origin",      Icon: Flag },
+  { key: "trophy",      label: "Trophy",      Icon: Trophy },
+  { key: "medal",       label: "Medal",       Icon: Medal },
+  { key: "infinity",    label: "Lasting",     Icon: Infinity },
+  { key: "calendar",    label: "Expiry",      Icon: Calendar },
+  { key: "percent",     label: "Percent",     Icon: Percent },
+  { key: "bookopen",    label: "Guide",       Icon: BookOpen },
+  { key: "anchor",      label: "Stable",      Icon: Anchor },
+  { key: "activity",    label: "Activity",    Icon: Activity },
+  { key: "scroll",      label: "Scroll",      Icon: Scroll },
+  { key: "filetext",    label: "Spec",        Icon: FileText },
+  { key: "snowflake",   label: "Cold",        Icon: Snowflake },
+  { key: "battery",     label: "Energy",      Icon: Battery },
+  { key: "mappin",      label: "Location",    Icon: MapPin },
+  { key: "watch",       label: "Duration",    Icon: Watch },
+  { key: "microscope",  label: "Precision",   Icon: Microscope },
+  { key: "beaker",      label: "Formula",     Icon: Beaker },
+  { key: "pipette",     label: "Measure",     Icon: Pipette },
+];
+
+function IconPicker({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (key: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [pos, setPos] = useState({ top: 0, left: 0, width: 0 });
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Normalise stored value (old text-input entries may be capitalised)
+  const normValue = value?.toLowerCase() ?? "";
+  const selected = ICON_OPTIONS.find((o) => o.key === normValue);
+  const filtered = query
+    ? ICON_OPTIONS.filter((o) => o.label.toLowerCase().includes(query.toLowerCase()))
+    : ICON_OPTIONS;
+
+  useEffect(() => {
+    if (!open) return;
+    // Position the portal dropdown relative to the trigger
+    if (triggerRef.current) {
+      const r = triggerRef.current.getBoundingClientRect();
+      setPos({
+        top: r.bottom + 4,
+        left: r.left,
+        width: Math.max(r.width, 288),
+      });
+    }
+    function onMouseDown(e: MouseEvent) {
+      if (
+        !triggerRef.current?.contains(e.target as Node) &&
+        !dropdownRef.current?.contains(e.target as Node)
+      ) setOpen(false);
+    }
+    document.addEventListener("mousedown", onMouseDown);
+    return () => document.removeEventListener("mousedown", onMouseDown);
+  }, [open]);
+
+  const dropdown = open && typeof document !== "undefined"
+    ? createPortal(
+        <div
+          ref={dropdownRef}
+          style={{ position: "fixed", top: pos.top, left: pos.left, width: pos.width, zIndex: 9999 }}
+          className="bg-white dark:bg-[#1a1830] border border-cream-200 dark:border-amber-900/30 rounded-xl shadow-2xl overflow-hidden"
+        >
+          <div className="p-2 border-b border-cream-100 dark:border-amber-900/20">
+            <input
+              autoFocus
+              placeholder="Search icons…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="w-full px-2.5 py-1.5 text-xs rounded-lg bg-cream-50 dark:bg-[#12101e] border border-cream-200 dark:border-amber-900/30 text-brown-900 dark:text-amber-100 placeholder:text-brown-400 dark:placeholder:text-amber-100/40 outline-none focus:border-amber-400"
+            />
+          </div>
+          <div className="p-2 grid grid-cols-6 gap-1 max-h-52 overflow-y-auto">
+            {filtered.map(({ key, label, Icon }) => (
+              <button
+                key={key}
+                type="button"
+                title={label}
+                onClick={() => { onChange(key); setOpen(false); setQuery(""); }}
+                className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+                  normValue === key
+                    ? "bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300"
+                    : "hover:bg-cream-50 dark:hover:bg-amber-900/20 text-brown-600 dark:text-amber-100/70"
+                }`}
+              >
+                <Icon size={16} />
+                <span className="text-[9px] leading-none text-center truncate w-full">{label}</span>
+              </button>
+            ))}
+            {filtered.length === 0 && (
+              <p className="col-span-6 text-center text-xs text-brown-400 dark:text-amber-100/40 py-4">No match</p>
+            )}
+          </div>
+        </div>,
+        document.body
+      )
+    : null;
+
+  return (
+    <div className="relative">
+      <button
+        ref={triggerRef}
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center gap-2 px-3 py-2 rounded-lg border border-cream-200 dark:border-amber-900/30 bg-white dark:bg-[#12101e] text-sm text-brown-900 dark:text-amber-100 hover:border-amber-400 dark:hover:border-amber-700 transition-colors"
+      >
+        {selected ? (
+          <>
+            <selected.Icon size={15} className="text-amber-600 dark:text-amber-400 shrink-0" />
+            <span className="flex-1 text-left truncate text-brown-900 dark:text-amber-100">{selected.label}</span>
+          </>
+        ) : (
+          <span className="flex-1 text-left text-brown-400 dark:text-amber-100/40">Pick icon…</span>
+        )}
+        {value ? (
+          <X
+            size={13}
+            className="text-brown-400 hover:text-red-500 shrink-0"
+            onClick={(e) => { e.stopPropagation(); onChange(""); setOpen(false); }}
+          />
+        ) : (
+          <ChevronDown size={13} className="text-brown-400 shrink-0" />
+        )}
+      </button>
+      {dropdown}
+    </div>
+  );
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function AdminProductsPage() {
@@ -349,6 +568,8 @@ export default function AdminProductsPage() {
   const [showCustomization, setShowCustomization] = useState(false);
   const [autoGenerateSlug, setAutoGenerateSlug] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const dragItem = useRef<number | null>(null);
+  const dragOverItem = useRef<number | null>(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -594,6 +815,21 @@ export default function AdminProductsPage() {
     await fetch(`/api/products/${deleteId}`, { method: "DELETE" });
     setProducts((prev) => prev.filter((p) => p.id !== deleteId));
     setDeleteId(null);
+  };
+
+  const handleSortImages = () => {
+    if (dragItem.current === null || dragOverItem.current === null) return;
+    const imagesArr = form.images
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    const draggedContent = imagesArr.splice(dragItem.current, 1)[0];
+    imagesArr.splice(dragOverItem.current, 0, draggedContent);
+
+    dragItem.current = null;
+    dragOverItem.current = null;
+
+    setForm({ ...form, images: imagesArr.join(", ") });
   };
 
   const addOption = () => {
@@ -911,26 +1147,57 @@ export default function AdminProductsPage() {
                     .split(",")
                     .map((i) => i.trim())
                     .filter(Boolean)
-                    .map((imgUrl, idx) =>
-                      imgUrl.match(/\.(mp4|webm|ogg)(\?.*)?$/i) ? (
-                        <video
-                          key={idx}
-                          src={imgUrl}
-                          autoPlay
-                          loop
-                          muted
-                          playsInline
-                          className="w-24 h-24 object-cover rounded-xl border border-cream-200 dark:border-amber-900/40 shadow-sm"
-                        />
-                      ) : (
-                        <img
-                          key={idx}
-                          src={imgUrl}
-                          alt={`Product preview ${idx + 1}`}
-                          className="w-24 h-24 object-cover rounded-xl border border-cream-200 dark:border-amber-900/40 shadow-sm"
-                        />
-                      ),
-                    )}
+                    .map((imgUrl, idx, arr) => (
+                      <div
+                        key={`${imgUrl}-${idx}`}
+                        draggable
+                        onDragStart={() => (dragItem.current = idx)}
+                        onDragEnter={() => (dragOverItem.current = idx)}
+                        onDragEnd={handleSortImages}
+                        onDragOver={(e) => e.preventDefault()}
+                        className="relative group w-24 h-24 rounded-xl border border-cream-200 dark:border-amber-900/40 shadow-sm overflow-hidden cursor-move"
+                      >
+                        {imgUrl.match(/\.(mp4|webm|ogg)(\?.*)?$/i) ? (
+                          <video
+                            src={imgUrl}
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <img
+                            src={imgUrl}
+                            alt={`Product preview ${idx + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        )}
+
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-1.5">
+                          <div className="flex justify-between items-start">
+                            <div className="p-1 text-white opacity-80 cursor-grab">
+                              <GripVertical size={16} />
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const images = form.images
+                                  .split(",")
+                                  .map((s) => s.trim())
+                                  .filter(Boolean);
+                                images.splice(idx, 1);
+                                setForm({ ...form, images: images.join(", ") });
+                              }}
+                              className="p-1 bg-red-500/90 hover:bg-red-500 text-white rounded-full transition-colors"
+                              title="Remove image"
+                            >
+                              <X size={12} />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                 </div>
               )}
             </div>
@@ -1237,17 +1504,15 @@ export default function AdminProductsPage() {
                       }
                       className={inputCls}
                     />
-                    <input
-                      placeholder="Icon (lucide name, optional)"
+                    <IconPicker
                       value={c.icon || ""}
-                      onChange={(e) =>
+                      onChange={(key) =>
                         setCharacteristics((prev) =>
                           prev.map((x, idx) =>
-                            idx === i ? { ...x, icon: e.target.value } : x,
+                            idx === i ? { ...x, icon: key } : x,
                           ),
                         )
                       }
-                      className={inputCls}
                     />
                     <button
                       type="button"

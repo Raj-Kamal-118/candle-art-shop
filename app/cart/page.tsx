@@ -114,6 +114,11 @@ export default function CartPage() {
       .catch(console.error);
   }, []);
 
+  const subtotal = cartItems.reduce(
+    (sum, item) => sum + (item.price ?? item.product.price) * item.quantity,
+    0,
+  );
+
   // ── Empty state ──────────────────────────────────────────────
   if (cartItems.length === 0) {
     return (
@@ -150,10 +155,6 @@ export default function CartPage() {
     );
   }
 
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + (item.price ?? item.product.price) * item.quantity,
-    0,
-  );
   const totalQty = cartItems.reduce((s, i) => s + i.quantity, 0);
 
   const eligibleUpsells = upsellProducts.filter((up) => {

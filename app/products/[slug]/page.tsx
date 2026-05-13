@@ -36,6 +36,71 @@ import {
   Smile,
   MapPin,
   Tag,
+  Ruler,
+  Thermometer,
+  FlaskConical,
+  Layers,
+  Box,
+  Timer,
+  Recycle,
+  Globe,
+  Award,
+  Zap,
+  Scissors,
+  Paintbrush,
+  Feather,
+  TreePine,
+  Flower2,
+  Waves,
+  Droplets,
+  Mountain,
+  Coffee,
+  AlarmClock,
+  Hourglass,
+  Scale,
+  Gem,
+  Crown,
+  BadgeCheck,
+  Gauge,
+  Maximize2,
+  Type,
+  // Materials
+  TreeDeciduous,
+  Hammer,
+  Wrench,
+  Cog,
+  Magnet,
+  GlassWater,
+  Shirt,
+  BrickWall,
+  Wheat,
+  Sprout,
+  Dumbbell,
+  Diamond,
+  TreePalm,
+  Bean,
+  Cpu,
+  Wine,
+  HardHat,
+  // General / process
+  Compass,
+  Flag,
+  Trophy,
+  Medal,
+  Infinity,
+  Calendar,
+  Percent,
+  BookOpen,
+  Anchor,
+  Activity,
+  Scroll,
+  FileText,
+  Snowflake,
+  Battery,
+  Watch,
+  Microscope,
+  Beaker,
+  Pipette,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Product } from "@/lib/types";
@@ -53,17 +118,94 @@ import Testimonials from "@/components/home/Testimonials";
 import HandDrawnStars from "@/components/ui/HandDrawnStars";
 
 const ICONS: Record<string, React.ElementType> = {
+  // Nature & elements
   flame: Flame,
   leaf: Leaf,
   droplet: Droplet,
-  clock: Clock,
-  sparkles: Sparkles,
-  package: Package,
+  droplets: Droplets,
   wind: Wind,
+  waves: Waves,
   sun: Sun,
   moon: Moon,
+  mountain: Mountain,
+  treepine: TreePine,
+  flower2: Flower2,
+  feather: Feather,
+  recycle: Recycle,
+  globe: Globe,
+  // Time & measurement
+  clock: Clock,
+  timer: Timer,
+  alarmclock: AlarmClock,
+  hourglass: Hourglass,
+  ruler: Ruler,
+  gauge: Gauge,
+  scale: Scale,
+  maximize2: Maximize2,
+  // Scent & craft
+  flaskconical: FlaskConical,
+  thermometer: Thermometer,
+  coffee: Coffee,
+  palette: Palette,
+  paintbrush: Paintbrush,
+  scissors: Scissors,
+  penline: PenLine,
+  type: Type,
+  // Quality & packaging
+  sparkles: Sparkles,
+  star: Star,
+  gem: Gem,
+  crown: Crown,
+  award: Award,
+  badgecheck: BadgeCheck,
+  shield: Shield,
+  zap: Zap,
+  layers: Layers,
+  package: Package,
+  box: Box,
+  tag: Tag,
+  // Lifestyle
   home: Home,
   heart: Heart,
+  gift: Gift,
+  // Materials
+  treedeciduous: TreeDeciduous,
+  hammer: Hammer,
+  wrench: Wrench,
+  cog: Cog,
+  magnet: Magnet,
+  glasswater: GlassWater,
+  shirt: Shirt,
+  brickwall: BrickWall,
+  wheat: Wheat,
+  sprout: Sprout,
+  dumbbell: Dumbbell,
+  diamond: Diamond,
+  treepalm: TreePalm,
+  bean: Bean,
+  cpu: Cpu,
+  wine: Wine,
+  hardhat: HardHat,
+  // General / process
+  compass: Compass,
+  flag: Flag,
+  trophy: Trophy,
+  medal: Medal,
+  infinity: Infinity,
+  calendar: Calendar,
+  percent: Percent,
+  bookopen: BookOpen,
+  anchor: Anchor,
+  activity: Activity,
+  scroll: Scroll,
+  filetext: FileText,
+  snowflake: Snowflake,
+  battery: Battery,
+  mappin: MapPin,
+  watch: Watch,
+  microscope: Microscope,
+  beaker: Beaker,
+  pipette: Pipette,
 };
 
 const allCardboardNotes = [
@@ -1479,28 +1621,6 @@ export default function ProductDetailPage() {
                 </div>
               </div>
             </div>
-
-            {/* ── Tags — arrow-shaped manila tags ── */}
-            {product.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 pt-5">
-                {product.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="inline-flex items-center bg-[#f5ecda] dark:bg-amber-950/40 text-brown-700 dark:text-amber-100/60 border border-[rgba(122,80,40,0.22)] dark:border-amber-900/25"
-                    style={{
-                      clipPath:
-                        "polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%)",
-                      padding: "3px 10px 3px 16px",
-                      fontFamily: "var(--font-serif)",
-                      fontStyle: "italic",
-                      fontSize: 11,
-                    }}
-                  >
-                    #{tag}
-                  </span>
-                ))}
-              </div>
-            )}
           </div>
         </div>
 

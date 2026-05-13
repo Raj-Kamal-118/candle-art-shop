@@ -5,6 +5,28 @@ export default function Receipt({ order }: { order: any }) {
   if (!order) return null;
   const createdAt = order.created_at || order.createdAt || new Date();
 
+  const giftDetails = order.gift_details || order.giftDetails || {};
+  const isGift = order.is_gift || order.isGift || false;
+  const giftWrap = giftDetails?.wrap || false;
+  const giftWrapFee = giftDetails?.wrapFee || 0;
+  const greetingCard = giftDetails?.greetingCard || "none";
+  const greetingCardFee = giftDetails?.greetingCardFee || 0;
+  const giftMessage = giftDetails?.message || "";
+  const codFee =
+    order.codFee ||
+    order.cod_fee ||
+    Math.max(
+      0,
+      Math.round(
+        (order.total || 0) -
+          (order.subtotal || 0) +
+          (order.discount || 0) -
+          (order.shipping || 0) -
+          giftWrapFee -
+          greetingCardFee,
+      ),
+    );
+
   return (
     <div className="hidden print:block bg-white text-black px-8 font-sans w-full max-w-4xl mx-auto">
       <style
@@ -134,6 +156,24 @@ export default function Receipt({ order }: { order: any }) {
               {order.shipping === 0 ? "Free" : formatPrice(order.shipping || 0)}
             </span>
           </div>
+          {giftWrapFee > 0 && (
+            <div className="flex justify-between text-gray-600">
+              <span>Gift Wrap</span>
+              <span>{formatPrice(giftWrapFee)}</span>
+            </div>
+          )}
+          {greetingCardFee > 0 && (
+            <div className="flex justify-between text-gray-600">
+              <span>Greeting Card</span>
+              <span>{formatPrice(greetingCardFee)}</span>
+            </div>
+          )}
+          {codFee > 0 && (
+            <div className="flex justify-between text-gray-600">
+              <span>Cash on Delivery</span>
+              <span>{formatPrice(codFee)}</span>
+            </div>
+          )}
           <div className="flex justify-between font-bold text-lg text-black pt-4 border-t border-gray-200 mt-4">
             <span>Total</span>
             <span>{formatPrice(order.total || 0)}</span>

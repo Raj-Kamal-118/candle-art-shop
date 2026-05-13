@@ -4,6 +4,7 @@ import {
   Category,
   DiscountCode,
   Order,
+  OrderIssue,
   HeroSettings,
   User,
   OTPSession,
@@ -104,6 +105,8 @@ function mapOrder(row: Record<string, unknown>): Order {
     userId: row.user_id as string | undefined,
     customerPhone: row.customer_phone as string | undefined,
     isTest: (row.is_test as boolean) || false,
+    isGift: (row.is_gift as boolean) || false,
+    giftDetails: row.gift_details || null,
   };
 }
 
@@ -595,6 +598,8 @@ export async function createOrder(order: Order): Promise<Order> {
       user_id: order.userId ?? null,
       customer_phone: order.customerPhone ?? null,
       created_at: order.createdAt,
+      is_gift: order.isGift ?? false,
+      gift_details: order.giftDetails ?? null,
     })
     .select()
     .single();
@@ -841,4 +846,30 @@ export async function markOTPVerified(id: string): Promise<boolean> {
     .update({ verified: true })
     .eq("id", id);
   return !error;
+}
+
+// ─── Order Issues ─────────────────────────────────────────────────────────────
+
+function mapOrderIssue(row: Record<string, unknown>): OrderIssue {
+  return {
+    id: row.id as string,
+    orderId: row.order_id as string,
+    customerEmail: row.customer_email as string,
+    customerPhone: row.customer_phone as string | undefined,
+    issueType: row.issue_type as string,
+    description: row.description as string,
+    imageUrl: row.image_url as string | undefined,
+    status: row.status as OrderIssue["status"],
+    adminNotes: row.admin_notes as string | undefined,
+    createdAt: row.created_at as string,
+  };
+}
+
+export async function getOrderIssues(): Promise<OrderIssue[]> {
+  const { data, error } = await supabase
+    .from("order_issues")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) return [];
+  return data.map(mapOrderIssue);
 }

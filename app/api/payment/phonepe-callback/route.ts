@@ -11,9 +11,11 @@ const supabase = createClient(
 
 async function verifyAndUpdateOrder(
   merchantOrderId: string
-): Promise<{ success: boolean; paymentRef: string; order: Record<string, unknown> | null }> {
+): Promise<{ success: boolean; paymentRef: string; order: Record<string, unknown> | null; realOrderId: string }> {
   const token = await getPhonePeToken();
   const pgBaseUrl = getPhonePePgBaseUrl();
+  // Extract the real order ID in case we appended a retry suffix (e.g., ord_1234_169999999)
+  const realOrderId = merchantOrderId.includes("_") ? merchantOrderId.split("_")[0] : merchantOrderId;
 
   const statusRes = await fetch(
     `${pgBaseUrl}/checkout/v2/order/${merchantOrderId}/status`,
@@ -28,7 +30,7 @@ async function verifyAndUpdateOrder(
   const statusData = await statusRes.json();
 
   if (statusData.state !== "COMPLETED") {
-    return { success: false, paymentRef: "", order: null };
+    return { success: false, paymentRef: "", order: null, realOrderId };
   }
 
   const paymentRef = statusData.paymentDetails?.[0]?.transactionId || "";
@@ -37,7 +39,7 @@ async function verifyAndUpdateOrder(
   const { data: order, error: fetchErr } = await supabase
     .from("orders")
     .select("*")
-    .eq("id", merchantOrderId)
+    .eq("id", realOrderId)
     .maybeSingle();
 
   if (fetchErr) console.error("Failed to fetch order:", fetchErr);
@@ -46,7 +48,7 @@ async function verifyAndUpdateOrder(
   const { error: updateErr } = await supabase
     .from("orders")
     .update({ status: "processing", payment_reference: paymentRef })
-    .eq("id", merchantOrderId);
+    .eq("id", realOrderId);
 
   if (updateErr) console.error("Failed to update order status:", updateErr);
 
@@ -67,7 +69,7 @@ async function verifyAndUpdateOrder(
           body: JSON.stringify({
             from: `Artisan House <${process.env.STORE_EMAIL || "orders@artisanhouse.in"}>`,
             to: [customerEmail],
-            subject: `Order Confirmed: #${merchantOrderId} | Artisan House`,
+              subject: `Order Confirmed: #${realOrderId} | Artisan House`,
             html: `
               <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #fdfbf9; padding: 40px 20px; color: #4a3320;">
                 <div style="background-color: #ffffff; border: 1px solid #e5dcd3; border-radius: 16px; padding: 40px; box-shadow: 0 8px 24px rgba(74, 51, 32, 0.04);">
@@ -84,7 +86,7 @@ async function verifyAndUpdateOrder(
                   <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 15px;">
                     <tr>
                       <td style="padding: 8px 0; color: #8c6a50;">Order ID</td>
-                      <td style="padding: 8px 0; text-align: right; font-weight: 600;">#${merchantOrderId}</td>
+                      <td style="padding: 8px 0; text-align: right; font-weight: 600;">#${realOrderId}</td>
                     </tr>
                     <tr>
                       <td style="padding: 8px 0; color: #8c6a50; vertical-align: top;">Shipping To</td>
@@ -115,7 +117,7 @@ async function verifyAndUpdateOrder(
                     </table>
                   </div>
                   <div style="text-align: center;">
-                    <a href="https://artisanhouse.in/order/${merchantOrderId}" target="_blank" style="display: inline-block; background-color: #D76E60; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 14px;">View Order Status</a>
+                    <a href="https://artisanhouse.in/order/${realOrderId}" target="_blank" style="display: inline-block; background-color: #D76E60; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 14px;">View Order Status</a>
                   </div>
                 </div>
               </div>`,
@@ -143,7 +145,7 @@ async function verifyAndUpdateOrder(
         body: JSON.stringify({
           from: `Artisan House Admin <${process.env.STORE_EMAIL || "orders@artisanhouse.in"}>`,
           to: [adminEmail],
-          subject: `🎉 New Order Received! #${merchantOrderId}`,
+            subject: `🎉 New Order Received! #${realOrderId}`,
           html: `
             <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #fdfbf9; padding: 40px 20px; color: #4a3320;">
               <div style="background-color: #ffffff; border: 1px solid #e5dcd3; border-radius: 16px; padding: 40px; box-shadow: 0 8px 24px rgba(74, 51, 32, 0.04);">
@@ -159,7 +161,7 @@ async function verifyAndUpdateOrder(
                 <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 15px;">
                   <tr>
                     <td style="padding: 8px 0; color: #8c6a50;">Order ID</td>
-                    <td style="padding: 8px 0; text-align: right; font-weight: 600;">#${merchantOrderId}</td>
+                    <td style="padding: 8px 0; text-align: right; font-weight: 600;">#${realOrderId}</td>
                   </tr>
                   <tr>
                     <td style="padding: 8px 0; color: #8c6a50;">Payment Ref</td>
@@ -196,14 +198,14 @@ async function verifyAndUpdateOrder(
       if (!adminRes.ok) {
         console.error("[Resend Error]: PhonePe admin email failed", await adminRes.text());
       } else {
-        console.log("[Resend Success]: Admin notified for PhonePe order", merchantOrderId);
+          console.log("[Resend Success]: Admin notified for PhonePe order", realOrderId);
       }
     } catch (e) {
       console.error("[Resend Error]: Failed to send PhonePe admin email:", e);
     }
   }
 
-  return { success: true, paymentRef, order };
+  return { success: true, paymentRef, order, realOrderId };
 }
 
 // PhonePe v2 redirects the user back via GET with ?merchantOrderId=...
@@ -217,15 +219,15 @@ export async function GET(req: Request) {
   }
 
   try {
-    const { success, paymentRef } = await verifyAndUpdateOrder(merchantOrderId);
+    const { success, paymentRef, realOrderId } = await verifyAndUpdateOrder(merchantOrderId);
     if (success) {
       return NextResponse.redirect(
-        `${appUrl}/checkout?order=${merchantOrderId}&status=SUCCESS&ref=${paymentRef}`,
+        `${appUrl}/checkout?order=${realOrderId}&status=SUCCESS&ref=${paymentRef}`,
         303
       );
     }
     return NextResponse.redirect(
-      `${appUrl}/checkout?order=${merchantOrderId}&status=FAILED`,
+      `${appUrl}/checkout?order=${realOrderId || merchantOrderId}&status=FAILED`,
       303
     );
   } catch (error) {
@@ -257,7 +259,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { success, paymentRef } = await verifyAndUpdateOrder(merchantOrderId);
+    const { success, paymentRef, realOrderId } = await verifyAndUpdateOrder(merchantOrderId);
 
     if (isS2S) {
       return NextResponse.json({ success: true });
@@ -265,12 +267,12 @@ export async function POST(req: Request) {
 
     if (success) {
       return NextResponse.redirect(
-        `${appUrl}/checkout?order=${merchantOrderId}&status=SUCCESS&ref=${paymentRef}`,
+        `${appUrl}/checkout?order=${realOrderId}&status=SUCCESS&ref=${paymentRef}`,
         303
       );
     }
     return NextResponse.redirect(
-      `${appUrl}/checkout?order=${merchantOrderId}&status=FAILED`,
+      `${appUrl}/checkout?order=${realOrderId || merchantOrderId}&status=FAILED`,
       303
     );
   } catch (error) {

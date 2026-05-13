@@ -11,8 +11,12 @@ import {
 } from "@/lib/data";
 import { generateId } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
+import { requireAdmin } from "@/lib/auth-guard";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const deny = requireAdmin(request);
+  if (deny) return deny;
+
   try {
     const orders = await getOrders();
     return NextResponse.json(orders);
@@ -88,7 +92,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Prevent total mismatch / payload tampering
-    const expectedTotal = body.subtotal - body.discount + body.shipping + codFee;
+    const giftWrapFee = body.giftWrapFee || 0;
+    const greetingCardFee = body.greetingCardFee || 0;
+    const expectedTotal = body.subtotal - body.discount + body.shipping + codFee + giftWrapFee + greetingCardFee;
     if (Math.abs(body.total - expectedTotal) > 1) {
       return NextResponse.json({ error: "Order total mismatch" }, { status: 400 });
     }
@@ -163,7 +169,26 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const { paymentScreenshot, ...orderData } = body;
+    const {
+      paymentScreenshot,
+      isGift,
+      giftMessage,
+      giftWrap,
+      giftNoteColor,
+      greetingCard,
+      giftWrapFee: _gwf,
+      greetingCardFee: _gcf,
+      ...orderData
+    } = body;
+
+    const gift_details = isGift ? {
+      message: giftMessage,
+      wrap: giftWrap,
+      noteColor: giftNoteColor,
+      greetingCard: greetingCard,
+      wrapFee: giftWrapFee,
+      greetingCardFee: greetingCardFee
+    } : null;
 
     // UPI orders need manual payment verification before processing
     const isUpiOrder = body.paymentMethod === "upi";
@@ -176,6 +201,8 @@ export async function POST(request: NextRequest) {
       userId,
       customerPhone,
       paymentScreenshotUrl: screenshotUrl,
+      isGift: isGift || false,
+      giftDetails: gift_details,
       ...orderData,
     });
 
@@ -195,7 +222,9 @@ export async function POST(request: NextRequest) {
       try {
         const adminSubject = isUpiOrder
           ? `⚠️ Payment Verification Required! #${order.id}`
-          : `🎉 New Order Received! #${order.id}`;
+          : body.isGift 
+            ? `🎁 New Gift Order Received! #${order.id}` 
+            : `🎉 New Order Received! #${order.id}`;
 
         const emailRes = await fetch("https://api.resend.com/emails", {
           method: "POST",
@@ -229,6 +258,7 @@ export async function POST(request: NextRequest) {
 
                   <p style="font-size: 15px; line-height: 1.6; color: #5c4028; margin-bottom: 25px; text-align: center;">
                     ${isUpiOrder ? `<strong>${body.shippingAddress?.fullName}</strong> placed a UPI order. Verify payment and mark as Verified &amp; Process in the admin dashboard.` : `Great news! <strong>${body.shippingAddress?.fullName}</strong> just placed an order.`}
+                    ${body.isGift ? `<br><span style="display: inline-block; margin-top: 10px; padding: 4px 12px; background-color: #fef3c7; color: #b45309; border-radius: 9999px; font-size: 12px; font-weight: bold; border: 1px solid #fde68a;">🎁 Gift Order</span>` : ''}
                   </p>
 
                   <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 15px;">
@@ -250,6 +280,18 @@ export async function POST(request: NextRequest) {
                     </tr>
                   </table>
                   
+                  ${body.isGift ? `
+                  <div style="background-color: #fdfbf9; border-radius: 12px; padding: 20px; margin-bottom: 30px; border: 1px solid #e5dcd3;">
+                    <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #4a3320; border-bottom: 1px solid #e5dcd3; padding-bottom: 10px;">Gift Details</h3>
+                    <div style="font-size: 14px; color: #4a3320; margin-bottom: 6px;"><strong>Premium Gift Wrap:</strong> ${body.giftWrap ? 'Yes (+₹30)' : 'No'}</div>
+                    <div style="font-size: 14px; color: #4a3320; margin-bottom: 6px; text-transform: capitalize;"><strong>Greeting Card:</strong> ${body.greetingCard && body.greetingCard !== 'none' ? body.greetingCard + ' (+₹20)' : 'None'}</div>
+                    ${body.giftMessage ? `
+                    <div style="margin-top: 15px; padding: 15px; background-color: ${body.giftNoteColor || '#fef3c7'}; border-radius: 8px; font-style: italic; color: #4a3320; font-size: 14px; text-align: center; border: 1px solid rgba(0,0,0,0.05);">
+                      " ${body.giftMessage} "
+                    </div>` : ''}
+                  </div>
+                  ` : ''}
+
                   <div style="background-color: #fdfbf9; border-radius: 12px; padding: 20px; margin-bottom: 30px;">
                     <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #4a3320; border-bottom: 1px solid #e5dcd3; padding-bottom: 10px;">Order Summary</h3>
                     <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
@@ -291,6 +333,16 @@ export async function POST(request: NextRequest) {
                       <tr>
                         <td style="padding: 8px 0; color: #8c6a50; text-align: right;">COD Fee</td>
                         <td style="padding: 8px 0; text-align: right; font-weight: 600;">₹${codFee}</td>
+                      </tr>` : ''}
+                      ${giftWrapFee > 0 ? `
+                      <tr>
+                        <td style="padding: 8px 0; color: #8c6a50; text-align: right;">Gift Wrap</td>
+                        <td style="padding: 8px 0; text-align: right; font-weight: 600;">₹${giftWrapFee}</td>
+                      </tr>` : ''}
+                      ${greetingCardFee > 0 ? `
+                      <tr>
+                        <td style="padding: 8px 0; color: #8c6a50; text-align: right;">Greeting Card</td>
+                        <td style="padding: 8px 0; text-align: right; font-weight: 600;">₹${greetingCardFee}</td>
                       </tr>` : ''}
                       <tr>
                         <td style="padding: 16px 0 0 0; font-weight: bold; font-size: 18px; color: #4a3320; text-align: right;">Total</td>
@@ -344,6 +396,7 @@ export async function POST(request: NextRequest) {
                     <p style="font-size: 15px; line-height: 1.6; color: #5c4028; margin-bottom: 25px;">
                       Hi ${body.shippingAddress.fullName?.split(' ')[0] || 'there'},<br><br>
                       Thank you for your order! We've received it and are getting your handcrafted pieces ready for their journey. We'll send you another update as soon as it ships.
+                      ${body.isGift ? `<br><br><span style="display: inline-block; padding: 4px 12px; background-color: #fef3c7; color: #b45309; border-radius: 9999px; font-size: 12px; font-weight: bold; border: 1px solid #fde68a;">🎁 You marked this as a Gift</span>` : ''}
                     </p>
                     
                     <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 15px;">
@@ -360,6 +413,18 @@ export async function POST(request: NextRequest) {
                       </tr>
                     </table>
                     
+                    ${body.isGift ? `
+                    <div style="background-color: #fdfbf9; border-radius: 12px; padding: 20px; margin-bottom: 30px; border: 1px solid #e5dcd3;">
+                      <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #4a3320; border-bottom: 1px solid #e5dcd3; padding-bottom: 10px;">Gift Details</h3>
+                      <div style="font-size: 14px; color: #4a3320; margin-bottom: 6px;"><strong>Premium Gift Wrap:</strong> ${body.giftWrap ? 'Yes (+₹30)' : 'No'}</div>
+                      <div style="font-size: 14px; color: #4a3320; margin-bottom: 6px; text-transform: capitalize;"><strong>Greeting Card:</strong> ${body.greetingCard && body.greetingCard !== 'none' ? body.greetingCard + ' (+₹20)' : 'None'}</div>
+                      ${body.giftMessage ? `
+                      <div style="margin-top: 15px; padding: 15px; background-color: ${body.giftNoteColor || '#fef3c7'}; border-radius: 8px; font-style: italic; color: #4a3320; font-size: 14px; text-align: center; border: 1px solid rgba(0,0,0,0.05);">
+                        " ${body.giftMessage} "
+                      </div>` : ''}
+                    </div>
+                    ` : ''}
+
                     <div style="background-color: #fdfbf9; border-radius: 12px; padding: 20px; margin-bottom: 30px;">
                       <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #4a3320; border-bottom: 1px solid #e5dcd3; padding-bottom: 10px;">Order Summary</h3>
                       <table style="width: 100%; border-collapse: collapse; font-size: 14px;">

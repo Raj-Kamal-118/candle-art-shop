@@ -164,13 +164,28 @@ export interface Order {
   is_reviewed?: boolean;
   rating?: number;
   isGift?: boolean;
-  giftMessage?: string;
+  giftDetails?: any;
   saveAddress?: boolean;
 }
 
 export interface AdminCredentials {
   username: string;
   password: string;
+}
+
+// ── Order Issues ──────────────────────────────────────────────────────────────
+
+export interface OrderIssue {
+  id: string;
+  orderId: string;
+  customerEmail: string;
+  customerPhone?: string;
+  issueType: string;
+  description: string;
+  imageUrl?: string;
+  status: "pending" | "contacted" | "resolving" | "resolved";
+  adminNotes?: string;
+  createdAt: string;
 }
 
 // ── Gift Sets ─────────────────────────────────────────────────────────────────
