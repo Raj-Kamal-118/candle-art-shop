@@ -51,28 +51,29 @@ export default function PaymentStep({
     <div className="space-y-6">
       {/* Payment options */}
       <div className="space-y-3">
-        {/* Disabled Online Payment */}
-        <label className="flex items-start gap-4 p-4 rounded-xl border-2 border-cream-200 dark:border-amber-900/30 bg-gray-50 dark:bg-[#12101e] opacity-60 cursor-not-allowed">
+        {/* Online Payment */}
+        <label
+          className={`flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-colors ${
+            method === "online"
+              ? "border-amber-500 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-500"
+              : "border-cream-200 bg-white dark:bg-[#151326] dark:border-amber-900/30 hover:border-amber-300 dark:hover:border-amber-700/50"
+          }`}
+        >
           <input
             type="radio"
             name="payment"
             value="online"
-            disabled
-            className="mt-0.5"
+            checked={method === "online"}
+            onChange={() => onMethodChange("online")}
+            className="mt-0.5 accent-amber-600"
           />
-          <CreditCard className="text-gray-400 shrink-0 mt-0.5" size={22} />
+          <CreditCard className="text-amber-600 shrink-0 mt-0.5" size={22} />
           <div className="flex-1">
-            <div className="flex items-center justify-between">
-              <p className="font-semibold text-gray-700 dark:text-gray-400 text-sm">
-                Pay Online (PhonePe)
-              </p>
-              <span className="text-[10px] font-bold bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 px-2 py-0.5 rounded-full uppercase tracking-wider">
-                Temporarily Down
-              </span>
-            </div>
-            <p className="text-gray-500 dark:text-gray-500 text-xs mt-1 leading-relaxed">
-              Our payment gateway is facing technical issues. Please use manual
-              UPI or COD.
+            <p className="font-semibold text-brown-900 dark:text-amber-100 text-sm">
+              Pay Online (PhonePe)
+            </p>
+            <p className="text-brown-500 dark:text-amber-100/60 text-xs mt-0.5 leading-relaxed">
+              Pay securely via UPI, Credit/Debit Cards, or NetBanking.
             </p>
           </div>
         </label>

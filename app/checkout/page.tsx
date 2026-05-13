@@ -53,7 +53,7 @@ function CheckoutContent() {
   const [applyingDiscount, setApplyingDiscount] = useState(false);
   const [placingOrder, setPlacingOrder] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"online" | "cod" | "upi">(
-    "upi",
+    "online",
   );
   const [paymentError, setPaymentError] = useState("");
   const [orderId, setOrderId] = useState<string | null>(null);
@@ -253,45 +253,52 @@ function CheckoutContent() {
     setPlacingOrder(true);
     setPaymentError("");
     try {
-      const orderItems = cartItems.map((item) => ({
-        productId: item.product.id,
-        productName: item.product.name,
-        productImage: item.product.images?.[0] ?? "",
-        price: item.price ?? item.product.price,
-        quantity: item.quantity,
-        customizations: item.customizations,
-        ...(item.giftSet ? { giftSet: item.giftSet } : {}),
-      }));
+      let currentOrderId = orderId;
 
-      const res = await fetch("/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          items: orderItems,
-          subtotal,
-          discount: discountAmount,
-          shipping,
-          codFee,
-          total,
-          discountCode: discountCode || undefined,
-          shippingAddress,
-          billingAddress: shippingAddress,
-          paymentMethod,
-          paymentReference: paymentData?.transactionId,
-          paymentScreenshot: paymentData?.screenshot,
-          userId: verifiedUser?.id,
-          customerEmail: verifiedUser?.email,
-          customerPhone: verifiedUser?.phone || shippingAddress.phone,
-          isGift: orderType === "gift",
-          giftMessage: orderType === "gift" ? giftMessage : undefined,
-          saveAddress: saveAddress,
-        }),
-      });
+      // Only create a new order if we haven't already created one in this session
+      if (!currentOrderId) {
+        const orderItems = cartItems.map((item) => ({
+          productId: item.product.id,
+          productName: item.product.name,
+          productImage: item.product.images?.[0] ?? "",
+          price: item.price ?? item.product.price,
+          quantity: item.quantity,
+          customizations: item.customizations,
+          ...(item.giftSet ? { giftSet: item.giftSet } : {}),
+        }));
 
-      const order = await res.json();
+        const res = await fetch("/api/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            items: orderItems,
+            subtotal,
+            discount: discountAmount,
+            shipping,
+            codFee,
+            total,
+            discountCode: discountCode || undefined,
+            shippingAddress,
+            billingAddress: shippingAddress,
+            paymentMethod,
+            paymentReference: paymentData?.transactionId,
+            paymentScreenshot: paymentData?.screenshot,
+            userId: verifiedUser?.id,
+            customerEmail: verifiedUser?.email,
+            customerPhone: verifiedUser?.phone || shippingAddress.phone,
+            isGift: orderType === "gift",
+            giftMessage: orderType === "gift" ? giftMessage : undefined,
+            saveAddress: saveAddress,
+          }),
+        });
 
-      if (!res.ok) {
-        throw new Error(order.error || "Failed to place order");
+        const order = await res.json();
+
+        if (!res.ok) {
+          throw new Error(order.error || "Failed to place order");
+        }
+        currentOrderId = order.id;
+        setOrderId(currentOrderId);
       }
 
       if (paymentMethod === "online") {
@@ -311,7 +318,7 @@ function CheckoutContent() {
         const ppRes = await fetch("/api/payment/phonepe", {
           method: "POST",
           body: JSON.stringify({
-            orderId: order.id,
+            orderId: currentOrderId,
             amount: total,
             phone: shippingAddress.phone,
           }),

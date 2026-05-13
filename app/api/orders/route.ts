@@ -313,8 +313,10 @@ export async function POST(request: NextRequest) {
         }
 
         // Send Customer Confirmation Email
-        // UPI orders: do NOT send confirmation yet — wait for admin payment verification
-        if (!isUpiOrder && customerEmail) {
+        // UPI orders: held back until admin verifies payment
+        // Online (PhonePe) orders: held back until payment callback confirms success
+        // COD orders: confirmed immediately since no upfront payment is needed
+        if (body.paymentMethod === "cod" && customerEmail) {
           const customerEmailRes = await fetch("https://api.resend.com/emails", {
             method: "POST",
             headers: {
