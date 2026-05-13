@@ -130,6 +130,79 @@ async function verifyAndUpdateOrder(
         console.error("[Resend Error]: Failed to send PhonePe confirmation email:", e);
       }
     }
+
+    // Send admin "New Order" notification now that payment is confirmed
+    const adminEmail = process.env.ADMIN_EMAIL || "artisanhouse.in@gmail.com";
+    try {
+      const addr = order.shipping_address as Record<string, string> | null;
+      const items = (order.items as Array<Record<string, unknown>>) || [];
+      const adminRes = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+        },
+        body: JSON.stringify({
+          from: `Artisan House Admin <${process.env.STORE_EMAIL || "orders@artisanhouse.in"}>`,
+          to: [adminEmail],
+          subject: `🎉 New Order Received! #${merchantOrderId}`,
+          html: `
+            <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #fdfbf9; padding: 40px 20px; color: #4a3320;">
+              <div style="background-color: #ffffff; border: 1px solid #e5dcd3; border-radius: 16px; padding: 40px; box-shadow: 0 8px 24px rgba(74, 51, 32, 0.04);">
+                <div style="text-align: center; margin-bottom: 30px;">
+                  <img src="https://pub-1f6a6fc4e92548b987db5dbea7cd456e.r2.dev/candle-art-shop-images/Asset/assets-03%20(2).png" alt="Artisan House Logo" style="width: 64px; height: 64px; border-radius: 50%; display: block; margin: 0 auto 12px auto;" />
+                  <span style="display: block; font-family: Georgia, serif; font-size: 20px; font-weight: bold; color: #4a3320;">Artisan House</span>
+                  <span style="display: block; font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: #b45309; margin-top: 4px;">Candles &middot; Clays &middot; Crafts</span>
+                  <h2 style="margin: 24px 0 0 0; color: #4a3320; font-size: 24px; font-weight: bold; border-top: 1px solid #e5dcd3; padding-top: 24px;">New Order Received</h2>
+                </div>
+                <p style="font-size: 15px; line-height: 1.6; color: #5c4028; margin-bottom: 25px; text-align: center;">
+                  Payment confirmed via PhonePe. <strong>${addr?.fullName || "A customer"}</strong> just placed an order.
+                </p>
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 15px;">
+                  <tr>
+                    <td style="padding: 8px 0; color: #8c6a50;">Order ID</td>
+                    <td style="padding: 8px 0; text-align: right; font-weight: 600;">#${merchantOrderId}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; color: #8c6a50;">Payment Ref</td>
+                    <td style="padding: 8px 0; text-align: right; font-weight: 600; font-family: monospace;">${paymentRef || "—"}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; color: #8c6a50;">Total</td>
+                    <td style="padding: 8px 0; text-align: right; font-weight: 600; color: #D76E60;">₹${order.total}</td>
+                  </tr>
+                </table>
+                <div style="background-color: #fdfbf9; border-radius: 12px; padding: 20px; margin-bottom: 30px;">
+                  <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #4a3320; border-bottom: 1px solid #e5dcd3; padding-bottom: 10px;">Items</h3>
+                  <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                    ${items.map((item) => `
+                      <tr>
+                        <td style="padding: 10px 0; border-bottom: 1px solid #e5dcd3; color: #4a3320;">
+                          <div style="font-weight: 600;">${item.productName}</div>
+                          <div style="color: #8c6a50; margin-top: 2px;">Qty: ${item.quantity}</div>
+                        </td>
+                        <td style="padding: 10px 0; border-bottom: 1px solid #e5dcd3; text-align: right; font-weight: 600; color: #4a3320; vertical-align: top;">
+                          ₹${(item.price as number) * (item.quantity as number)}
+                        </td>
+                      </tr>
+                    `).join("")}
+                  </table>
+                </div>
+                <div style="text-align: center;">
+                  <a href="https://artisanhouse.in/admin/orders" target="_blank" style="display: inline-block; background-color: #D76E60; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 14px;">View in Admin Dashboard</a>
+                </div>
+              </div>
+            </div>`,
+        }),
+      });
+      if (!adminRes.ok) {
+        console.error("[Resend Error]: PhonePe admin email failed", await adminRes.text());
+      } else {
+        console.log("[Resend Success]: Admin notified for PhonePe order", merchantOrderId);
+      }
+    } catch (e) {
+      console.error("[Resend Error]: Failed to send PhonePe admin email:", e);
+    }
   }
 
   return { success: true, paymentRef, order };

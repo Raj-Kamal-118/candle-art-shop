@@ -188,7 +188,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Send Admin Notification Email via Resend
-    if (process.env.RESEND_API_KEY) {
+    // Online (PhonePe) orders: skip here — admin email is sent from the payment callback
+    // after PhonePe confirms payment, so cancelled/abandoned orders never trigger a notification.
+    const isOnlineOrder = body.paymentMethod === "online";
+    if (process.env.RESEND_API_KEY && !isOnlineOrder) {
       try {
         const adminSubject = isUpiOrder
           ? `⚠️ Payment Verification Required! #${order.id}`
