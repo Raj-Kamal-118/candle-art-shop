@@ -44,7 +44,7 @@ export function calculateDiscount(
 
 export function getShippingCost(subtotal: number): number {
   if (subtotal >= 999) return 0;
-  return 99;
+  return 1;
 }
 
 /**
