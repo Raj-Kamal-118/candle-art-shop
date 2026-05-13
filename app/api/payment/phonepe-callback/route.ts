@@ -134,8 +134,6 @@ async function verifyAndUpdateOrder(
     // Send admin "New Order" notification now that payment is confirmed
     const adminEmail = process.env.ADMIN_EMAIL || "artisanhouse.in@gmail.com";
     try {
-      const addr = order.shipping_address as Record<string, string> | null;
-      const items = (order.items as Array<Record<string, unknown>>) || [];
       const adminRes = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {

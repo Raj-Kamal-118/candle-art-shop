@@ -21,7 +21,7 @@ export async function POST(req: Request) {
       paymentFlow: {
         type: "PG_CHECKOUT",
         merchantUrls: {
-          redirectUrl: `${appUrl}/api/payment/phonepe-callback`,
+          redirectUrl: `${appUrl}/api/payment/phonepe-callback?merchantOrderId=${encodeURIComponent(orderId)}`,
         },
       },
     };
