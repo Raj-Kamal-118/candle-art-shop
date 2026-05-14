@@ -42,7 +42,7 @@ export default function CustomTrio() {
       className="bg-[var(--home-bg-alt)] dark:bg-[#1a1612] overflow-hidden"
       style={{
         position: "relative",
-        padding: "96px 0",
+        padding: "72px 0",
         borderTop: "1px solid var(--home-border)",
       }}
     >

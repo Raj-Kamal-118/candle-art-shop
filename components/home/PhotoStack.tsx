@@ -521,8 +521,6 @@ export default function PhotoStack({
           <ArrowLeft size={16} />
         </button>
 
-        <span className="text-xs font-semibold select-none">Flip pages</span>
-
         <button
           type="button"
           disabled={currentPage >= totalPages - 2}

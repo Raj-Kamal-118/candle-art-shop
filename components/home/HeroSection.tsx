@@ -174,7 +174,7 @@ export default function HeroSection({ settings }: HeroSectionProps) {
 
   return (
     <section
-      className={`relative min-h-[910px] flex items-center overflow-hidden ${
+      className={`relative min-h-[60vh] lg:min-h-[910px] flex items-center overflow-hidden ${
         isCustomBg
           ? ""
           : "bg-cream-50 dark:bg-[#0a0a16] transition-colors duration-700"
@@ -216,7 +216,7 @@ export default function HeroSection({ settings }: HeroSectionProps) {
         </div>
       )}
 
-      <div className="relative z-10 max-w-[1440px] mx-auto px-4 sm:px-6 py-12 grid lg:grid-cols-2 gap-16 items-center">
+      <div className="relative z-10 max-w-[1440px] mx-auto px-4 sm:px-6 py-16 lg:py-12 grid lg:grid-cols-2 gap-16 items-center">
         {/* Content */}
         <div>
           <motion.div
@@ -241,15 +241,15 @@ export default function HeroSection({ settings }: HeroSectionProps) {
 
             {/* Buttons — 2 per row */}
             {buttons.length > 0 && (
-              <div className="grid grid-cols-2 gap-3 max-w-lg">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 max-w-lg">
                 {buttons.map((btn, i) => (
                   <Link
                     key={i}
                     href={btn.link}
                     className={
                       btn.variant === "primary"
-                        ? "inline-flex items-center justify-center gap-2 bg-coral-600 dark:bg-amber-600 text-white px-6 py-3.5 rounded-xl font-semibold hover:bg-coral-700 dark:hover:bg-amber-500 transition-all duration-200 shadow-lg shadow-coral-200 dark:shadow-amber-900/30 hover:shadow-xl hover:-translate-y-0.5 text-sm"
-                        : "inline-flex items-center justify-center gap-2 bg-white dark:bg-[#1a1830] dark:border dark:border-amber-700/30 text-forest-800 dark:text-amber-200 px-6 py-3.5 rounded-xl font-semibold hover:bg-cream-100 dark:hover:bg-amber-900/20 transition-all duration-200 shadow-md hover:shadow-lg border border-cream-200 text-sm"
+                        ? "inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-coral-600 dark:bg-amber-600 text-white px-2 sm:px-6 py-3 sm:py-3.5 rounded-xl font-semibold hover:bg-coral-700 dark:hover:bg-amber-500 transition-all duration-200 shadow-lg shadow-coral-200 dark:shadow-amber-900/30 hover:shadow-xl hover:-translate-y-0.5 text-[13px] sm:text-sm w-full text-center"
+                        : "inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-white dark:bg-[#1a1830] dark:border dark:border-amber-700/30 text-forest-800 dark:text-amber-200 px-2 sm:px-6 py-3 sm:py-3.5 rounded-xl font-semibold hover:bg-cream-100 dark:hover:bg-amber-900/20 transition-all duration-200 shadow-md hover:shadow-lg border border-cream-200 text-[13px] sm:text-sm w-full text-center"
                     }
                   >
                     {btn.text}
@@ -261,20 +261,26 @@ export default function HeroSection({ settings }: HeroSectionProps) {
 
             {/* Stats */}
             {showStats && stats.length > 0 && (
-              <div className="flex flex-wrap gap-4 sm:gap-6 mt-12 pt-8 border-t border-cream-200 dark:border-amber-900/20">
+              <div className="flex justify-center sm:justify-start sm:flex-wrap gap-2 sm:gap-6 mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-cream-200 dark:border-amber-900/20">
                 {stats.map((stat, i) => (
-                  <PostageStamp
+                  <div
                     key={stat.label}
-                    label={["✦", "❀", "✧"][i % 3] + " " + stat.value}
-                    denom={
-                      <span className="flex items-center justify-center gap-1.5 mt-0.5">
-                        <span>{stat.label}</span>
-                      </span>
-                    }
-                    kind={(["gold", "coral", "gold", "coral"] as const)[i % 4]}
-                    tilt="none"
-                    className="hover:scale-105 transition-transform duration-300 shadow-sm"
-                  />
+                    className="scale-[0.65] sm:scale-100 origin-top sm:origin-center -mx-6 sm:mx-0 shrink-0"
+                  >
+                    <PostageStamp
+                      label={["✦", "❀", "✧"][i % 3] + " " + stat.value}
+                      denom={
+                        <span className="flex items-center justify-center gap-1.5 mt-0.5">
+                          <span>{stat.label}</span>
+                        </span>
+                      }
+                      kind={
+                        (["gold", "coral", "gold", "coral"] as const)[i % 4]
+                      }
+                      tilt="none"
+                      className="hover:scale-105 transition-transform duration-300 shadow-sm"
+                    />
+                  </div>
                 ))}
               </div>
             )}

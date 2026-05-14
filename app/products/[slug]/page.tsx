@@ -720,10 +720,10 @@ export default function ProductDetailPage() {
                 }}
               >
                 {/* Red margin line */}
-                <div className="absolute top-0 left-10 bottom-0 w-px bg-red-200/70 dark:bg-red-500/20" />
+                <div className="absolute top-0 left-6 sm:left-10 bottom-0 w-px bg-red-200/70 dark:bg-red-500/20" />
                 {/* Spiral holes */}
                 <div
-                  className="absolute top-0 left-4 bottom-0 w-2 bg-repeat-y"
+                  className="absolute top-0 left-2 sm:left-4 bottom-0 w-2 bg-repeat-y"
                   style={{
                     backgroundImage:
                       "radial-gradient(circle at center, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 3px, transparent 3px)",
@@ -745,9 +745,9 @@ export default function ProductDetailPage() {
                   .dark .craft-fav-btn:hover { box-shadow: 0 6px 16px rgba(232,93,74,0.35) !important; }
                   .dark .craft-extra-btn.craft-extra-outline:hover { background: rgba(28,23,16,0.95) !important; }
                 `}</style>
-                <div className="relative z-10 p-2 pl-12 sm:p-10 sm:pl-16">
+                <div className="relative z-10 p-3 sm:p-10 pl-8 sm:pl-16">
                   {/* ── Badges ── */}
-                  <div className="flex flex-wrap items-center gap-2 mb-5">
+                  <div className="flex flex-wrap items-center gap-2 mb-4 sm:mb-5">
                     {product.featured && (
                       <span
                         className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 dark:bg-amber-900/20 border border-amber-300 dark:border-amber-700/50 text-amber-800 dark:text-amber-300 rounded-md"
@@ -785,7 +785,7 @@ export default function ProductDetailPage() {
 
                   {/* ── Title ── */}
                   <h1
-                    className="font-bold text-brown-900 dark:text-amber-100 leading-[1.15] mb-3"
+                    className="font-bold text-brown-900 dark:text-amber-100 leading-[1.15] mb-2 sm:mb-3"
                     style={{
                       fontFamily: "var(--font-serif)",
                       fontSize: "clamp(26px, 3.5vw, 42px)",
@@ -841,7 +841,7 @@ export default function ProductDetailPage() {
                   </h1>
 
                   {/* ── Price + inline reviews (tablet/desktop) ── */}
-                  <div className="flex items-end justify-between gap-3 mb-7 flex-wrap">
+                  <div className="flex items-end justify-between gap-3 mb-5 sm:mb-7 flex-wrap">
                     {/* Price group */}
                     <div className="flex items-baseline gap-3 flex-wrap">
                       <span
@@ -939,7 +939,7 @@ export default function ProductDetailPage() {
                   </div>
 
                   {/* Divider between header and description */}
-                  <div className="mb-7 relative">
+                  <div className="mb-5 sm:mb-7 relative">
                     <div className="h-px bg-red-300/50 dark:bg-red-700/30" />
                     <div className="h-px bg-red-200/30 dark:bg-red-600/15 mt-[3px]" />
                   </div>
@@ -950,10 +950,9 @@ export default function ProductDetailPage() {
                   >
                     <div
                       dangerouslySetInnerHTML={{ __html: product.description }}
-                      className="prose dark:prose-invert max-w-none text-brown-800 dark:text-amber-100/90 [&>p]:mt-0 [&>p]:mb-[28px] [&>ul]:pl-5 [&>ul>li]:mb-1 [&>ol]:pl-5 [&>ol>li]:mb-1 [&>h2]:font-bold [&>h3]:font-semibold [&_strong]:font-bold [&_strong]:text-coral-700 [&_strong]:dark:text-amber-400 [&_em]:text-coral-700 [&_em]:dark:text-amber-400 [&_em]:not-italic [&_em]:border-b [&_em]:border-dashed [&_em]:border-coral-400/60"
+                      className="prose dark:prose-invert max-w-none text-[20px] sm:text-[24px] text-brown-800 dark:text-amber-100/90 [&>p]:mt-0 [&>p]:mb-[20px] sm:[&>p]:mb-[28px] [&>ul]:pl-5 [&>ul>li]:mb-1 [&>ol]:pl-5 [&>ol>li]:mb-1 [&>h2]:font-bold [&>h3]:font-semibold [&_strong]:font-bold [&_strong]:text-coral-700 [&_strong]:dark:text-amber-400 [&_em]:text-coral-700 [&_em]:dark:text-amber-400 [&_em]:not-italic [&_em]:border-b [&_em]:border-dashed [&_em]:border-coral-400/60"
                       style={{
                         fontFamily: "var(--font-hand)",
-                        fontSize: "24px",
                         lineHeight: "28px",
                         letterSpacing: "0.02em",
                       }}
@@ -962,7 +961,7 @@ export default function ProductDetailPage() {
                       <div className="md:hidden absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#fdfbf7] dark:from-[#1c1710] to-transparent pointer-events-none" />
                     )}
                   </div>
-                  <div className="md:hidden mt-2 mb-6 text-center relative z-10">
+                  <div className="md:hidden mt-2 mb-4 sm:mb-6 text-center relative z-10">
                     <button
                       onClick={() => setIsDescExpanded(!isDescExpanded)}
                       className="inline-flex items-center gap-1.5 text-coral-600 dark:text-amber-400 font-serif italic text-lg font-semibold"
@@ -1885,10 +1884,9 @@ function ProductTabs({
               </div>
             )}
             <div
-              className="prose dark:prose-invert max-w-none text-brown-800 dark:text-amber-100/90 [&>p]:mt-0 [&>p]:mb-[32px] [&_strong]:font-bold [&_strong]:text-coral-700 [&_strong]:dark:text-amber-400 [&_em]:text-coral-700 [&_em]:dark:text-amber-400 [&_em]:not-italic [&_em]:border-b [&_em]:border-dashed [&_em]:border-coral-400/60"
+              className="prose dark:prose-invert max-w-none text-[20px] sm:text-[24px] text-brown-800 dark:text-amber-100/90 [&>p]:mt-0 [&>p]:mb-[32px] [&_strong]:font-bold [&_strong]:text-coral-700 [&_strong]:dark:text-amber-400 [&_em]:text-coral-700 [&_em]:dark:text-amber-400 [&_em]:not-italic [&_em]:border-b [&_em]:border-dashed [&_em]:border-coral-400/60"
               style={{
                 fontFamily: "var(--font-hand)",
-                fontSize: "24px",
                 lineHeight: "32px",
                 letterSpacing: "0.02em",
               }}

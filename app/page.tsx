@@ -18,7 +18,7 @@ export default async function HomePage() {
     getApprovedReviews(),
   ]);
 
-  const featuredProducts = products.filter((p) => p.featured).slice(0, 4);
+  const featuredProducts = products.filter((p) => p.featured).slice(0, 10);
 
   // Map categoryId → in-stock products for CategoryZigZag
   const productsByCategory = Object.fromEntries(
