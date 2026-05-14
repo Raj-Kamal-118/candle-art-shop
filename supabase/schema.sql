@@ -125,6 +125,20 @@ CREATE TABLE public.order_issues (
 ALTER TABLE public.order_issues ADD COLUMN IF NOT EXISTS admin_notes TEXT;
 ALTER TABLE public.order_issues ENABLE ROW LEVEL SECURITY;
 
+-- Store Offers (Carousel on Homepage)
+CREATE TABLE IF NOT EXISTS store_offers (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  type TEXT NOT NULL,
+  text TEXT NOT NULL,
+  code TEXT,
+  icon TEXT NOT NULL DEFAULT 'sparkles',
+  bg_color TEXT NOT NULL DEFAULT '#fef3c7',
+  pin_color TEXT NOT NULL DEFAULT '#d97706',
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+ALTER TABLE store_offers ENABLE ROW LEVEL SECURITY;
+
 -- Service role bypasses RLS automatically, so no policies needed
 -- for the server-side Next.js app. Public (anon) access is blocked.
 
@@ -202,6 +216,15 @@ INSERT INTO discounts (id, code, type, value, min_order_amount, max_uses, used_c
   ('disc-2', 'SAVE500',    'fixed',      500, 2000, 50,  0, NOW() + INTERVAL '6 months', TRUE, FALSE),
   ('disc-3', 'FESTIVE20',  'percentage', 20,  5000, 200, 0, NOW() + INTERVAL '3 months', TRUE, FALSE)
 ON CONFLICT (id) DO NOTHING;
+
+-- ============================================================
+-- Seed: store_offers
+-- ============================================================
+INSERT INTO store_offers (id, type, text, code, icon, bg_color, pin_color) VALUES
+  (gen_random_uuid(), 'New Here?', 'Use code WELCOME10 for 10% off your first hand-poured order.', 'WELCOME10', 'sparkles', '#fef3c7', '#d97706'),
+  (gen_random_uuid(), 'On Us', 'Free delivery across India on all orders over ₹999.', NULL, 'truck', '#e0f2fe', '#0284c7'),
+  (gen_random_uuid(), 'Launching', 'Just dropped: The Solstice Gift Collection. Limited edition!', NULL, 'rocket', '#f3e8ff', '#7c3aed'),
+  (gen_random_uuid(), 'Clearance', 'Up to 20% off on last season''s artisan clay pieces.', NULL, 'tag', '#fee2e2', '#e85d4a');
 
 -- ============================================================
 -- Seed: reviews

@@ -13,6 +13,7 @@ import {
   MessageSquare,
   HelpCircle,
   Gift,
+  Megaphone,
 } from "lucide-react";
 import ArtisanLogo from "../ui/ArtisanLogo";
 
@@ -21,6 +22,7 @@ const navItems = [
   { href: "/admin/hero", label: "Hero Section", icon: Layers },
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/categories", label: "Categories", icon: Tag },
+  { href: "/admin/offers", label: "Store Offers", icon: Megaphone },
   { href: "/admin/discounts", label: "Discounts", icon: Percent },
   { href: "/admin/orders", label: "Orders", icon: ShoppingBag },
   { href: "/admin/gift-sets", label: "Gift Sets", icon: Gift },

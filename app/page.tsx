@@ -1,22 +1,40 @@
 import { getProducts, getCategories, getHeroSettings } from "@/lib/data";
+import { supabase } from "@/lib/supabase";
+import { unstable_cache } from "next/cache";
 import { getApprovedReviews } from "@/lib/reviews";
 import HeroSection from "@/components/home/HeroSection";
 import CategoryZigZag from "@/components/home/CategoryZigZag";
 import CustomTrio from "@/components/home/CustomTrio";
-import CraftProcess from "@/components/home/CraftProcess";
-import MaterialsStrip from "@/components/home/MaterialsStrip";
+import OffersBoard from "@/components/home/OffersBoard";
 import FeaturedProducts from "@/components/home/FeaturedProducts";
 import Testimonials from "@/components/home/Testimonials";
+import StoryTeaser from "@/components/home/StoryTeaser";
 
 export const revalidate = 60;
 
+// Heavily cache offers fetching directly from Supabase
+const getStoreOffers = unstable_cache(
+  async () => {
+    const { data } = await supabase
+      .from("store_offers")
+      .select("*")
+      .eq("is_active", true)
+      .order("created_at", { ascending: false });
+    return data || [];
+  },
+  ["store-offers"],
+  { revalidate: 3600, tags: ["offers"] },
+);
+
 export default async function HomePage() {
-  const [products, categories, heroSettings, reviews] = await Promise.all([
-    getProducts(),
-    getCategories(),
-    getHeroSettings(),
-    getApprovedReviews(),
-  ]);
+  const [products, categories, heroSettings, reviews, offers] =
+    await Promise.all([
+      getProducts(),
+      getCategories(),
+      getHeroSettings(),
+      getApprovedReviews(),
+      getStoreOffers(),
+    ]);
 
   const featuredProducts = products.filter((p) => p.featured).slice(0, 10);
 
@@ -31,14 +49,14 @@ export default async function HomePage() {
   return (
     <>
       <HeroSection settings={heroSettings} />
+      <OffersBoard offers={offers} />
       <CategoryZigZag
         categories={categories}
         productsByCategory={productsByCategory}
       />
       <FeaturedProducts products={featuredProducts} />
       <CustomTrio />
-      <CraftProcess />
-      <MaterialsStrip />
+      <StoryTeaser />
       <Testimonials reviews={reviews} />
     </>
   );
