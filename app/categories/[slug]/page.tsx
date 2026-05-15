@@ -641,144 +641,146 @@ export default function CategoryPage() {
           }}
         />
 
-        <div className="relative max-w-[1440px] mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center gap-3">
-          {/* ── Filter label ── */}
-          <span
-            className="hidden sm:block text-xs font-bold uppercase tracking-[0.22em] shrink-0 pr-3"
-            style={{
-              fontFamily: "var(--font-serif)",
-              color: "var(--home-amber)",
-              borderRight: "1.5px dashed var(--home-border)",
-            }}
-          >
-            Filter
-          </span>
-
-          {/* ── Tag chips ── */}
-          <div className="flex items-center gap-2 flex-wrap flex-1">
-            {["All", ...allTags].map((tag, i) => {
-              const isActive =
-                tag === "All" ? activeTag === null : activeTag === tag;
-              const chipBg =
-                i % 3 === 0
-                  ? "rgba(167,243,208,0.45)"
-                  : i % 3 === 1
-                    ? "rgba(221,214,254,0.5)"
-                    : "rgba(186,230,253,0.45)";
-              return (
-                <button
-                  key={tag}
-                  onClick={() =>
-                    setActiveTag(
-                      tag === "All" ? null : activeTag === tag ? null : tag,
-                    )
-                  }
-                  className="relative px-4 py-1.5 text-sm font-semibold capitalize transition-all duration-200"
-                  style={{
-                    fontFamily: "var(--font-serif)",
-                    fontStyle: "italic",
-                    background: isActive ? "var(--home-coral)" : chipBg,
-                    color: isActive ? "#fff" : "var(--home-text)",
-                    borderRadius: 4,
-                    boxShadow: isActive
-                      ? "0 2px 10px rgba(196,86,74,0.35)"
-                      : "1px 2px 4px rgba(28,18,9,0.09)",
-                    transform: isActive
-                      ? "scale(1.07) rotate(0deg)"
-                      : `rotate(${i % 2 === 0 ? -0.7 : 0.7}deg)`,
-                    border: isActive
-                      ? "1px solid rgba(196,86,74,0.4)"
-                      : "1px solid rgba(28,18,9,0.07)",
-                  }}
-                >
-                  {tag}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* ── Sort pills ── */}
-          <div
-            className="flex items-center gap-1 shrink-0 px-3"
-            style={{ borderLeft: "1.5px dashed var(--home-border)" }}
-          >
+        <div className="relative max-w-[1440px] mx-auto px-4 sm:px-6 py-3.5 flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-3">
+          {/* ── Top row: Filter label & Tags ── */}
+          <div className="flex items-center gap-2 w-full lg:w-auto lg:flex-1 overflow-hidden">
+            {/* ── Filter label ── */}
             <span
-              className="hidden sm:block text-xs font-bold uppercase tracking-[0.22em] mr-2"
+              className="hidden lg:block text-xs font-bold uppercase tracking-[0.22em] shrink-0 pr-3"
               style={{
                 fontFamily: "var(--font-serif)",
                 color: "var(--home-amber)",
+                borderRight: "1.5px dashed var(--home-border)",
               }}
             >
-              Sort
+              Filter
             </span>
-            {(
-              [
-                { value: "featured", label: "Featured" },
-                { value: "price-asc", label: "Price ↑" },
-                { value: "price-desc", label: "Price ↓" },
-                { value: "name", label: "A–Z" },
-              ] as { value: SortOption; label: string }[]
-            ).map((opt) => (
-              <button
-                key={opt.value}
-                onClick={() => setSort(opt.value)}
-                className="px-3 py-1.5 text-sm font-semibold rounded transition-all duration-150"
-                style={{
-                  fontFamily: "var(--font-serif)",
-                  fontStyle: "italic",
-                  background:
-                    sort === opt.value ? "var(--home-text)" : "transparent",
-                  color:
-                    sort === opt.value ? "var(--home-bg)" : "var(--home-muted)",
-                  border:
-                    sort === opt.value
-                      ? "1px solid var(--home-text)"
-                      : "1px dashed var(--home-border)",
-                  transform: `rotate(${opt.value === "name" ? 0.5 : -0.5}deg)`,
-                }}
-              >
-                {opt.label}
-              </button>
-            ))}
+
+            {/* ── Tag chips ── */}
+            <div className="flex items-center gap-2 flex-nowrap lg:flex-wrap overflow-x-auto scrollbar-hide py-2 lg:py-0 w-full px-1 -mx-1 lg:px-0 lg:mx-0">
+              {["All", ...allTags].map((tag, i) => {
+                const isActive =
+                  tag === "All" ? activeTag === null : activeTag === tag;
+                const chipBg =
+                  i % 3 === 0
+                    ? "rgba(167,243,208,0.45)"
+                    : i % 3 === 1
+                      ? "rgba(221,214,254,0.5)"
+                      : "rgba(186,230,253,0.45)";
+                return (
+                  <button
+                    key={tag}
+                    onClick={() =>
+                      setActiveTag(
+                        tag === "All" ? null : activeTag === tag ? null : tag,
+                      )
+                    }
+                    className="relative px-4 py-1.5 text-sm font-semibold capitalize transition-all duration-200 whitespace-nowrap shrink-0"
+                    style={{
+                      fontFamily: "var(--font-serif)",
+                      fontStyle: "italic",
+                      background: isActive ? "var(--home-coral)" : chipBg,
+                      color: isActive ? "#fff" : "var(--home-text)",
+                      borderRadius: 4,
+                      boxShadow: isActive
+                        ? "0 2px 10px rgba(196,86,74,0.35)"
+                        : "1px 2px 4px rgba(28,18,9,0.09)",
+                      transform: isActive
+                        ? "scale(1.07) rotate(0deg)"
+                        : `rotate(${i % 2 === 0 ? -0.7 : 0.7}deg)`,
+                      border: isActive
+                        ? "1px solid rgba(196,86,74,0.4)"
+                        : "1px solid rgba(28,18,9,0.07)",
+                    }}
+                  >
+                    {tag}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          {/* ── View mode toggle ── */}
-          <div
-            className="flex items-center gap-1 shrink-0 pl-3"
-            style={{ borderLeft: "1.5px dashed var(--home-border)" }}
-          >
-            <button
-              onClick={() => setViewMode("grid")}
-              aria-label="Grid view"
-              className="p-2 rounded transition-all duration-150"
-              style={{
-                background:
-                  viewMode === "grid" ? "var(--home-coral)" : "transparent",
-                color: viewMode === "grid" ? "#fff" : "var(--home-muted)",
-                border:
-                  viewMode === "grid"
-                    ? "1px solid var(--home-coral)"
-                    : "1px dashed var(--home-border)",
-              }}
-            >
-              <LayoutGrid size={16} />
-            </button>
-            <button
-              onClick={() => setViewMode("list")}
-              aria-label="Detail view"
-              className="p-2 rounded transition-all duration-150"
-              style={{
-                background:
-                  viewMode === "list" ? "var(--home-coral)" : "transparent",
-                color: viewMode === "list" ? "#fff" : "var(--home-muted)",
-                border:
-                  viewMode === "list"
-                    ? "1px solid var(--home-coral)"
-                    : "1px dashed var(--home-border)",
-              }}
-            >
-              <List size={16} />
-            </button>
+          {/* ── Bottom row: Sort & View Mode ── */}
+          <div className="flex items-center justify-between w-full lg:w-auto gap-3">
+            {/* ── Sort pills ── */}
+            <div className="flex items-center gap-1 shrink-0 overflow-x-auto scrollbar-hide py-2 lg:py-0 lg:px-3 lg:border-l-[1.5px] border-dashed border-[color:var(--home-border)]">
+              <span
+                className="hidden lg:block text-xs font-bold uppercase tracking-[0.22em] mr-2"
+                style={{
+                  fontFamily: "var(--font-serif)",
+                  color: "var(--home-amber)",
+                }}
+              >
+                Sort
+              </span>
+              {(
+                [
+                  { value: "featured", label: "Featured" },
+                  { value: "price-asc", label: "Price ↑" },
+                  { value: "price-desc", label: "Price ↓" },
+                  { value: "name", label: "A–Z" },
+                ] as { value: SortOption; label: string }[]
+              ).map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => setSort(opt.value)}
+                  className="px-3 py-1.5 text-sm font-semibold rounded transition-all duration-150 whitespace-nowrap shrink-0"
+                  style={{
+                    fontFamily: "var(--font-serif)",
+                    fontStyle: "italic",
+                    background:
+                      sort === opt.value ? "var(--home-text)" : "transparent",
+                    color:
+                      sort === opt.value
+                        ? "var(--home-bg)"
+                        : "var(--home-muted)",
+                    border:
+                      sort === opt.value
+                        ? "1px solid var(--home-text)"
+                        : "1px dashed var(--home-border)",
+                    transform: `rotate(${opt.value === "name" ? 0.5 : -0.5}deg)`,
+                  }}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+
+            {/* ── View mode toggle ── */}
+            <div className="flex items-center gap-1 shrink-0 pl-3 border-l-[1.5px] border-dashed border-[color:var(--home-border)]">
+              <button
+                onClick={() => setViewMode("grid")}
+                aria-label="Grid view"
+                className="p-2 rounded transition-all duration-150"
+                style={{
+                  background:
+                    viewMode === "grid" ? "var(--home-coral)" : "transparent",
+                  color: viewMode === "grid" ? "#fff" : "var(--home-muted)",
+                  border:
+                    viewMode === "grid"
+                      ? "1px solid var(--home-coral)"
+                      : "1px dashed var(--home-border)",
+                }}
+              >
+                <LayoutGrid size={16} />
+              </button>
+              <button
+                onClick={() => setViewMode("list")}
+                aria-label="Detail view"
+                className="p-2 rounded transition-all duration-150"
+                style={{
+                  background:
+                    viewMode === "list" ? "var(--home-coral)" : "transparent",
+                  color: viewMode === "list" ? "#fff" : "var(--home-muted)",
+                  border:
+                    viewMode === "list"
+                      ? "1px solid var(--home-coral)"
+                      : "1px dashed var(--home-border)",
+                }}
+              >
+                <List size={16} />
+              </button>
+            </div>
           </div>
         </div>
       </section>
